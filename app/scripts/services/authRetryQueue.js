@@ -5,7 +5,7 @@ angular.module('dyanote')
 // authRetryQueue is a generic retry queue for security failures.
 // Each item is expected to expose two functions: retry and cancel.
 // This code is a modification of https://github.com/angular-app/angular-app/blob/master/client/src/common/security/retryQueue.js
-.service('authRetryQueue', ['$q', '$log', function($q, $log) {
+.service('authRetryQueue', function ($q, $log) {
   var retryQueue = [];
 
   // The security service puts its own handler in here!
@@ -72,4 +72,4 @@ angular.module('dyanote')
       retryQueue.shift().retry();
     }
   }
-}]);
+});

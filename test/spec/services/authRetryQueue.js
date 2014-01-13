@@ -3,7 +3,7 @@
 describe('Service: authRetryQueue', function () {
 
   // load the service's module
-  beforeEach(module('clientApp'));
+  beforeEach(module('dyanote'));
 
   // instantiate service
   var authRetryQueue;
@@ -27,7 +27,7 @@ describe('authRetryQueue', function() {
     return jasmine.createSpyObj('retryItem', ['retry', 'cancel']);
   }
 
-  beforeEach(module('clientApp'));
+  beforeEach(module('dyanote'));
 
   beforeEach(inject(function($injector) {
     queue = $injector.get('authRetryQueue');

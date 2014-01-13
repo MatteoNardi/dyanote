@@ -3,7 +3,7 @@
 describe('Service: authFailureInterceptor', function () {
 
   // load the service's module
-  beforeEach(module('clientApp'));
+  beforeEach(module('dyanote'));
 
   // instantiate services and initialize variables
   var $rootScope, authFailureInterceptor, authRetryQueue;

@@ -2,6 +2,6 @@
 
 angular.module('dyanote')
   .controller('MainCtrl', function ($scope) {
-    $scope.isLogged = true;
+    $scope.isAuthenticated = auth.isAuthenticated;
     $scope.username = "Matteo Nardi";
   });
