@@ -14,25 +14,26 @@ angular.module('dyanote')
     authToken: null
   }
 
+  this.getEmail = function () {
+    return currentUser.email;
+  };
+
   // Is the current user authenticated?
-  this.isAuthenticated = function() {
+  this.isAuthenticated = function () {
     return !!currentUser.authToken;
   };
 
   // Attempt to authenticate a user by the given email and password
-  this.login = function(email, password) {
-    // curl -X POST -d "client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&grant_type=password&username=YOUR_USERNAME&password=YOUR_PASSWORD" http://localhost:8000/oauth2/access_token/
-    // {"access_token": "<your-access-token>", "scope": "read", "expires_in": 86399, "refresh_token": "<your-refresh-token>"}
-
-    var loginUrl = SERVER_CONFIG.apiUrl + "oauth2/access_token"
-      + "?client_id=" + encodeURIComponent(SERVER_CONFIG.clientId)
+  this.login = function (email, password) {
+    var loginUrl = SERVER_CONFIG.apiUrl + "oauth2/access_token/";
+    var data = "client_id=" + encodeURIComponent(SERVER_CONFIG.clientId)
       + "&client_secret=" + encodeURIComponent(SERVER_CONFIG.clientSecret)
       + "&grant_type=password"
       + "&username=" + encodeURIComponent(email)
       + "&password=" + encodeURIComponent(password);
 
     var _this = this;
-    return $http.post(loginUrl).then(function(response) {
+    return $http.post(loginUrl, data, {"headers": {"Content-Type": "application/x-www-form-urlencoded"}}).then(function (response) {
       $log.info("Login successful");
       currentUser.email = email;
       currentUser.authToken = response.data.access_token;
@@ -43,12 +44,12 @@ angular.module('dyanote')
   };
 
   // Give up trying to login and clear the retry queue
-  this.cancelLogin = function() {
+  this.cancelLogin = function () {
     authRetryQueue.cancelAll();
   };
 
   // Logout the current user
-  this.logout = function() {
+  this.logout = function () {
     currentUser.email = null;
     currentUser.authToken = null;
     updateHttpHeaders();
@@ -57,7 +58,7 @@ angular.module('dyanote')
   };
 
   // Load user information from settings.
-  this.loadFromSettings = function() {
+  this.loadFromSettings = function () {
     // TODO: implement using local storage
     // http://gregpike.net/demos/angular-local-storage/demo/demo.html
   };
@@ -70,7 +71,7 @@ angular.module('dyanote')
   });
 
   // Configure Angular to send user credentials in each http request.
-  var updateHttpHeaders = function() {
+  var updateHttpHeaders = function () {
     if(this.isAuthenticated())
       $http.defaults.headers.common["Authorization"] = "Bearer " + currentUser.authToken;
     else

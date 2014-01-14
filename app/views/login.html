@@ -1,1 +1,19 @@
-<p>This is the login view.</p>
+<form role="form" ng-submit="login()">
+  <div class="form-group">
+	  <span class="help-block label-warning">{{ errorMessage }}</span>
+    <label for="email">Email address</label>
+    <input type="email" class="form-control" id="email" placeholder="Enter email" ng-model="email">
+    <span class="help-block label-warning">{{ emailErrorMessage }}</span>
+  </div>
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" class="form-control" id="password" placeholder="Password" ng-model="password">
+    <span class="help-block label-warning">{{ passwordErrorMessage }}</span>
+  </div>
+  <div class="checkbox">
+    <label>
+      <input type="checkbox" ng-model="remembar"> Remembar me.
+    </label>
+  </div>
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>
