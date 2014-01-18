@@ -6,30 +6,29 @@ describe('Controller: LoginCtrl', function () {
   beforeEach(module('dyanote'));
 
   var LoginCtrl, createController,
-    scope, $log, $location, mockAuth, loginResponse;
+    scope, $log, $location, auth, loginResponse;
 
   // Initialize the controller and a mock scope
-  beforeEach(inject(function ($controller, $rootScope, _$log_, _$location_, $q) {
+  beforeEach(inject(function ($controller, $rootScope, _$log_, _$location_, $q, _auth_) {
     loginResponse = $q.defer();
     $log = _$log_;
     $location = _$location_;
-    mockAuth = {
-      isAuthenticated: function () { return false; },
-      login: function () { return loginResponse.promise; }
-    };
+    auth = _auth_;
+    spyOn(auth, 'isAuthenticated').andReturn(false);
+    spyOn(auth, 'login').andReturn(loginResponse.promise);
+
     scope = $rootScope.$new();
     createController = function () {
       return $controller('LoginCtrl', {
         $scope: scope,
-        auth: mockAuth
       });
     }
     LoginCtrl = createController();
   }));
 
   it('should redirect to notes if user is already logged in', function () {
-    mockAuth.isAuthenticated = function () { return true; };
-    createController();
+    auth.isAuthenticated.andReturn(true);
+    LoginCtrl = createController();
     expect($log.warn.logs.shift().shift()).toBe('User is already logged in');
     expect($location.path()).toBe('/notes');
   });
