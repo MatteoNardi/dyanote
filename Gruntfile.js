@@ -6,11 +6,6 @@ var mountFolder = function (connect, dir) {
   return connect.static(require('path').resolve(dir));
 };
 
-// # Globbing
-// for performance reasons we're only matching one level down:
-// 'test/spec/{,*/}*.js'
-// use this if you want to recursively match all subfolders:
-// 'test/spec/**/*.js'
 
 module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
@@ -28,8 +23,11 @@ module.exports = function (grunt) {
     yeoman: yeomanConfig,
     watch: {
       styles: {
-        files: ['<%= yeoman.app %>/styles/{,*/}*.css'],
-        tasks: ['copy:styles', 'autoprefixer']
+        files: [
+          '<%= yeoman.app %>/styles/{,*/}*.css',
+          '<%= yeoman.app %>/styles/{,*/}*.less'
+        ],
+        tasks: ['less', 'copy:styles', 'autoprefixer']
       },
       livereload: {
         options: {
@@ -38,6 +36,7 @@ module.exports = function (grunt) {
         files: [
           '<%= yeoman.app %>/{,*/}*.html',
           '.tmp/styles/{,*/}*.css',
+          '.tmp/styles/{,*/}*.less',
           '{.tmp,<%= yeoman.app %>}/scripts/{,*/}*.js',
           '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
         ]
@@ -125,11 +124,6 @@ module.exports = function (grunt) {
         '<%= yeoman.app %>/scripts/{,*/}*.js'
       ]
     },
-    // not used since Uglify task does concat,
-    // but still available if needed
-    /*concat: {
-      dist: {}
-    },*/
     rev: {
       dist: {
         files: {
@@ -176,30 +170,11 @@ module.exports = function (grunt) {
       }
     },
     cssmin: {
-      // By default, your `index.html` <!-- Usemin Block --> will take care of
-      // minification. This option is pre-configured if you do not wish to use
-      // Usemin blocks.
-      // dist: {
-      //   files: {
-      //     '<%= yeoman.dist %>/styles/main.css': [
-      //       '.tmp/styles/{,*/}*.css',
-      //       '<%= yeoman.app %>/styles/{,*/}*.css'
-      //     ]
-      //   }
-      // }
+
     },
     htmlmin: {
       dist: {
         options: {
-          /*removeCommentsFromCDATA: true,
-          // https://github.com/yeoman/grunt-usemin/issues/44
-          //collapseWhitespace: true,
-          collapseBooleanAttributes: true,
-          removeAttributeQuotes: true,
-          removeRedundantAttributes: true,
-          useShortDoctype: true,
-          removeEmptyAttributes: true,
-          removeOptionalTags: true*/
         },
         files: [{
           expand: true,
@@ -242,15 +217,15 @@ module.exports = function (grunt) {
     },
     concurrent: {
       server: [
-        //'coffee:dist',
+        'less',
         'copy:styles'
       ],
       test: [
-        //'coffee',
+        'less',
         'copy:styles'
       ],
       dist: [
-        //'coffee',
+        'less',
         'copy:styles',
         'imagemin',
         'svgmin',
@@ -286,6 +261,21 @@ module.exports = function (grunt) {
           ]
         }
       }
+    },
+
+    less: {
+      options: {
+        paths: ['<%= yeoman.app %>/styles/']
+      },
+      server: {
+        files: [{
+          expand: true,
+          cwd: '<%= yeoman.app %>/styles/',
+          src: ['main.less'],
+          dest: '.tmp/styles/',
+          ext: '.css'
+        }]
+      }
     }
   });
 
@@ -317,7 +307,6 @@ module.exports = function (grunt) {
     'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
-    'concat',
     'copy:dist',
     'cdnify',
     'ngmin',
