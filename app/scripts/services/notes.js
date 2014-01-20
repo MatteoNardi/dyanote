@@ -20,7 +20,7 @@ angular.module('dyanote')
     NoteResource.query(function (result) {
       for (var i = 0; i < result.length; i++) {
         notes[result[i].id] = result[i];
-        if (result[i].flags.indexOf("root") != -1)
+        if (result[i].flags && result[i].flags.indexOf("root") != -1)
           rootNoteId = result[i].id;
         rootNoteId
       }
@@ -47,4 +47,20 @@ angular.module('dyanote')
     }
     return size;
   }
+})
+
+// Intercept API requests without a trailing slash and add it. 
+// Angular's $resource service is buggy and strips the ending slashes in urls.
+// Our REST service needs it (it will return a 301, which breacks CORS)
+.service('missingSlashInterceptor', function () {
+  this.request = function (config) {
+    var url = config.url
+    if (url[url.length -1] != '/' && url.indexOf('/api/') != -1)
+      config.url += '/';
+    return config;
+  };
+})
+
+.config(function($httpProvider) {
+  $httpProvider.interceptors.push('missingSlashInterceptor');
 });

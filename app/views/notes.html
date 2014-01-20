@@ -1,1 +1,8 @@
-<p>This is the notes view.</p>
+<div class="container">
+	<h1>This is the notes view.</h1>
+
+	<div ng-repeat="note in notes">
+		<h2>{{ note.title }}</h2>
+		<p>{{ note.body }}</p>
+	</div>
+</div>

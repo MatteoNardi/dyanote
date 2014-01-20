@@ -6,13 +6,14 @@ describe('Service: notes', function () {
   beforeEach(module('dyanote'));
 
   // instantiate service
-  var notes, auth, $httpBackend;
+  var notes, auth, $httpBackend, $http;
   var note1, note4;
 
-  beforeEach(inject(function (_notes_, _auth_, _$httpBackend_) {
+  beforeEach(inject(function (_notes_, _auth_, _$httpBackend_, _$http_) {
     notes = _notes_;
     auth = _auth_;
 
+    $http = _$http_;
     $httpBackend = _$httpBackend_;
 
     // Mock data
@@ -29,7 +30,7 @@ describe('Service: notes', function () {
       title: "<title2>", body: "<note>note content 2</note>", author: "http://dyanote.herokuapp.com/api/users/user@example.com/"
     };
 
-    $httpBackend.expect('GET', 'https://dyanote.herokuapp.com/api/users/user@example.com/pages')
+    $httpBackend.expect('GET', 'https://dyanote.herokuapp.com/api/users/user@example.com/pages/')
       .respond(200, [note1, note4]);
   }));
 
@@ -51,5 +52,16 @@ describe('Service: notes', function () {
     notes.loadAll();
     $httpBackend.flush();
     expect(JSON.stringify(notes.getRoot())).toEqual(JSON.stringify(note1));
+  });
+
+  it('should add interceptor to broken urls', function () {
+    // AngularJS removes trailing slashes from urls. We've added an interceptor to fix it.
+    $httpBackend.resetExpectations();
+    $httpBackend.expect('GET', 'https://dyanote.herokuapp.com/api/abracadabra/').respond(200);
+    $http.get('https://dyanote.herokuapp.com/api/abracadabra');
+    $httpBackend.flush();
+
+    $httpBackend.verifyNoOutstandingExpectation();
+    $httpBackend.verifyNoOutstandingRequest()
   });
 });
