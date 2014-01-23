@@ -14,7 +14,7 @@ describe('Controller: LoginCtrl', function () {
     $log = _$log_;
     $location = _$location_;
     auth = _auth_;
-    spyOn(auth, 'isAuthenticated').andReturn(false);
+    spyOn(auth, 'loadFromSettings').andReturn(false);
     spyOn(auth, 'login').andReturn(loginResponse.promise);
 
     scope = $rootScope.$new();
@@ -27,7 +27,7 @@ describe('Controller: LoginCtrl', function () {
   }));
 
   it('should redirect to notes if user is already logged in', function () {
-    auth.isAuthenticated.andReturn(true);
+    auth.loadFromSettings.andReturn(true);
     LoginCtrl = createController();
     expect($log.warn.logs.shift().shift()).toBe('User is already logged in');
     expect($location.path()).toBe('/notes');
@@ -81,4 +81,12 @@ describe('Controller: LoginCtrl', function () {
     scope.$apply();
     expect($location.path()).toBe("/notes");
   });
+
+  it('should save user to settings if "remembar me" is checked', function () {
+    scope.email = "asd@gmail.com";
+    scope.password = "123456";
+    scope.remembar = true;
+    scope.login();
+    expect(auth.login).toHaveBeenCalledWith('asd@gmail.com', '123456', true);
+  })
 });

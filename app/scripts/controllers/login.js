@@ -3,7 +3,7 @@
 angular.module('dyanote')
 
 .controller('LoginCtrl', function ($scope, $log, $location, auth) {
-  if (auth.isAuthenticated()) {
+  if (auth.loadFromSettings()) {
     $log.warn('User is already logged in');
     $location.path('/notes');
   }
@@ -14,6 +14,7 @@ angular.module('dyanote')
   $scope.passwordErrorMessage = "";
   $scope.errorMessage = "";
   $scope.isLoggingIn = false;
+  $scope.remembar = false;
 
   $scope.login = function () {
     if ($scope.email == "")
@@ -36,7 +37,7 @@ angular.module('dyanote')
     $scope.isLoggingIn = true;
     $scope.errorMessage = "";
 
-    auth.login($scope.email, $scope.password).then(function (response) {
+    auth.login($scope.email, $scope.password, $scope.remembar).then(function (response) {
       $log.info("Logged in");
       $scope.isLoggingIn = false;
       $location.path('/notes');

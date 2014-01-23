@@ -1,10 +1,8 @@
 'use strict';
 
 angular.module('dyanote')
-  .controller('LogoutCtrl', function ($scope) {
-    $scope.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
+  .controller('LogoutCtrl', function ($scope, $log, $location, auth) {
+    auth.logout();
+    $log.info('Logout');
+    $location.path('/login');
   });

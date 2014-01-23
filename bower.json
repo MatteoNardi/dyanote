@@ -9,7 +9,8 @@
     "angular-route": "1.2.7",
     "angular-cookies": "1.2.7",
     "angular-sanitize": "1.2.7",
-    "bootstrap": "~3.0.3"
+    "bootstrap": "~3.0.3",
+    "angular-local-storage": "*"
   },
   "devDependencies": {
     "angular-mocks": "1.2.7",

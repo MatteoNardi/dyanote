@@ -7,10 +7,11 @@ angular.module('dyanote')
 // it inserts the request into the retry queue, which will execute it
 // again once we'll be authenticated.
 // This code is a modification of https://github.com/angular-app/angular-app/blob/master/client/src/common/security/interceptor.js
-.service('authFailureInterceptor', function ($q, $injector, authRetryQueue) {
+.service('authFailureInterceptor', function ($q, $injector, $log, authRetryQueue) {
   this.responseError = function (request) {
     // do something on error
     if (request.status === 401) {
+      $log.warn("Intercepted failed request");
       var promise = authRetryQueue.pushRetryFn('unauthorized-server', function retryRequest () {
         return $injector.get('$http')(request.config);
       });

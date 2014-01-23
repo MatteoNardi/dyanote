@@ -4,9 +4,11 @@ angular.module('dyanote')
 
 // auth is the authentication service.
 // - Log user in and out of Dyanote
-// - Load user session from local storage (TODO)
+// - Load user session from local storage
 // - Add authentication headers to all http requests.
-.service('auth', function ($http, $location, $log, authRetryQueue, SERVER_CONFIG) {
+.service('auth', function ($http, $location, $log, localStorageService, authRetryQueue, SERVER_CONFIG) {
+
+  var auth = this;
 
   // Information about the current user
   var currentUser = {
@@ -24,7 +26,7 @@ angular.module('dyanote')
   };
 
   // Attempt to authenticate a user by the given email and password
-  this.login = function (email, password) {
+  this.login = function (email, password, remembar) {
     var loginUrl = SERVER_CONFIG.apiUrl + "oauth2/access_token/";
     var data = "client_id=" + encodeURIComponent(SERVER_CONFIG.clientId)
       + "&client_secret=" + encodeURIComponent(SERVER_CONFIG.clientSecret)
@@ -40,6 +42,9 @@ angular.module('dyanote')
       updateHttpHeaders.call(_this);
       // We've successfully authenticated: retry all failed tasks.
       authRetryQueue.retryAll();
+      if (remembar) {
+        localStorageService.add('currentUser', currentUser);
+      }
     });
   };
 
@@ -54,13 +59,22 @@ angular.module('dyanote')
     currentUser.authToken = null;
     updateHttpHeaders();
     $location.path('/login');
+    localStorageService.clearAll();
     // TODO: delete OAuth2 session from server instead of just forgetting it.
   };
 
   // Load user information from settings.
   this.loadFromSettings = function () {
-    // TODO: implement using local storage
-    // http://gregpike.net/demos/angular-local-storage/demo/demo.html
+    var stored = localStorageService.get('currentUser');
+    if (stored && stored.email && stored.authToken) {
+      currentUser = {
+        email: stored.email,
+        authToken: stored.authToken
+      }
+    }
+    if (auth.isAuthenticated)
+      updateHttpHeaders();
+    return auth.isAuthenticated();
   };
 
   // When an item is added to the retry queue, user needs to login again.
@@ -72,9 +86,12 @@ angular.module('dyanote')
 
   // Configure Angular to send user credentials in each http request.
   var updateHttpHeaders = function () {
-    if(this.isAuthenticated())
+    if(auth.isAuthenticated())
       $http.defaults.headers.common["Authorization"] = "Bearer " + currentUser.authToken;
     else
       delete $http.defaults.headers.common["Authorization"];
   }
+
+  // At startup we should load settings
+  this.loadFromSettings();
 });

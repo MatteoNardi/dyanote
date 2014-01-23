@@ -14,9 +14,14 @@ angular.module('dyanote')
 
   // Load all notes from server with the currently logged in user.
   this.loadAll = function () {
+    var deferred = $q.defer();
+    if(!auth.isAuthenticated()) {
+      deferred.reject("User is not logged in");
+      return deferred.promise
+    }
+
     NoteResource = $resource(SERVER_CONFIG.apiUrl + 'users/:user/pages/:id',
                             { user: auth.getEmail() });
-    var deferred = $q.defer();
     NoteResource.query(function (result) {
       for (var i = 0; i < result.length; i++) {
         notes[result[i].id] = result[i];

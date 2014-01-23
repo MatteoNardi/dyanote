@@ -6,15 +6,16 @@ describe('Service: notes', function () {
   beforeEach(module('dyanote'));
 
   // instantiate service
-  var notes, auth, $httpBackend, $http;
+  var notes, auth, $httpBackend, $http, $rootScope;
   var note1, note4;
 
-  beforeEach(inject(function (_notes_, _auth_, _$httpBackend_, _$http_) {
+  beforeEach(inject(function (_notes_, _auth_, _$httpBackend_, _$http_, _$rootScope_) {
     notes = _notes_;
     auth = _auth_;
 
     $http = _$http_;
     $httpBackend = _$httpBackend_;
+    $rootScope = _$rootScope_;
 
     // Mock data
     spyOn(auth, 'isAuthenticated').andReturn(true);
@@ -63,5 +64,17 @@ describe('Service: notes', function () {
 
     $httpBackend.verifyNoOutstandingExpectation();
     $httpBackend.verifyNoOutstandingRequest()
+  });
+
+  if('should fail if user is not logged in', function () {
+    auth.resetExpectations();
+    auth.isAuthenticated.andReturn(false);
+    promise = notes.loadAll();
+    var msg = 'No error';
+    promise.catch(function (reason) {
+      msg = reason;
+    });
+    $rootScope.$apply();
+    expect(msg).toEqual('User is not logged in');
   });
 });

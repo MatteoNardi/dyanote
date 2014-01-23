@@ -3,12 +3,15 @@
 angular.module('dyanote')
 
 // Controller for the notes view
-.controller('NotesCtrl', function ($scope, $log, notes) {
+.controller('NotesCtrl', function ($scope, $log, $location, notes) {
   $scope.notes = [];
 
   var req = notes.loadAll();
   req.then(function () {
     $log.info("Loaded notes: " + notes.count());
     $scope.notes.push(notes.getRoot());
+  }, function (reason) {
+    $log.info("Loading notes failed: " + reason);
+    $location.path("/login");
   })
 });
