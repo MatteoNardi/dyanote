@@ -5,11 +5,13 @@ angular.module('dyanote')
 // richTextEditor is a widget using wysihtml5
 .directive('richTextEditor', function () {
   return {
-    template: '<div><textarea></textarea></div>',
+    template: '<div class="richTextEditor"><textarea></textarea></div>',
     restrict: 'E',
     replace: true,
     link: function postLink(scope, element, attrs) {
       scope.editor = new wysihtml5.Editor(element.find('textarea')[0], {
+        stylesheets: ['/styles/wysihtml5.css'],
+        style: false,
       });
 
       // Sync view -> model
