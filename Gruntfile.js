@@ -272,7 +272,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= yeoman.app %>/styles/',
-          src: ['main.less'],
+          src: ['main.less', 'wysihtml5.less'],
           dest: '.tmp/styles/',
           ext: '.css'
         }]

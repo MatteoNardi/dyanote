@@ -1,0 +1,48 @@
+/* 
+ * These styles are applied to the sysihtml5 iframe.
+ * This file must be found under /styles/wysihtml5.css
+ */
+
+@import "colors.less";
+@import "fonts.less";
+
+
+@line-height: 18px;
+
+body {
+	border: 0;
+	margin: 0;
+	padding: 0px 7px;
+
+	font-family: Ubuntu;
+	outline: none;
+	resize: none;
+
+	font-size: 14px;
+	line-height: @line-height;
+
+
+	background-image: 
+		linear-gradient(180deg,
+		                transparent,
+		                transparent (@line-height - 2),
+		                #eee (@line-height - 2),
+		                #eee (@line-height - 1),
+		                transparent (@line-height - 1),
+		                transparent);
+	background-size: 100% @line-height;
+}
+
+body h1 {
+	margin: @line-height 0;
+	font: 20px/@line-height @font-family-serif;
+	color: @dyanote-green;
+}
+
+body h1:first-child, body ul:first-child {
+	margin-top: 0;
+}
+
+body ul {
+	margin: 0 0 @line-height 0;
+}
