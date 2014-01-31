@@ -1,7 +1,5 @@
 <div class="container">
-	<div class="note" ng-repeat="note in notes" ng-controller="NoteCtrl">
-		<h1>{{ note.title }}</h1>
-		<rich-text-editor ng-model="note.body"></rich-text-editor>
+	<div ng-repeat="note in notes" ng-controller="NoteCtrl">
+		<note ng-model="note.body"></note>
 	</div>
-	<p>{{notes[0].body}}</p>
 </div>

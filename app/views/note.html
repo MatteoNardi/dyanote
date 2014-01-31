@@ -1,0 +1,20 @@
+<div class="note-container">
+	<div class="note">
+		<h1>{{ note.title }}</h1>
+		<div class="richTextEditor"><textarea></textarea></div>
+	</div>
+
+	<toolbar class="toolbar" style="display: none;">
+		<button type="button" data-wysihtml5-command="bold" class="btn btn-default">Bold</button>
+		<button type="button" data-wysihtml5-command="italic" class="btn btn-default">Italic</button>
+
+		<button type="button" data-wysihtml5-command="createLink" class="btn btn-default">Link</button>
+		<div data-wysihtml5-dialog="createLink" style="display: none;">
+		<label>
+		  Link:
+		  <input data-wysihtml5-dialog-field="href" value="http://" class="text">
+		</label>
+		<a data-wysihtml5-dialog-action="save">OK</a> <a data-wysihtml5-dialog-action="cancel">Cancel</a>
+		</div>
+	</toolbar>
+</div>

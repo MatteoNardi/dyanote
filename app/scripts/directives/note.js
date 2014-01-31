@@ -2,7 +2,7 @@ asdasd = "asd";
 angular.module('dyanote')
 
 // richTextEditor is a widget using wysihtml5
-.directive('richTextEditor', function () {
+.directive('note', function () {
 
   // parserRules specifies the allowed tags
   var parserRules = {
@@ -31,14 +31,15 @@ angular.module('dyanote')
   };
 
   return {
-    template: '<div class="richTextEditor"><textarea></textarea></div>',
+    templateUrl: 'views/note.html',
     restrict: 'E',
     replace: true,
     link: function postLink(scope, element, attrs) {
       asdasd = scope.editor = new wysihtml5.Editor(element.find('textarea')[0], {
         stylesheets: ['/styles/wysihtml5.css', 'http://fonts.googleapis.com/css?family=Gilda+Display'],
         style: false,
-        parserRules:  parserRules
+        parserRules:  parserRules,
+        toolbar: element.find('toolbar')[0]
       });
 
       // Sync view -> model

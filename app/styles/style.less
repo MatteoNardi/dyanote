@@ -10,8 +10,14 @@ body { padding-top: 70px; }
 	box-shadow: 0 0 20px @dyanote-green;
 }
 
+.note-container {
+	position: relative;
+}
+
 .note {
 	display: block;
+	position: relative;
+	z-index: 2;
 	width: 560px;
 	background-color: white;
 	border: 1px solid @dyanote-yellow-dark;
@@ -27,8 +33,24 @@ body { padding-top: 70px; }
 }
 
 .richTextEditor {
-height: 580px;
+	height: 580px;
 }
 /* Force wysihtml5 to expand its frame. */
 .richTextEditor .wysihtml5-sandbox { width: 100%; height: 100%; }
 
+.toolbar {
+	display: block;
+	position: absolute;
+	left: 540px;
+	top: 30px;
+	width: 270px;
+	height: 440px;
+	border: 1px solid @dyanote-yellow-dark;
+	background-color: @dyanote-yellow;
+}
+
+.toolbar button {
+	display: inline-block;
+	height: 100px;
+	width: 100px;
+}
