@@ -13,5 +13,11 @@ angular.module('dyanote')
   }, function (reason) {
     $log.info("Loading notes failed: " + reason);
     $location.path("/login");
-  })
+  });
+
+  $scope.$on('$locationChangeStart', function (event, oldUrl, newUrl) {
+    // Todo: close unwanted notes.
+    $scope.notes.push(notes.getById($location.hash()));
+    event.preventDefault();
+  });
 });

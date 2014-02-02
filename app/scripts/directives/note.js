@@ -2,7 +2,7 @@ asdasd = "asd";
 angular.module('dyanote')
 
 // richTextEditor is a widget using wysihtml5
-.directive('note', function () {
+.directive('note', function ($location) {
 
   // parserRules specifies the allowed tags
   var parserRules = {
@@ -40,6 +40,14 @@ angular.module('dyanote')
         style: false,
         parserRules:  parserRules,
         toolbar: element.find('toolbar')[0]
+      });
+
+      element.find('iframe').contents().on('click', 'a', function(event){
+          event.preventDefault();
+          var noteId = event.target.getAttribute('href');
+          console.log(noteId);
+          $location.hash(noteId);
+          scope.$apply();
       });
 
       // Sync view -> model
