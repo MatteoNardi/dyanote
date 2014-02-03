@@ -27,7 +27,6 @@ angular.module('dyanote')
         notes[result[i].id] = result[i];
         if (result[i].flags && result[i].flags.indexOf("root") != -1)
           rootNoteId = result[i].id;
-        rootNoteId
       }
       deferred.resolve()
     });

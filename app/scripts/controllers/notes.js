@@ -15,9 +15,20 @@ angular.module('dyanote')
     $location.path("/login");
   });
 
-  $scope.$on('$locationChangeStart', function (event, oldUrl, newUrl) {
-    // Todo: close unwanted notes.
-    $scope.notes.push(notes.getById($location.hash()));
+  $scope.$on('$openNote', function (event, callerNoteId, targetNoteId) {
+    var callerNote = notes.getById(callerNoteId);
+    var targetNote = notes.getById(targetNoteId);
+    // Close notes after callerNote
+    var callerPosition = $scope.notes.indexOf(callerNote);
+    if (callerPosition == -1) { $log.error('caller note not found'); return; }
+    $scope.notes = $scope.notes.slice(0, callerPosition + 1);
+    // Open targetNote
+    $scope.notes.push(targetNote);
+
+    // Todo: add hash to location
+    // Todo: on load, open note in location
     event.preventDefault();
+    event.stopPropagation();
+    // Todo: scroll to note
   });
 });

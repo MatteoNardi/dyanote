@@ -44,9 +44,10 @@ angular.module('dyanote')
 
       element.find('iframe').contents().on('click', 'a', function(event){
           event.preventDefault();
-          var noteId = event.target.getAttribute('href');
-          console.log(noteId);
-          $location.hash(noteId);
+          var targetNoteId = event.target.getAttribute('href');
+          var callerNoteId = scope.note.id;
+          console.log('Note ' + callerNoteId + ' opens ' + targetNoteId);
+          scope.$emit('$openNote', callerNoteId, targetNoteId);
           scope.$apply();
       });
 
