@@ -38,4 +38,9 @@ angular.module('dyanote')
     event.preventDefault();
     event.stopPropagation();
   });
+
+  $scope.onBreadcrumbItemClicked = function ($event, noteId) {
+    $event.preventDefault();
+    $scope.$broadcast('$scrollToNote', noteId);
+  };
 });
