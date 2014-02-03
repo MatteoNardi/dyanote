@@ -1,5 +1,30 @@
 
-body { padding-top: 70px; }
+#notes-container { margin-top: @navbar-height; }
+
+@note-height:  650px;
+@note-margin:  60px;
+@magic-margin: @note-height + @navbar-height + @note-margin * 2;
+
+@media all and (max-height: 950px) and (min-height: 800px) {
+	#notes-container { margin-bottom: 950px - @magic-margin; }
+}
+
+@media all and (max-height: 1100px) and (min-height: 950px) {
+	#notes-container { margin-bottom: 1100px - @magic-margin; }
+}
+
+@media all and (max-height: 1250px) and (min-height: 1100px) {
+	#notes-container { margin-bottom: 1250px - @magic-margin; }
+}
+
+@media all and (max-height: 1400px) and (min-height: 1250px) {
+	#notes-container { margin-bottom: 1400px - @magic-margin; }
+}
+
+@media all and (min-height: 1400px) {
+	#notes-container { margin-bottom: 1400px -@magic-margin; }
+}
+
 
 .navbar-brand {
 	font: 19px @font-family-serif;
@@ -23,7 +48,7 @@ body { padding-top: 70px; }
 	border: 1px solid @dyanote-yellow-dark;
 	padding: 5px 10px;
 	box-shadow: 0 0 20px @dyanote-yellow-dark;
-	margin: 40px 0 40px 0;
+	margin: @note-margin 0 @note-margin 0;
 }
 
 .note h1 {

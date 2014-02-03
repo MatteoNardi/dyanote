@@ -18,17 +18,24 @@ angular.module('dyanote')
   $scope.$on('$openNote', function (event, callerNoteId, targetNoteId) {
     var callerNote = notes.getById(callerNoteId);
     var targetNote = notes.getById(targetNoteId);
-    // Close notes after callerNote
-    var callerPosition = $scope.notes.indexOf(callerNote);
-    if (callerPosition == -1) { $log.error('caller note not found'); return; }
-    $scope.notes = $scope.notes.slice(0, callerPosition + 1);
-    // Open targetNote
-    $scope.notes.push(targetNote);
+
+    // If note isn't already open, open it.
+    if ($scope.notes.indexOf(targetNote) == -1) {
+      // Close notes after callerNote
+      var callerPosition = $scope.notes.indexOf(callerNote);
+      if (callerPosition == -1) { $log.error('caller note not found'); return; }
+      $scope.notes = $scope.notes.slice(0, callerPosition + 1);
+      // Open targetNote
+      $scope.notes.push(targetNote);
+    }
+    // If note is already open, scroll to it.
+    else {
+      $scope.$broadcast('$scrollToNote', targetNoteId);
+    }
 
     // Todo: add hash to location
     // Todo: on load, open note in location
     event.preventDefault();
     event.stopPropagation();
-    // Todo: scroll to note
   });
 });

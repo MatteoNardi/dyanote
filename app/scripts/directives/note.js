@@ -65,6 +65,20 @@ angular.module('dyanote')
         element.find('textarea').html(updatedValue);
         scope.editor.setValue(scope.editor.parse(updatedValue));
       });
+
+      // Scroll to note on directive creation...
+      var scrollToNote = function () {
+        jQuery("body").animate({scrollTop: element.offset().top - 90}, 400);
+        // Note: this 90px magic number shoud be @navbar-height + @note-margin in style.less 
+      };
+      scrollToNote();
+      // ... and when someone asks to.
+      scope.$on('$scrollToNote', function (event, targetNoteId) {
+        if (targetNoteId == scope.note.id)
+          scrollToNote();
+      });
+
+      // Todo: make sure these Observer patters don't cause memory leak.
     }
   };
 });
