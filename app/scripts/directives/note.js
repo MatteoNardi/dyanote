@@ -1,4 +1,3 @@
-asdasd = "asd";
 angular.module('dyanote')
 
 // richTextEditor is a widget using wysihtml5
@@ -35,7 +34,7 @@ angular.module('dyanote')
     restrict: 'E',
     replace: true,
     link: function postLink(scope, element, attrs) {
-      asdasd = scope.editor = new wysihtml5.Editor(element.find('textarea')[0], {
+      scope.editor = new wysihtml5.Editor(element.find('textarea')[0], {
         stylesheets: ['/styles/wysihtml5.css', 'http://fonts.googleapis.com/css?family=Gilda+Display'],
         style: false,
         parserRules:  parserRules,

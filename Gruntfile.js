@@ -169,9 +169,6 @@ module.exports = function (grunt) {
         }]
       }
     },
-    cssmin: {
-
-    },
     htmlmin: {
       dist: {
         options: {
@@ -179,7 +176,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= yeoman.app %>',
-          src: ['*.html', 'views/*.html'],
+          src: ['*.html'],
           dest: '<%= yeoman.dist %>'
         }]
       }
@@ -195,7 +192,6 @@ module.exports = function (grunt) {
           src: [
             '*.{ico,png,txt}',
             '.htaccess',
-            'bower_components/**/*',
             'extra/**/*',
             'images/{,*/}*.{gif,webp}',
             'styles/fonts/*'
@@ -226,7 +222,7 @@ module.exports = function (grunt) {
         'copy:styles'
       ],
       dist: [
-        'less',
+        'less:dist',
         'copy:styles',
         'imagemin',
         'svgmin',
@@ -248,19 +244,10 @@ module.exports = function (grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: '<%= yeoman.dist %>/scripts',
+          cwd: '.tmp/concat/scripts',
           src: '*.js',
-          dest: '<%= yeoman.dist %>/scripts'
+          dest: '.tmp/concat/scripts'
         }]
-      }
-    },
-    uglify: {
-      dist: {
-        files: {
-          '<%= yeoman.dist %>/scripts/scripts.js': [
-            '<%= yeoman.dist %>/scripts/scripts.js'
-          ]
-        }
       }
     },
 
@@ -276,6 +263,34 @@ module.exports = function (grunt) {
           dest: '.tmp/styles/',
           ext: '.css'
         }]
+      },
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '<%= yeoman.app %>/styles/',
+          src: ['main.less'],
+          dest: '.tmp/concat/styles/',
+          ext: '.css'
+        }, {
+          expand: true,
+          cwd: '<%= yeoman.app %>/styles/',
+          src: ['wysihtml5.less'],
+          dest: '<%= yeoman.dist %>/styles/',
+          ext: '.css'
+        }]
+      }
+    },
+
+    // Put AngularJS templates in $templateCache
+    ngtemplates: {
+      dist: {
+        cwd: '<%= yeoman.app %>/',
+        src: 'views/*.html',
+        dest: '.tmp/ngtemplates/template.js',
+        options: {
+          module: 'dyanote',
+          usemin: 'scripts/scripts.js'
+        }
       }
     }
   });
@@ -309,9 +324,11 @@ module.exports = function (grunt) {
     'concurrent:dist',
     'autoprefixer',
     'copy:dist',
-    'cdnify',
-    'ngmin',
     'cssmin',
+    'cdnify',
+    'ngtemplates:dist',
+    'concat',
+    'ngmin',
     'uglify',
     'rev',
     'usemin'

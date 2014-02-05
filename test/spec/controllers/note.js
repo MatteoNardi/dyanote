@@ -25,6 +25,7 @@ describe('Controller: NoteCtrl', function () {
       body: '<note>...</note>'
     };
     scope.note = note;
+    $rootScope.$apply();
     spyOn(notes, 'uploadById');
     note.body = '<note> Changed </note>';
     $rootScope.$apply();
