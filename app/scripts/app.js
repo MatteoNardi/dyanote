@@ -34,4 +34,5 @@ angular.module('dyanote', ['ngRoute', 'ngResource', 'LocalStorageModule'])
 
 .config(function ($locationProvider) {
   $locationProvider.html5Mode(true);
+  $locationProvider.hashPrefix('!');
 });

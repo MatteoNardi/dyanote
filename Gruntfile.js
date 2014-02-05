@@ -12,7 +12,6 @@ module.exports = function (grunt) {
   require('time-grunt')(grunt);
   var modRewrite = require('connect-modrewrite');
 
-
   // configurable paths
   var yeomanConfig = {
     app: 'app',
@@ -21,13 +20,15 @@ module.exports = function (grunt) {
 
   grunt.initConfig({
     yeoman: yeomanConfig,
+    timestamp: (new Date()).getTime(),
+
     watch: {
       styles: {
         files: [
           '<%= yeoman.app %>/styles/{,*/}*.css',
           '<%= yeoman.app %>/styles/{,*/}*.less'
         ],
-        tasks: ['less', 'copy:styles', 'autoprefixer']
+        tasks: ['less', 'autoprefixer']
       },
       livereload: {
         options: {
@@ -144,7 +145,6 @@ module.exports = function (grunt) {
     },
     usemin: {
       html: ['<%= yeoman.dist %>/{,*/}*.html'],
-      css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
       options: {
         dirs: ['<%= yeoman.dist %>']
       }
@@ -205,29 +205,10 @@ module.exports = function (grunt) {
           ]
         }]
       },
-      styles: {
-        expand: true,
-        cwd: '<%= yeoman.app %>/styles',
-        dest: '.tmp/styles/',
-        src: '{,*/}*.css'
+      scout: {
+        src: 'dist/index.html',
+        dest: 'dist/scout.html'
       }
-    },
-    concurrent: {
-      server: [
-        'less',
-        'copy:styles'
-      ],
-      test: [
-        'less',
-        'copy:styles'
-      ],
-      dist: [
-        'less:dist',
-        'copy:styles',
-        'imagemin',
-        'svgmin',
-        'htmlmin'
-      ]
     },
     karma: {
       unit: {
@@ -268,13 +249,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= yeoman.app %>/styles/',
-          src: ['main.less'],
-          dest: '.tmp/concat/styles/',
-          ext: '.css'
-        }, {
-          expand: true,
-          cwd: '<%= yeoman.app %>/styles/',
-          src: ['wysihtml5.less'],
+          src: ['main.less', 'wysihtml5.less'],
           dest: '<%= yeoman.dist %>/styles/',
           ext: '.css'
         }]
@@ -292,6 +267,69 @@ module.exports = function (grunt) {
           usemin: 'scripts/scripts.js'
         }
       }
+    },
+
+    replace: {
+      scout: {
+        src: ['dist/scout.html'],
+        dest: 'dist/scout.html',
+        replacements: [{ 
+          from: 'scripts/',
+          to: '<%= timestamp %>/scripts/'
+        }, { 
+          from: 'styles/',
+          to: '<%= timestamp %>/styles/'
+        }]
+      }
+    },
+
+
+    // Amazon S3 deployment
+    s3: {
+      options: {
+        bucket: 'dyanote.com',
+        region: 'eu-west-1',
+        access: 'public-read',
+        gzip: true,
+        headers: {
+          // Two Year cache policy (1000 * 60 * 60 * 24 * 730)
+          "Cache-Control": "max-age=630720000, public",
+          "Expires": new Date(Date.now() + 63072000000).toUTCString()
+        }
+      },
+      deploy: {
+        upload: [{
+          // CSS
+          src: '<%= yeoman.dist %>/styles/*',
+          dest: '<%= timestamp %>/styles/',
+          options: {
+            headers: {
+              'Content-Type': 'text/css'
+            }
+          }
+        }, {
+          // JS (scripts)
+          src: '<%= yeoman.dist %>/scripts/*',
+          dest: '<%= timestamp %>/scripts/',
+        }, {
+          // JS (extra)
+          src: '<%= yeoman.dist %>/extra/*',
+          dest: '<%= timestamp %>/extra/',
+        }, {
+          // Html
+          src: '<%= yeoman.dist %>/index.html',
+          dest: '<%= timestamp %>/',
+        }, {
+          // Scout file
+          src: '<%= yeoman.dist %>/scout.html',
+          dest: '/index.html',
+          headers: {
+            // 5 minutes cache policy (1000 * 60 * 6)
+            "Cache-Control": "max-age=360000, public",
+            "Expires": new Date(Date.now() + 360000).toUTCString()
+          }
+        }]
+      }
     }
   });
 
@@ -302,7 +340,7 @@ module.exports = function (grunt) {
 
     grunt.task.run([
       'clean:server',
-      'concurrent:server',
+      'less',
       'autoprefixer',
       'connect:livereload',
       'open',
@@ -312,7 +350,6 @@ module.exports = function (grunt) {
 
   grunt.registerTask('test', [
     'clean:server',
-    'concurrent:test',
     'autoprefixer',
     'connect:test',
     'karma'
@@ -321,10 +358,12 @@ module.exports = function (grunt) {
   grunt.registerTask('build', [
     'clean:dist',
     'useminPrepare',
-    'concurrent:dist',
+    'less:dist',
+    'imagemin',
+    'svgmin',
+    'htmlmin',
     'autoprefixer',
     'copy:dist',
-    'cssmin',
     'cdnify',
     'ngtemplates:dist',
     'concat',
@@ -338,5 +377,11 @@ module.exports = function (grunt) {
     'jshint',
     'test',
     'build'
+  ]),
+
+  grunt.registerTask('deploy', [
+    'copy:scout',
+    'replace:scout',
+    's3:deploy',
   ]);
 };
