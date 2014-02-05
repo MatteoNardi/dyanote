@@ -6,13 +6,20 @@ describe('Service: notes', function () {
   beforeEach(module('dyanote'));
 
   // instantiate service
-  var notes, auth, $httpBackend, $http, $rootScope;
-  var note1, note4;
+  var notes,
+    auth,
+    $httpBackend,
+    $http,
+    $rootScope,
+    $log,
+    note1,
+    note4;
 
-  beforeEach(inject(function (_notes_, _auth_, _$httpBackend_, _$http_, _$rootScope_) {
+  beforeEach(inject(function (_notes_, _auth_, _$httpBackend_, _$http_, _$rootScope_, _$log_) {
     notes = _notes_;
     auth = _auth_;
 
+    $log = _$log_;
     $http = _$http_;
     $httpBackend = _$httpBackend_;
     $rootScope = _$rootScope_;
@@ -66,15 +73,39 @@ describe('Service: notes', function () {
     $httpBackend.verifyNoOutstandingRequest()
   });
 
-  if('should fail if user is not logged in', function () {
-    auth.resetExpectations();
+  it('should fail if user is not logged in', function () {
+    $httpBackend.resetExpectations();
     auth.isAuthenticated.andReturn(false);
-    promise = notes.loadAll();
+    var promise = notes.loadAll();
     var msg = 'No error';
     promise.catch(function (reason) {
       msg = reason;
     });
     $rootScope.$apply();
     expect(msg).toEqual('User is not logged in');
+  });
+
+  it('should upload notes to server', function () {
+    notes.loadAll();
+    $httpBackend.flush();
+
+    $httpBackend.expect('PUT', 'https://dyanote.herokuapp.com/api/users/user@example.com/pages/1/').respond(200);
+    notes.uploadById(note1.id);
+
+    $httpBackend.flush();
+    $httpBackend.verifyNoOutstandingExpectation();
+    $httpBackend.verifyNoOutstandingRequest()
+  });
+
+  it('should complain when note doesnt exist', function () {
+    notes.loadAll();
+    $httpBackend.flush();
+
+    notes.uploadById(231421323);
+
+    expect($log.error.logs.shift().shift()).toBe('uploadById: No note with id 231421323');
+
+    $httpBackend.verifyNoOutstandingExpectation();
+    $httpBackend.verifyNoOutstandingRequest()
   });
 });

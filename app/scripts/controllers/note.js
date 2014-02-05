@@ -2,8 +2,13 @@
 
 angular.module('dyanote')
 
-.controller('NoteCtrl', function ($scope, $log) {
+// Controller of a single note.
+// Is responsible for calling notes.uploadById(note.id) on note change.
+.controller('NoteCtrl', function ($scope, notes, $log) {
   $scope.$watch('note.body', function(newValue, oldValue) {
-    $log.info("NoteCtrl. Note body changed:\n" + newValue);
+    if (newValue !== oldValue) {
+        $log.info("NoteCtrl. Uploading note " + $scope.note.id);
+        notes.uploadById($scope.note.id);
+    }
   });
 });

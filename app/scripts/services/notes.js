@@ -3,7 +3,7 @@
 angular.module('dyanote')
 
 // notes handles comunication with the REST service and notes handling.
-.service('notes', function ($resource, $q, auth, SERVER_CONFIG) {
+.service('notes', function ($resource, $q, $log, auth, SERVER_CONFIG) {
   
   // All our notes
   var notes = {};
@@ -21,7 +21,13 @@ angular.module('dyanote')
     }
 
     NoteResource = $resource(SERVER_CONFIG.apiUrl + 'users/:user/pages/:id',
-                            { user: auth.getEmail() });
+                            {
+                              user: auth.getEmail(),
+                              id: '@id'
+                            },
+                            {
+                              'update': { method:'PUT' }
+                            });
     NoteResource.query(function (result) {
       for (var i = 0; i < result.length; i++) {
         notes[result[i].id] = result[i];
@@ -41,6 +47,15 @@ angular.module('dyanote')
   // Get a note given its id.
   this.getById = function (id) {
     return notes[id];
+  }
+
+  // Upload to server the note with the given id.
+  this.uploadById = function (id) {
+    if (notes[id] == undefined) {
+      $log.error('uploadById: No note with id ' + id);
+      return;
+    }
+    notes[id].$update();
   }
 
   // Get number of notes.
