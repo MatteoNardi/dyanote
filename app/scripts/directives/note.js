@@ -29,18 +29,26 @@ angular.module('dyanote')
     }
   };
 
+  /* This is an ugly hack. 
+   * We need the url of the css of our application since wysihtml5 is inside an iframe
+   * and it doesn't inherit it.
+   */
+  var stylesheetUrl = jQuery('head link[href$="main.css"]')[0].href;
+
   return {
     templateUrl: 'views/note.html',
     restrict: 'E',
     replace: true,
     link: function postLink(scope, element, attrs) {
+
       scope.editor = new wysihtml5.Editor(element.find('textarea')[0], {
-        stylesheets: ['/styles/wysihtml5.css', 'http://fonts.googleapis.com/css?family=Gilda+Display'],
+        stylesheets: [stylesheetUrl, 'http://fonts.googleapis.com/css?family=Gilda+Display'],
         style: false,
         parserRules:  parserRules,
         toolbar: element.find('toolbar')[0]
       });
 
+      // Fixme: doesn't work on firefox: iframe is not loaded yet.
       element.find('iframe').contents().on('click', 'a', function(event){
           event.preventDefault();
           var targetNoteId = event.target.getAttribute('href');

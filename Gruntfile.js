@@ -240,7 +240,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= yeoman.app %>/styles/',
-          src: ['main.less', 'wysihtml5.less'],
+          src: ['main.less'],
           dest: '.tmp/styles/',
           ext: '.css'
         }]
@@ -249,7 +249,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= yeoman.app %>/styles/',
-          src: ['main.less', 'wysihtml5.less'],
+          src: ['main.less'],
           dest: '<%= yeoman.dist %>/styles/',
           ext: '.css'
         }]
