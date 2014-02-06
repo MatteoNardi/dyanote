@@ -1,5 +1,4 @@
 angular.module('dyanote')
-
 // richTextEditor is a widget using wysihtml5
 .directive('note', function ($location) {
 
@@ -45,7 +44,6 @@ angular.module('dyanote')
         stylesheets: [stylesheetUrl, 'http://fonts.googleapis.com/css?family=Gilda+Display'],
         style: false,
         parserRules:  parserRules,
-        toolbar: element.find('toolbar')[0]
       });
 
       // Fixme: doesn't work on firefox: iframe is not loaded yet.

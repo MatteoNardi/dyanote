@@ -4,8 +4,5 @@
 		<div class="richTextEditor"><textarea></textarea></div>
 	</div>
 
-	<toolbar class="toolbar" style="display: none;">
-		<button type="button" data-wysihtml5-command="bold" class="btn btn-default">Bold</button>
-		<button type="button" data-wysihtml5-command="italic" class="btn btn-default">Italic</button>
-	</toolbar>
+	<div ng-include="'views/toolbar.html'" class="toolbar" ng-controller="ToolbarCtrl"></div>
 </div>

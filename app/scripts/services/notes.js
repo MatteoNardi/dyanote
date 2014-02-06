@@ -58,6 +58,16 @@ angular.module('dyanote')
     notes[id].$update();
   }
 
+  this.newNote = function (newNoteRequest) {
+    var note = new NoteResource();
+    note.title = newNoteRequest.title;
+    note.body = newNoteRequest.body;
+    note.parent = notes[newNoteRequest.parentId].url;
+    return note.$save(function (note) {
+      notes[note.id] = note;
+    });
+  }
+
   // Get number of notes.
   this.count = function () {
     var size = 0, key;
