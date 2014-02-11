@@ -50,10 +50,10 @@ angular.module('dyanote')
 
       // Sync view -> model
       var updateModel = function () {
-        var updatedValue = "<note>" + scope.editor.parse(scope.editor.getValue()) + "</note>";
-        if (scope.note.body != updatedValue) {
+        var newValue = scope.editor.parse(scope.editor.getValue());
+        if (scope.note.body != newValue) {
           console.log('Sync view -> model (' + scope.note.id + ')');
-          scope.note.body = updatedValue;
+          scope.note.body = newValue;
           if(!scope.$$phase)
             scope.$apply();
         }
@@ -61,11 +61,10 @@ angular.module('dyanote')
 
       // Sync model -> view
       var updateView = function (newValue, oldValue) {
-        var updatedValue = newValue.replace(/<\/?note>/gi, '');
-        if (scope.editor.getValue() != updatedValue) {
+        if (scope.editor.getValue() != newValue) {
           console.log('Sync model -> view (' + scope.note.id + ')');
-          element.find('textarea').html(updatedValue);
-          scope.editor.setValue(scope.editor.parse(updatedValue));
+          element.find('textarea').html(newValue);
+          scope.editor.setValue(scope.editor.parse(newValue));
         }
       }
 

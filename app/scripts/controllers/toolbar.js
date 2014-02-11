@@ -31,7 +31,7 @@ angular.module('dyanote')
       newNoteRequest.title = selection.toString();
     } else {
       newNoteRequest.title = 'New note (' + (new Date()).toDateString() + ')';
-      newNoteRequest.body = '<note>' + selection.toHtml() + '</note>';
+      newNoteRequest.body = selection.toHtml();
       composer.commands.exec("delete");
       selection = composer.selection.getSelection();
     }

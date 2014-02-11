@@ -35,7 +35,7 @@ angular.module('dyanote')
         var flags = result[i].flags;
         if (flags && flags.indexOf("root") != -1)
           rootNoteId = result[i].id;
-        if (flags && flags.indexOf("trash") != -1)
+        if (flags && flags.indexOf("archive") != -1)
           archiveNoteId = result[i].id;
       }
       deferred.resolve()
