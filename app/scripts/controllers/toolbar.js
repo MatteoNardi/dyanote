@@ -2,34 +2,47 @@
 
 angular.module('dyanote')
 
+// ToolbarCtrl is the controller of the toolbar and is tightly coupled with WysiHTML5.
+// When a toolbar button is clicked, we update our rich text editor accordingly.
+// $scope.editor must be set by the note directive.
 .controller('ToolbarCtrl', function ($scope, $log, notes) {
-  // $scope.editor should be set by the note directive.
 
   // Create a link with the currently selected text.
   $scope.applyLink = function () {
-    // If a single line is selected, that will be the title of the new note.
-    // If multiple lines are selected, that will be the new note's body.
-    var selection = $scope.editor.composer.selection.getSelection();
-    var selectedText = $scope.editor.composer.selection.getText(); // Note: Doen't keep formatting
-    var singleLine = selection.anchorNode === selection.focusNode && 
-                     selection.anchorNode.nodeName == '#text' &&
-                     selectedText.length < 20;
+    
     var newNoteRequest = {
-      title: singleLine ? selectedText : 'New note (' + (new Date()).toDateString() + ')',
-      body: singleLine ? "" : selectedText,
+      title: '',
+      body: '',
       parentId: $scope.note.id
     }
+    
+    var composer = $scope.editor.composer;
+    var selection = composer.selection.getSelection();
+    var range = composer.selection.getRange();
 
-    if(!singleLine) {
-      $scope.editor.composer.commands.exec("delete");
-      selection = $scope.editor.composer.selection.getSelection();
+    // If a single line is selected, that will be the title of the new note.
+    // If multiple lines are selected, that will be the new note's body.
+    var isSingleLine = selection.anchorNode === selection.focusNode && 
+                       selection.anchorNode.nodeName == '#text' &&
+                       selection.toString().length < 20;
+    
+    if(isSingleLine) {
+      // Make the selected text (without formatting) as the title
+      newNoteRequest.title = selection.toString();
+    } else {
+      newNoteRequest.title = 'New note (' + (new Date()).toDateString() + ')';
+      newNoteRequest.body = '<note>' + selection.toHtml() + '</note>';
+      composer.commands.exec("delete");
+      selection = composer.selection.getSelection();
     }
     
     notes.newNote(newNoteRequest).then(function (note) {
-      $log.info("New note created");
+      $log.info('New note created (' + note.id + '): ' + note.title
+                + (isSingleLine ? ' [Single line]' : ' [Multi line]'));
       $scope.$emit('$openNote', $scope.note.id, note.id);
-      $scope.editor.composer.selection.setSelection(selection);
-      $scope.editor.composer.commands.exec("createLink", { href: note.id, text: note.title });
+      composer.selection.setSelection(range);
+      composer.commands.exec("createLink", { href: note.id, text: note.title });
+      $scope.editor.fire('change');
     }, function (error) {
       $log.error('Error creating note: ' + error);
     });

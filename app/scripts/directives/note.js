@@ -1,4 +1,7 @@
+asdasd = "";
 angular.module('dyanote')
+
+
 // richTextEditor is a widget using wysihtml5
 .directive('note', function ($location) {
 
@@ -40,7 +43,7 @@ angular.module('dyanote')
     replace: true,
     link: function postLink(scope, element, attrs) {
 
-      scope.editor = new wysihtml5.Editor(element.find('textarea')[0], {
+      asdasd = scope.editor = new wysihtml5.Editor(element.find('textarea')[0], {
         stylesheets: [stylesheetUrl, 'http://fonts.googleapis.com/css?family=Gilda+Display'],
         style: false,
         parserRules:  parserRules,
@@ -53,27 +56,34 @@ angular.module('dyanote')
           var callerNoteId = scope.note.id;
           console.log('Note ' + callerNoteId + ' opens ' + targetNoteId);
           scope.$emit('$openNote', callerNoteId, targetNoteId);
-          scope.$apply();
+          if(!scope.$$phase)
+            scope.$apply();
       });
 
       // Sync view -> model
       scope.editor.on('change', function () {
-        console.log('Sync view -> model');
-        scope.note.body = "<note>" + scope.editor.parse(scope.editor.getValue()) + "</note>";
-        scope.$apply();
+        var updatedValue = "<note>" + scope.editor.parse(scope.editor.getValue()) + "</note>";
+        if (scope.note.body != updatedValue) {
+          console.log('Sync view -> model (' + scope.note.id + ')');
+          scope.note.body = updatedValue;
+          if(!scope.$$phase)
+            scope.$apply();
+        }
       });
 
       // Sync model -> view
       scope.$watch(attrs.ngModel, function (newValue, oldValue) {
         var updatedValue = newValue.replace(/<\/?note>/gi, '');
-        console.log('Sync model -> view');
-        element.find('textarea').html(updatedValue);
-        scope.editor.setValue(scope.editor.parse(updatedValue));
+        if (scope.editor.getValue() != updatedValue) {
+          console.log('Sync model -> view (' + scope.note.id + ')');
+          element.find('textarea').html(updatedValue);
+          scope.editor.setValue(scope.editor.parse(updatedValue));
+        }
       });
 
       // Scroll to note on directive creation...
       var scrollToNote = function () {
-        jQuery("body").animate({scrollTop: element.offset().top - 90}, 400);
+        jQuery("html").animate({scrollTop: element.offset().top - 90}, 400);
         // Note: this 90px magic number shoud be @navbar-height + @note-margin in style.less 
       };
       scrollToNote();
