@@ -1,4 +1,3 @@
-asdasd = "";
 angular.module('dyanote')
 
 
@@ -43,11 +42,35 @@ angular.module('dyanote')
     replace: true,
     link: function postLink(scope, element, attrs) {
 
-      asdasd = scope.editor = new wysihtml5.Editor(element.find('textarea')[0], {
+      scope.editor = new wysihtml5.Editor(element.find('textarea')[0], {
         stylesheets: [stylesheetUrl, 'http://fonts.googleapis.com/css?family=Gilda+Display'],
         style: false,
         parserRules:  parserRules,
       });
+
+      // Sync view -> model
+      var updateModel = function () {
+        var updatedValue = "<note>" + scope.editor.parse(scope.editor.getValue()) + "</note>";
+        if (scope.note.body != updatedValue) {
+          console.log('Sync view -> model (' + scope.note.id + ')');
+          scope.note.body = updatedValue;
+          if(!scope.$$phase)
+            scope.$apply();
+        }
+      }
+
+      // Sync model -> view
+      var updateView = function (newValue, oldValue) {
+        var updatedValue = newValue.replace(/<\/?note>/gi, '');
+        if (scope.editor.getValue() != updatedValue) {
+          console.log('Sync model -> view (' + scope.note.id + ')');
+          element.find('textarea').html(updatedValue);
+          scope.editor.setValue(scope.editor.parse(updatedValue));
+        }
+      }
+
+      scope.editor.on('change', updateModel);
+      scope.$watch(attrs.ngModel, updateView);
 
       // Fixme: doesn't work on firefox: iframe is not loaded yet.
       element.find('iframe').contents().on('click', 'a', function(event){
@@ -56,29 +79,9 @@ angular.module('dyanote')
           var callerNoteId = scope.note.id;
           console.log('Note ' + callerNoteId + ' opens ' + targetNoteId);
           scope.$emit('$openNote', callerNoteId, targetNoteId);
+          updateModel();
           if(!scope.$$phase)
             scope.$apply();
-      });
-
-      // Sync view -> model
-      scope.editor.on('change', function () {
-        var updatedValue = "<note>" + scope.editor.parse(scope.editor.getValue()) + "</note>";
-        if (scope.note.body != updatedValue) {
-          console.log('Sync view -> model (' + scope.note.id + ')');
-          scope.note.body = updatedValue;
-          if(!scope.$$phase)
-            scope.$apply();
-        }
-      });
-
-      // Sync model -> view
-      scope.$watch(attrs.ngModel, function (newValue, oldValue) {
-        var updatedValue = newValue.replace(/<\/?note>/gi, '');
-        if (scope.editor.getValue() != updatedValue) {
-          console.log('Sync model -> view (' + scope.note.id + ')');
-          element.find('textarea').html(updatedValue);
-          scope.editor.setValue(scope.editor.parse(updatedValue));
-        }
       });
 
       // Scroll to note on directive creation...
