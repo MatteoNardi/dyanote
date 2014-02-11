@@ -64,7 +64,9 @@ angular.module('dyanote')
       $log.error('uploadById: No note with id ' + id);
       return;
     }
-    notes[id].$update();
+    // BUG: this updates our note resource too.
+    // We don't want this because it can create loops.
+    //notes[id].$update();
   }
 
   // Create a new note

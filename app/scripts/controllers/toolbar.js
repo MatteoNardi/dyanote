@@ -32,8 +32,6 @@ angular.module('dyanote')
     } else {
       newNoteRequest.title = 'New note (' + (new Date()).toDateString() + ')';
       newNoteRequest.body = selection.toHtml();
-      composer.commands.exec("delete");
-      selection = composer.selection.getSelection();
     }
     
     notes.newNote(newNoteRequest).then(function (note) {
@@ -41,8 +39,11 @@ angular.module('dyanote')
                 + (isSingleLine ? ' [Single line]' : ' [Multi line]'));
       $scope.$emit('$openNote', $scope.note.id, note.id);
       composer.selection.setSelection(range);
-      composer.commands.exec("createLink", { href: note.id, text: note.title });
-      $scope.editor.fire('change');
+      if (!isSingleLine) {
+        composer.commands.exec("delete");
+        selection = composer.selection.getSelection();
+      }
+      composer.commands.exec("createLink", { href: note.url, text: note.title });
     }, function (error) {
       $log.error('Error creating note: ' + error);
     });
