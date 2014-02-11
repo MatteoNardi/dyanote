@@ -3,7 +3,7 @@
 angular.module('dyanote')
 
 // Controller of a single note.
-// Is responsible for calling notes.uploadById(note.id) on note change.
+// Is responsible for updating the note and deleting it.
 .controller('NoteCtrl', function ($scope, notes, $log) {
   $scope.$watch('note.body', function(newValue, oldValue) {
     if (newValue !== oldValue) {
@@ -11,4 +11,9 @@ angular.module('dyanote')
         notes.uploadById($scope.note.id);
     }
   });
+
+  $scope.moveToTrash = function() {
+      $log.info("NoteCtrl. Moving to trash note " + $scope.note.id);
+      notes.archive($scope.note.id);
+  }
 });

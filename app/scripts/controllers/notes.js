@@ -2,7 +2,8 @@
 
 angular.module('dyanote')
 
-// Controller for the notes view
+// Controller for the notes view.
+// It is responsible for navigation (via breadcrumb or clicked links)
 .controller('NotesCtrl', function ($scope, $log, $location, notes) {
   $scope.notes = [];
 

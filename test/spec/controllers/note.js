@@ -32,4 +32,16 @@ describe('Controller: NoteCtrl', function () {
     expect(notes.uploadById).toHaveBeenCalledWith(note.id);
   });
 
+  it('should move a note to trash when asked to', function () {
+    var note = {
+      title: 'Title',
+      id: 2343,
+      body: '<note>...</note>'
+    };
+    scope.note = note;
+    $rootScope.$apply();
+    spyOn(notes, 'archive');
+    scope.moveToTrash();
+    expect(notes.archive).toHaveBeenCalledWith(note.id);
+  });
 });

@@ -8,50 +8,78 @@ describe('Service: notes', function () {
   // instantiate service
   var notes,
     auth,
+    SERVER_CONFIG,
     $httpBackend,
     $http,
     $rootScope,
     $log,
-    note1,
+    rootNote,
+    archiveNote,
     note4;
 
-  beforeEach(inject(function (_notes_, _auth_, _$httpBackend_, _$http_, _$rootScope_, _$log_) {
+  beforeEach(inject(function (_notes_, _auth_, _$httpBackend_, _$http_, _$rootScope_, _$log_, _SERVER_CONFIG_) {
     notes = _notes_;
     auth = _auth_;
+    SERVER_CONFIG = _SERVER_CONFIG_;
 
     $log = _$log_;
     $http = _$http_;
     $httpBackend = _$httpBackend_;
     $rootScope = _$rootScope_;
 
-    // Mock data
+    // Mock auth service
     spyOn(auth, 'isAuthenticated').andReturn(true);
     spyOn(auth, 'getEmail').andReturn('user@example.com');
 
-    note1 = {
-      url: "<url>", id: 1, parent: "<parent-url>", created: "2013-12-24T17:41:10.871Z", flags: ["root"],
-      title: "<title>", body: "<note>note content</note>", author: "http://dyanote.herokuapp.com/api/users/user@example.com/"
+    // Create a set of notes.
+    var authorUrl = SERVER_CONFIG.apiUrl + "users/user@example.com/";
+    var date = "2013-12-24T17:41:10.871Z";
+    rootNote = {
+      url: authorUrl + "pages/1/",
+      id: 1,
+      parent: "",
+      created: date,
+      flags: ["root"],
+      title: "Root",
+      body: "<note>Root note</note>",
+      author: authorUrl
     };
-
+    archiveNote = {
+      url: authorUrl + "pages/2/",
+      id: 2,
+      parent: "",
+      created: date,
+      flags: ["trash"],
+      title: "Archive",
+      body: "<note>Archive note</note>",
+      author: authorUrl
+    };
     note4 = {
-      url: "<url>", id: 4, parent: "<parent-url>", created: "2013-12-24T17:41:10.871Z", flags: [],
-      title: "<title2>", body: "<note>note content 2</note>", author: "http://dyanote.herokuapp.com/api/users/user@example.com/"
+      url: authorUrl + "pages/4/",
+      id: 4,
+      parent: rootNote.url,
+      created: date,
+      flags: [],
+      title: "Note 4",
+      body: "<note>Note 4</note>",
+      author: authorUrl
     };
 
-    $httpBackend.expect('GET', 'https://dyanote.herokuapp.com/api/users/user@example.com/pages/')
-      .respond(200, [note1, note4]);
+    $httpBackend.expect('GET', authorUrl + 'pages/')
+      .respond(200, [rootNote, archiveNote, note4]);
   }));
+
 
   it('should load notes from server', function () {
     notes.loadAll();
     $httpBackend.flush();
-    expect(notes.count()).toBe(2);
+    expect(notes.count()).toBe(3);
   });
 
   it('should allow to get notes by id', function () {
     notes.loadAll();
     $httpBackend.flush();
-    expect(JSON.stringify(notes.getById(1))).toEqual(JSON.stringify(note1));
+    expect(JSON.stringify(notes.getById(1))).toEqual(JSON.stringify(rootNote));
     expect(JSON.stringify(notes.getById(4))).toEqual(JSON.stringify(note4));
     expect(notes.getById(42)).toBeUndefined();
   });
@@ -59,14 +87,21 @@ describe('Service: notes', function () {
   it('should allow to get root note', function () {
     notes.loadAll();
     $httpBackend.flush();
-    expect(JSON.stringify(notes.getRoot())).toEqual(JSON.stringify(note1));
+    expect(JSON.stringify(notes.getRoot())).toEqual(JSON.stringify(rootNote));
+  });
+
+  it('should allow to get archive note', function () {
+    notes.loadAll();
+    $httpBackend.flush();
+    expect(JSON.stringify(notes.getArchive())).toEqual(JSON.stringify(archiveNote));
   });
 
   it('should add interceptor to broken urls', function () {
     // AngularJS removes trailing slashes from urls. We've added an interceptor to fix it.
     $httpBackend.resetExpectations();
-    $httpBackend.expect('GET', 'https://dyanote.herokuapp.com/api/abracadabra/').respond(200);
-    $http.get('https://dyanote.herokuapp.com/api/abracadabra');
+    var url = SERVER_CONFIG.apiUrl + 'abracadabra/';
+    $httpBackend.expect('GET', url).respond(200);
+    $http.get(url);
     $httpBackend.flush();
 
     $httpBackend.verifyNoOutstandingExpectation();
@@ -89,8 +124,8 @@ describe('Service: notes', function () {
     notes.loadAll();
     $httpBackend.flush();
 
-    $httpBackend.expect('PUT', 'https://dyanote.herokuapp.com/api/users/user@example.com/pages/1/').respond(200);
-    notes.uploadById(note1.id);
+    $httpBackend.expect('PUT', rootNote.url).respond(200);
+    notes.uploadById(rootNote.id);
 
     $httpBackend.flush();
     $httpBackend.verifyNoOutstandingExpectation();
@@ -108,4 +143,25 @@ describe('Service: notes', function () {
     $httpBackend.verifyNoOutstandingExpectation();
     $httpBackend.verifyNoOutstandingRequest()
   });
+
+  it('should move notes', function () {
+    notes.loadAll();
+    $httpBackend.flush();
+
+    $httpBackend.expect('PUT', note4.url).respond(200);
+    notes.changeParent(note4.id, archiveNote.id);
+    expect(notes.getById(note4.id).parent).toBe(archiveNote.url);
+    expect(notes.getById(note4.id).parentId).toBe(archiveNote.id);
+  })
+
+
+  it('should move notes to trash', function () {
+    notes.loadAll();
+    $httpBackend.flush();
+
+    $httpBackend.expect('PUT', note4.url).respond(200);
+    notes.archive(note4.id);
+    expect(notes.getById(note4.id).parent).toBe(archiveNote.url);
+    expect(notes.getById(note4.id).parentId).toBe(archiveNote.id);
+  })
 });

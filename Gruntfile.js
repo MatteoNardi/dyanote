@@ -38,6 +38,7 @@ module.exports = function (grunt) {
           '<%= yeoman.app %>/{,*/}*.html',
           '.tmp/styles/{,*/}*.css',
           '.tmp/styles/{,*/}*.less',
+          '.tmp/styles/fonts/*',
           '{.tmp,<%= yeoman.app %>}/scripts/{,*/}*.js',
           '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
         ]
@@ -183,6 +184,16 @@ module.exports = function (grunt) {
     },
     // Put files not handled in other tasks here
     copy: {
+      // When testing locally we only need to copy fonts.
+      server: {
+        files: [{
+          expand: true,
+          dot: true,
+          cwd: '<%= yeoman.app %>',
+          dest: '.tmp',
+          src: ['styles/fonts/*']
+        }]
+      },
       dist: {
         files: [{
           expand: true,
@@ -341,6 +352,7 @@ module.exports = function (grunt) {
     grunt.task.run([
       'clean:server',
       'less',
+      'copy:server',
       'autoprefixer',
       'connect:livereload',
       'open',

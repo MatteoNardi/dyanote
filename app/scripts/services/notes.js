@@ -7,7 +7,8 @@ angular.module('dyanote')
   
   // All our notes
   var notes = {};
-  var rootNoteId;
+  var rootNoteId,
+    archiveNoteId;
 
   // $resource wrapper around our REST APIs.
   var NoteResource;
@@ -31,8 +32,11 @@ angular.module('dyanote')
     NoteResource.query(function (result) {
       for (var i = 0; i < result.length; i++) {
         notes[result[i].id] = result[i];
-        if (result[i].flags && result[i].flags.indexOf("root") != -1)
+        var flags = result[i].flags;
+        if (flags && flags.indexOf("root") != -1)
           rootNoteId = result[i].id;
+        if (flags && flags.indexOf("trash") != -1)
+          archiveNoteId = result[i].id;
       }
       deferred.resolve()
     });
@@ -42,6 +46,11 @@ angular.module('dyanote')
   // Get the one to rule them all.
   this.getRoot = function () {
     return notes[rootNoteId];
+  }
+
+  // Get the archive note (The trash).
+  this.getArchive = function () {
+    return notes[archiveNoteId];
   }
 
   // Get a note given its id.
@@ -58,6 +67,7 @@ angular.module('dyanote')
     notes[id].$update();
   }
 
+  // Create a new note
   this.newNote = function (newNoteRequest) {
     var note = new NoteResource();
     note.title = newNoteRequest.title;
@@ -66,6 +76,23 @@ angular.module('dyanote')
     return note.$save(function (note) {
       notes[note.id] = note;
     });
+  }
+
+  // Archive note.
+  this.archive = function (id) {
+    this.changeParent(id, archiveNoteId);
+  }
+
+  // Change the parent of a note.
+  this.changeParent = function (id, newParentId) {
+    if (!notes[id] || !notes[newParentId]) {
+      $log.error('changeParent: notes not found.');
+      return;
+    }
+    notes[id].parentId = newParentId;
+    notes[id].parent = notes[newParentId].url;
+    notes[id].$update();
+    // TODO: make sure the new parent contains a link to this note.
   }
 
   // Get number of notes.
