@@ -15,7 +15,8 @@ describe('Service: notes', function () {
     $log,
     rootNote,
     archiveNote,
-    note4;
+    note4,
+    authorUrl;
 
   beforeEach(inject(function (_notes_, _auth_, _$httpBackend_, _$http_, _$rootScope_, _$log_, _SERVER_CONFIG_) {
     notes = _notes_;
@@ -32,36 +33,36 @@ describe('Service: notes', function () {
     spyOn(auth, 'getEmail').andReturn('user@example.com');
 
     // Create a set of notes.
-    var authorUrl = SERVER_CONFIG.apiUrl + "users/user@example.com/";
-    var date = "2013-12-24T17:41:10.871Z";
+    authorUrl = SERVER_CONFIG.apiUrl + 'users/user@example.com/';
+    var date = '2013-12-24T17:41:10.871Z';
     rootNote = {
-      url: authorUrl + "pages/1/",
+      url: authorUrl + 'pages/1/',
       id: 1,
-      parent: "",
+      parent: '',
       created: date,
-      flags: ["root"],
-      title: "Root",
-      body: "<note>Root note</note>",
+      flags: ['root'],
+      title: 'Root',
+      body: '<note>Root note</note>',
       author: authorUrl
     };
     archiveNote = {
-      url: authorUrl + "pages/2/",
+      url: authorUrl + 'pages/2/',
       id: 2,
-      parent: "",
+      parent: '',
       created: date,
-      flags: ["trash"],
-      title: "Archive",
-      body: "<note>Archive note</note>",
+      flags: ['archive'],
+      title: 'Archive',
+      body: '<note>Archive note</note>',
       author: authorUrl
     };
     note4 = {
-      url: authorUrl + "pages/4/",
+      url: authorUrl + 'pages/4/',
       id: 4,
       parent: rootNote.url,
       created: date,
       flags: [],
-      title: "Note 4",
-      body: "<note>Note 4</note>",
+      title: 'Note 4',
+      body: '<note>Note 4</note>',
       author: authorUrl
     };
 
@@ -81,7 +82,7 @@ describe('Service: notes', function () {
     $httpBackend.flush();
     expect(JSON.stringify(notes.getById(1))).toEqual(JSON.stringify(rootNote));
     expect(JSON.stringify(notes.getById(4))).toEqual(JSON.stringify(note4));
-    expect(notes.getById(42)).toBeUndefined();
+    expect(function () { notes.getById(42); }).toThrow('Note 42 not found.');
   });
 
   it('should allow to get root note', function () {
@@ -94,18 +95,6 @@ describe('Service: notes', function () {
     notes.loadAll();
     $httpBackend.flush();
     expect(JSON.stringify(notes.getArchive())).toEqual(JSON.stringify(archiveNote));
-  });
-
-  it('should add interceptor to broken urls', function () {
-    // AngularJS removes trailing slashes from urls. We've added an interceptor to fix it.
-    $httpBackend.resetExpectations();
-    var url = SERVER_CONFIG.apiUrl + 'abracadabra/';
-    $httpBackend.expect('GET', url).respond(200);
-    $http.get(url);
-    $httpBackend.flush();
-
-    $httpBackend.verifyNoOutstandingExpectation();
-    $httpBackend.verifyNoOutstandingRequest()
   });
 
   it('should fail if user is not logged in', function () {
@@ -132,13 +121,31 @@ describe('Service: notes', function () {
     $httpBackend.verifyNoOutstandingRequest()
   });
 
+  it('should create new notes', function () {
+    $httpBackend.resetExpectations();
+
+    var uncompletedNote4 = JSON.parse(JSON.stringify(note4));
+    delete uncompletedNote4.id;
+    delete uncompletedNote4.url;
+    var id;
+    $httpBackend.expect('POST', authorUrl + 'pages/').respond(note4);
+    notes.newNote(uncompletedNote4).then(function (note) {
+      id = note.id;
+    });
+    $httpBackend.flush();
+    $rootScope.$apply();
+    expect(id).toEqual(note4.id);
+    expect(notes.getById(note4.id)).toEqual(note4);
+
+    $httpBackend.verifyNoOutstandingExpectation();
+    $httpBackend.verifyNoOutstandingRequest()
+  });
+
   it('should complain when note doesnt exist', function () {
     notes.loadAll();
     $httpBackend.flush();
 
-    notes.uploadById(231421323);
-
-    expect($log.error.logs.shift().shift()).toBe('uploadById: No note with id 231421323');
+    expect(function () { notes.uploadById(231421323); }).toThrow('Note 231421323 not found.');
 
     $httpBackend.verifyNoOutstandingExpectation();
     $httpBackend.verifyNoOutstandingRequest()
@@ -152,8 +159,7 @@ describe('Service: notes', function () {
     notes.changeParent(note4.id, archiveNote.id);
     expect(notes.getById(note4.id).parent).toBe(archiveNote.url);
     expect(notes.getById(note4.id).parentId).toBe(archiveNote.id);
-  })
-
+  });
 
   it('should move notes to trash', function () {
     notes.loadAll();
@@ -163,5 +169,5 @@ describe('Service: notes', function () {
     notes.archive(note4.id);
     expect(notes.getById(note4.id).parent).toBe(archiveNote.url);
     expect(notes.getById(note4.id).parentId).toBe(archiveNote.id);
-  })
+  });
 });

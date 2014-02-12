@@ -10,10 +10,11 @@ angular.module('dyanote')
   // Create a link with the currently selected text.
   $scope.applyLink = function () {
     
-    var newNoteRequest = {
+    var note = {
       title: '',
       body: '',
-      parentId: $scope.note.id
+      parentId: $scope.note.id,
+      parent: $scope.note.url
     }
     
     var composer = $scope.editor.composer;
@@ -28,13 +29,13 @@ angular.module('dyanote')
     
     if(isSingleLine) {
       // Make the selected text (without formatting) as the title
-      newNoteRequest.title = selection.toString();
+      note.title = selection.toString();
     } else {
-      newNoteRequest.title = 'New note (' + (new Date()).toDateString() + ')';
-      newNoteRequest.body = selection.toHtml();
+      note.title = 'New note (' + (new Date()).toDateString() + ')';
+      note.body = selection.toHtml();
     }
     
-    notes.newNote(newNoteRequest).then(function (note) {
+    notes.newNote(note).then(function (note) {
       $log.info('New note created (' + note.id + '): ' + note.title
                 + (isSingleLine ? ' [Single line]' : ' [Multi line]'));
       $scope.$emit('$openNote', $scope.note.id, note.id);

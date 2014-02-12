@@ -3,7 +3,7 @@
 angular.module('dyanote')
 
 // notes handles comunication with the REST service and notes handling.
-.service('notes', function ($resource, $q, $log, auth, SERVER_CONFIG) {
+.service('notes', function ($http, $q, $log, auth, SERVER_CONFIG) {
   
   // All our notes
   var notes = {};
@@ -21,15 +21,8 @@ angular.module('dyanote')
       return deferred.promise
     }
 
-    NoteResource = $resource(SERVER_CONFIG.apiUrl + 'users/:user/pages/:id',
-                            {
-                              user: auth.getEmail(),
-                              id: '@id'
-                            },
-                            {
-                              'update': { method:'PUT' }
-                            });
-    NoteResource.query(function (result) {
+    var url = SERVER_CONFIG.apiUrl + 'users/' + auth.getEmail() + '/pages/';
+    return $http.get(url).success(function (result) {
       for (var i = 0; i < result.length; i++) {
         notes[result[i].id] = result[i];
         var flags = result[i].flags;
@@ -38,45 +31,40 @@ angular.module('dyanote')
         if (flags && flags.indexOf("archive") != -1)
           archiveNoteId = result[i].id;
       }
-      deferred.resolve()
     });
-    return deferred.promise;
   }
 
   // Get the one to rule them all.
   this.getRoot = function () {
-    return notes[rootNoteId];
+    return this.getById(rootNoteId);
   }
 
   // Get the archive note (The trash).
   this.getArchive = function () {
-    return notes[archiveNoteId];
+    return this.getById(archiveNoteId);
   }
 
-  // Get a note given its id.
+  // Returns the note with the given id or throws an exception.
   this.getById = function (id) {
-    return notes[id];
+    if (id in notes)
+      return notes[id];
+    else
+      throw "Note " + id + " not found.";
   }
 
   // Upload to server the note with the given id.
   this.uploadById = function (id) {
-    if (notes[id] == undefined) {
-      $log.error('uploadById: No note with id ' + id);
-      return;
-    }
-    // BUG: this updates our note resource too.
-    // We don't want this because it can create loops.
-    //notes[id].$update();
+    var note = this.getById(id);
+    return $http.put(note.url, note);
   }
 
   // Create a new note
-  this.newNote = function (newNoteRequest) {
-    var note = new NoteResource();
-    note.title = newNoteRequest.title;
-    note.body = newNoteRequest.body;
-    note.parent = notes[newNoteRequest.parentId].url;
-    return note.$save(function (note) {
+  this.newNote = function (note) {
+    var url = SERVER_CONFIG.apiUrl + 'users/' + auth.getEmail() + '/pages/';
+    return $http.post(url, note).then(function (result) {
+      var note = result.data;
       notes[note.id] = note;
+      return note;
     });
   }
 
@@ -87,13 +75,12 @@ angular.module('dyanote')
 
   // Change the parent of a note.
   this.changeParent = function (id, newParentId) {
-    if (!notes[id] || !notes[newParentId]) {
-      $log.error('changeParent: notes not found.');
-      return;
-    }
-    notes[id].parentId = newParentId;
-    notes[id].parent = notes[newParentId].url;
-    notes[id].$update();
+    var note = this.getById(id),
+      newParent = this.getById(newParentId);
+
+    note.parentId = newParentId;
+    note.parent = newParent.url;
+    $http.put(note.url, note);
     // TODO: make sure the new parent contains a link to this note.
   }
 
@@ -106,19 +93,3 @@ angular.module('dyanote')
     return size;
   }
 })
-
-// Intercept API requests without a trailing slash and add it. 
-// Angular's $resource service is buggy and strips the ending slashes in urls.
-// Our REST service needs it (it will return a 301, which breacks CORS)
-.service('missingSlashInterceptor', function () {
-  this.request = function (config) {
-    var url = config.url
-    if (url[url.length -1] != '/' && url.indexOf('/api/') != -1)
-      config.url += '/';
-    return config;
-  };
-})
-
-.config(function($httpProvider) {
-  $httpProvider.interceptors.push('missingSlashInterceptor');
-});
