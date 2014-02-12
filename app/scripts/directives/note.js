@@ -48,61 +48,64 @@ angular.module('dyanote')
         parserRules:  parserRules,
       });
 
-      // Sync view -> model
-      var updateModel = function () {
-        var newValue = scope.editor.parse(scope.editor.getValue());
-        if (scope.note.body != newValue) {
-          console.log('Sync view -> model (' + scope.note.id + ')');
-          console.log(scope.note.body);
-          console.log(newValue);
-          scope.editor.setValue(newValue);
-          $timeout(function () {
-            scope.note.body = newValue;
-          });
+      // When wysihtml5 is loaded, we do the DOM manipulation.
+      scope.editor.on('load', function () {
+        // Sync view -> model
+        var updateModel = function () {
+          var newValue = scope.editor.parse(scope.editor.getValue());
+          if (scope.note.body != newValue) {
+            console.log('Sync view -> model (' + scope.note.id + ')');
+            console.log(scope.note.body);
+            console.log(newValue);
+            scope.editor.setValue(newValue);
+            $timeout(function () {
+              scope.note.body = newValue;
+            });
+          }
         }
-      }
 
-      // Sync model -> view
-      var updateView = function (newValue, oldValue) {
-        newValue = scope.editor.parse(scope.note.body);
-        scope.note.body = newValue;
-        if (scope.editor.getValue() != newValue) {
-          console.log('Sync model -> view (' + scope.note.id + ')');
-          console.log(scope.editor.getValue());
-          console.log(newValue);
-          element.find('textarea').html(newValue);
-          scope.editor.setValue(newValue);
+        // Sync model -> view
+        var updateView = function (newValue, oldValue) {
+          newValue = scope.editor.parse(scope.note.body);
+          scope.note.body = newValue;
+          if (scope.editor.getValue() != newValue) {
+            console.log('Sync model -> view (' + scope.note.id + ')');
+            console.log(scope.editor.getValue());
+            console.log(newValue);
+            element.find('textarea').html(newValue);
+            scope.editor.setValue(newValue);
+          }
         }
-      }
 
-      scope.editor.on('change', updateModel);
-      scope.editor.on('aftercommand:composer', updateModel);
-      scope.$watch(attrs.ngModel, updateView);
+        scope.editor.on('change', updateModel);
+        scope.editor.on('aftercommand:composer', updateModel);
+        scope.$watch(attrs.ngModel, updateView);
 
-      // Fixme: doesn't work on firefox: iframe is not loaded yet.
-      element.find('iframe').contents().on('click', 'a', function(event){
-          event.preventDefault();
-          // Use a regex the get the note id, which is the last number in the href.
-          var targetNoteId = event.target.getAttribute('href').match(/.*\/(\d+)\/$/)[1];
-          var callerNoteId = scope.note.id;
-          console.log('Note ' + callerNoteId + ' opens ' + targetNoteId);
-          scope.$emit('$openNote', callerNoteId, targetNoteId);
-          scope.$apply();
+        // Fixme: doesn't work on firefox: iframe is not loaded yet.
+        element.find('iframe').contents().on('click', 'a', function(event){
+            event.preventDefault();
+            // Use a regex the get the note id, which is the last number in the href.
+            var targetNoteId = event.target.getAttribute('href').match(/.*\/(\d+)\/$/)[1];
+            var callerNoteId = scope.note.id;
+            console.log('Note ' + callerNoteId + ' opens ' + targetNoteId);
+            scope.$emit('$openNote', callerNoteId, targetNoteId);
+            scope.$apply();
+        });
+
+        // Scroll to note on directive creation...
+        var scrollToNote = function () {
+          jQuery("html").animate({scrollTop: element.offset().top - 90}, 400);
+          // Note: this 90px magic number shoud be @navbar-height + @note-margin in style.less 
+        };
+        scrollToNote();
+        // ... and when someone asks to.
+        scope.$on('$scrollToNote', function (event, targetNoteId) {
+          if (targetNoteId == scope.note.id)
+            scrollToNote();
+        });
+
+        // Todo: make sure these Observer patters don't cause memory leak.
       });
-
-      // Scroll to note on directive creation...
-      var scrollToNote = function () {
-        jQuery("html").animate({scrollTop: element.offset().top - 90}, 400);
-        // Note: this 90px magic number shoud be @navbar-height + @note-margin in style.less 
-      };
-      scrollToNote();
-      // ... and when someone asks to.
-      scope.$on('$scrollToNote', function (event, targetNoteId) {
-        if (targetNoteId == scope.note.id)
-          scrollToNote();
-      });
-
-      // Todo: make sure these Observer patters don't cause memory leak.
     }
   };
 });
