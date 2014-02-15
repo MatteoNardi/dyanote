@@ -98,8 +98,8 @@ angular.module('dyanote')
         };
         scrollToNote();
         // ... and when someone asks to.
-        scope.$on('$scrollToNote', function (event, targetNoteId) {
-          if (targetNoteId == scope.note.id)
+        scope.$on('$scrollToNote', function (event, targetNote) {
+          if (targetNote == scope.note)
             scrollToNote();
         });
 

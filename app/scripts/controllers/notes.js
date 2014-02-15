@@ -31,7 +31,7 @@ angular.module('dyanote')
     }
     // If note is already open, scroll to it.
     else {
-      $scope.$broadcast('$scrollToNote', targetNoteId);
+      $scope.$broadcast('$scrollToNote', targetNote);
     }
 
     // Todo: add hash to location
@@ -40,8 +40,8 @@ angular.module('dyanote')
     event.stopPropagation();
   });
 
-  $scope.onBreadcrumbItemClicked = function ($event, noteId) {
+  $scope.onBreadcrumbItemClicked = function ($event, note) {
     $event.preventDefault();
-    $scope.$broadcast('$scrollToNote', noteId);
+    $scope.$broadcast('$scrollToNote', note);
   };
 });

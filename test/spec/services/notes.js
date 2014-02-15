@@ -7,30 +7,22 @@ describe('Service: notes', function () {
 
   // instantiate service
   var notes,
-    auth,
-    SERVER_CONFIG,
-    $httpBackend,
-    $http,
+    noteResource,
     $rootScope,
     $log,
+    $q,
     rootNote,
     archiveNote,
     note4,
     authorUrl;
 
-  beforeEach(inject(function (_notes_, _auth_, _$httpBackend_, _$http_, _$rootScope_, _$log_, _SERVER_CONFIG_) {
+  beforeEach(inject(function (_notes_, _noteResource_, _$rootScope_, _$log_, _$q_, SERVER_CONFIG) {
     notes = _notes_;
-    auth = _auth_;
-    SERVER_CONFIG = _SERVER_CONFIG_;
+    noteResource = _noteResource_;
 
     $log = _$log_;
-    $http = _$http_;
-    $httpBackend = _$httpBackend_;
     $rootScope = _$rootScope_;
-
-    // Mock auth service
-    spyOn(auth, 'isAuthenticated').andReturn(true);
-    spyOn(auth, 'getEmail').andReturn('user@example.com');
+    $q = _$q_;
 
     // Create a set of notes.
     authorUrl = SERVER_CONFIG.apiUrl + 'users/user@example.com/';
@@ -66,42 +58,43 @@ describe('Service: notes', function () {
       author: authorUrl
     };
 
-    $httpBackend.expect('GET', authorUrl + 'pages/')
-      .respond(200, [rootNote, archiveNote, note4]);
+    // Mock noteResource service
+    var deferred = $q.defer();
+    deferred.resolve([rootNote, archiveNote, note4]);
+    spyOn(noteResource, 'getAll').andReturn(deferred.promise);
   }));
 
 
   it('should load notes from server', function () {
     notes.loadAll();
-    $httpBackend.flush();
+    $rootScope.$apply();
     expect(notes.count()).toBe(3);
   });
 
   it('should allow to get notes by id', function () {
     notes.loadAll();
-    $httpBackend.flush();
-    expect(JSON.stringify(notes.getById(1))).toEqual(JSON.stringify(rootNote));
-    expect(JSON.stringify(notes.getById(4))).toEqual(JSON.stringify(note4));
+    $rootScope.$apply();
+    expect(JSON.stringify(notes.getById(1)._json)).toEqual(JSON.stringify(rootNote));
+    expect(JSON.stringify(notes.getById(4)._json)).toEqual(JSON.stringify(note4));
     expect(function () { notes.getById(42); }).toThrow('Note 42 not found.');
   });
 
   it('should allow to get root note', function () {
     notes.loadAll();
-    $httpBackend.flush();
-    expect(JSON.stringify(notes.getRoot())).toEqual(JSON.stringify(rootNote));
+    $rootScope.$apply();
+    expect(JSON.stringify(notes.getRoot()._json)).toEqual(JSON.stringify(rootNote));
   });
 
   it('should allow to get archive note', function () {
     notes.loadAll();
-    $httpBackend.flush();
-    expect(JSON.stringify(notes.getArchive())).toEqual(JSON.stringify(archiveNote));
+    $rootScope.$apply();
+    expect(JSON.stringify(notes.getArchive()._json)).toEqual(JSON.stringify(archiveNote));
   });
 
   it('should fail if user is not logged in', function () {
-    $httpBackend.resetExpectations();
-    auth.isAuthenticated.andReturn(false);
+    noteResource.getAll.andReturn($q.reject("User is not logged in"));
     var promise = notes.loadAll();
-    var msg = 'No error';
+    var msg;
     promise.catch(function (reason) {
       msg = reason;
     });
@@ -109,65 +102,128 @@ describe('Service: notes', function () {
     expect(msg).toEqual('User is not logged in');
   });
 
-  it('should upload notes to server', function () {
+  it('should upload notes to server when body changes', function () {
     notes.loadAll();
-    $httpBackend.flush();
+    $rootScope.$apply();
 
-    $httpBackend.expect('PUT', rootNote.url).respond(200);
-    notes.uploadById(rootNote.id);
+    spyOn(noteResource, 'put').andReturn();
+    var root = notes.getById(rootNote.id);
+    root.setBody("Abracadabra");
+    $rootScope.$apply();
 
-    $httpBackend.flush();
-    $httpBackend.verifyNoOutstandingExpectation();
-    $httpBackend.verifyNoOutstandingRequest()
+    expect(noteResource.put).toHaveBeenCalledWith(root._json);
   });
 
-  it('should create new notes', function () {
-    $httpBackend.resetExpectations();
-
-    var uncompletedNote4 = JSON.parse(JSON.stringify(note4));
-    delete uncompletedNote4.id;
-    delete uncompletedNote4.url;
-    var id;
-    $httpBackend.expect('POST', authorUrl + 'pages/').respond(note4);
-    notes.newNote(uncompletedNote4).then(function (note) {
-      id = note.id;
-    });
-    $httpBackend.flush();
+  it('should upload notes to server when title changes', function () {
+    notes.loadAll();
     $rootScope.$apply();
-    expect(id).toEqual(note4.id);
-    expect(notes.getById(note4.id)).toEqual(note4);
 
-    $httpBackend.verifyNoOutstandingExpectation();
-    $httpBackend.verifyNoOutstandingRequest()
+    spyOn(noteResource, 'put').andReturn();
+    var root = notes.getById(rootNote.id);
+    root.setTitle("Abracadabra");
+    $rootScope.$apply();
+
+    expect(noteResource.put).toHaveBeenCalledWith(root._json);
   });
 
   it('should complain when note doesnt exist', function () {
     notes.loadAll();
-    $httpBackend.flush();
+    $rootScope.$apply();
 
-    expect(function () { notes.uploadById(231421323); }).toThrow('Note 231421323 not found.');
-
-    $httpBackend.verifyNoOutstandingExpectation();
-    $httpBackend.verifyNoOutstandingRequest()
+    expect(function () { notes.getById(231421323); }).toThrow('Note 231421323 not found.');
   });
 
   it('should move notes', function () {
     notes.loadAll();
-    $httpBackend.flush();
+    $rootScope.$apply();
 
-    $httpBackend.expect('PUT', note4.url).respond(200);
-    notes.changeParent(note4.id, archiveNote.id);
-    expect(notes.getById(note4.id).parent).toBe(archiveNote.url);
-    expect(notes.getById(note4.id).parentId).toBe(archiveNote.id);
+    var note = notes.getById(note4.id);
+    var archive = notes.getById(archiveNote.id);
+
+    spyOn(noteResource, 'put').andReturn();
+    note.setParent(archive);
+    expect(noteResource.put).toHaveBeenCalledWith(note._json);
+    expect(note._json.parent).toEqual(archiveNote.url);
   });
 
-  it('should move notes to trash', function () {
+  it('should archive notes', function () {
     notes.loadAll();
-    $httpBackend.flush();
+    $rootScope.$apply();
 
-    $httpBackend.expect('PUT', note4.url).respond(200);
-    notes.archive(note4.id);
-    expect(notes.getById(note4.id).parent).toBe(archiveNote.url);
-    expect(notes.getById(note4.id).parentId).toBe(archiveNote.id);
+    var note = notes.getById(note4.id);
+    var archive = notes.getById(archiveNote.id);
+
+    spyOn(noteResource, 'put').andReturn();
+    note.archive();
+    expect(noteResource.put).toHaveBeenCalledWith(note._json);
+    expect(note._json.parent).toEqual(archiveNote.url);
+  });
+
+  it('should convert note from the server format', function () {
+    notes.loadAll();
+    $rootScope.$apply();
+
+    var note = notes.getById(note4.id);
+    expect(note.getTitle()).toEqual(note4.title);
+    expect(note.getBody()).toEqual(note4.body);
+    expect(note.getId()).toEqual(note4.id);
+    expect(note.getUrl()).toEqual(note4.url);
+    expect(note.isRoot()).toBe(false);
+    expect(note.isArchive()).toBe(false);
+    expect(note.getParent()).toBe(notes.getById(rootNote.id));
+  });
+
+  it('should throw when asking for parent of root or archive note', function () {
+    notes.loadAll();
+    $rootScope.$apply();
+
+    var root = notes.getById(rootNote.id);
+    expect(root.isRoot()).toBe(true);
+    expect(root.isArchive()).toBe(false);
+    expect(function () { root.getParent(); }).toThrow("Root note has no parent");
+
+    var archive = notes.getById(archiveNote.id);
+    expect(archive.isRoot()).toBe(false);
+    expect(archive.isArchive()).toBe(true);
+    expect(function () { archive.getParent(); }).toThrow("Archive note has no parent"); 
+  });
+
+  it('should create new notes immediately', function () {
+    notes.loadAll();
+    $rootScope.$apply();
+
+    var deferred = $q.defer(); 
+    spyOn(noteResource, 'post').andReturn(deferred.promise);
+
+    var root = notes.getById(rootNote.id);
+    var n5 = notes.newNote(root, "Title", "Body");
+
+    expect(noteResource.post).toHaveBeenCalledWith(n5._json);
+    expect(n5.getTitle()).toEqual("Title");
+    expect(n5.getBody()).toEqual("Body");
+    expect(n5.getParent()).toBe(root);
+    expect(n5.getUrl()).toBeTruthy();
+    expect(n5.getId()).toBeTruthy();
+  });
+
+  it('should complete newly created notes when server responds', function () {
+    notes.loadAll();
+    $rootScope.$apply();
+
+    var deferred = $q.defer(); 
+    spyOn(noteResource, 'post').andReturn(deferred.promise);
+
+    var root = notes.getById(rootNote.id);
+    var n5 = notes.newNote(root, "Title", "Body");
+
+    var note5 = JSON.parse(JSON.stringify(note4));
+    note5.id = 5;
+    note5.url = note5.url.replace('/4/', '/5/');
+    deferred.resolve(note5);
+    $rootScope.$apply();
+
+    expect(n5.getId()).toEqual(5);
+    expect(n5.getUrl()).toEqual(note5.url);
+    expect(notes.getById(5)).toBe(n5);
   });
 });
