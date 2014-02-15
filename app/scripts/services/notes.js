@@ -3,33 +3,24 @@
 angular.module('dyanote')
 
 // notes handles comunication with the REST service and notes handling.
-.service('notes', function ($http, $q, $log, auth, SERVER_CONFIG) {
+.service('notes', function ($log, noteResource) {
   
   // All our notes
   var notes = {};
   var rootNoteId,
     archiveNoteId;
 
-  // $resource wrapper around our REST APIs.
-  var NoteResource;
 
-  // Load all notes from server with the currently logged in user.
+  // Load all notes
   this.loadAll = function () {
-    var deferred = $q.defer();
-    if(!auth.isAuthenticated()) {
-      deferred.reject("User is not logged in");
-      return deferred.promise
-    }
-
-    var url = SERVER_CONFIG.apiUrl + 'users/' + auth.getEmail() + '/pages/';
-    return $http.get(url).success(function (result) {
-      for (var i = 0; i < result.length; i++) {
-        notes[result[i].id] = result[i];
-        var flags = result[i].flags;
+    return noteResource.getAll().then(function (noteList) {
+      for (var i = 0; i < noteList.length; i++) {
+        notes[noteList[i].id] = noteList[i];
+        var flags = noteList[i].flags;
         if (flags && flags.indexOf("root") != -1)
-          rootNoteId = result[i].id;
+          rootNoteId = noteList[i].id;
         if (flags && flags.indexOf("archive") != -1)
-          archiveNoteId = result[i].id;
+          archiveNoteId = noteList[i].id;
       }
     });
   }
@@ -55,14 +46,12 @@ angular.module('dyanote')
   // Upload to server the note with the given id.
   this.uploadById = function (id) {
     var note = this.getById(id);
-    return $http.put(note.url, note);
+    return noteResource.put(note);
   }
 
   // Create a new note
   this.newNote = function (note) {
-    var url = SERVER_CONFIG.apiUrl + 'users/' + auth.getEmail() + '/pages/';
-    return $http.post(url, note).then(function (result) {
-      var note = result.data;
+    return noteResource.post(note).then(function (note) {
       notes[note.id] = note;
       return note;
     });
@@ -80,7 +69,7 @@ angular.module('dyanote')
 
     note.parentId = newParentId;
     note.parent = newParent.url;
-    $http.put(note.url, note);
+    return noteResource.put(note);
     // TODO: make sure the new parent contains a link to this note.
   }
 

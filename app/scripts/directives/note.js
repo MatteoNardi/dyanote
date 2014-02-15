@@ -81,7 +81,6 @@ angular.module('dyanote')
         scope.editor.on('aftercommand:composer', updateModel);
         scope.$watch(attrs.ngModel, updateView);
 
-        // Fixme: doesn't work on firefox: iframe is not loaded yet.
         element.find('iframe').contents().on('click', 'a', function(event){
             event.preventDefault();
             // Use a regex the get the note id, which is the last number in the href.
