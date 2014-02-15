@@ -34,7 +34,7 @@ describe('Service: notes', function () {
       created: date,
       flags: ['root'],
       title: 'Root',
-      body: '<note>Root note</note>',
+      body: 'Root note',
       author: authorUrl
     };
     archiveNote = {
@@ -44,7 +44,7 @@ describe('Service: notes', function () {
       created: date,
       flags: ['archive'],
       title: 'Archive',
-      body: '<note>Archive note</note>',
+      body: 'Archive note',
       author: authorUrl
     };
     note4 = {
@@ -54,7 +54,7 @@ describe('Service: notes', function () {
       created: date,
       flags: [],
       title: 'Note 4',
-      body: '<note>Note 4</note>',
+      body: 'Note 4',
       author: authorUrl
     };
 
@@ -225,5 +225,35 @@ describe('Service: notes', function () {
     expect(n5.getId()).toEqual(5);
     expect(n5.getUrl()).toEqual(note5.url);
     expect(notes.getById(5)).toBe(n5);
+  });
+
+  describe('NotesCoherenceTools', function () {
+    describe('removeFakeLinks', function () {
+      it('should replace links', function () {
+        notes.loadAll();
+        $rootScope.$apply();
+
+        var deferred = $q.defer(); 
+        spyOn(noteResource, 'post').andReturn(deferred.promise);
+        spyOn(noteResource, 'put').andReturn();
+
+        var root = notes.getById(rootNote.id);
+        var n5 = notes.newNote(root, "Title", "Body");
+
+        root.setBody(root.getBody() + '<a href="' + n5.getUrl() + '">Title</a>');
+        //console.log(root.getBody());
+
+        var note5 = JSON.parse(JSON.stringify(note4));
+        note5.id = 5;
+        note5.url = note5.url.replace('/4/', '/5/');
+        //console.log(note5.url);
+        deferred.resolve(note5);
+        $rootScope.$apply();
+
+        notes.NotesCoherenceTools.removeFakeLinks(root);
+
+        expect(root.getBody()).toEqual('Root note<a href="' + n5.getUrl() + '">Title</a>');
+      });
+    });
   });
 });

@@ -15,6 +15,7 @@ angular.module('dyanote')
   // The Note class.
   // The constructor takes as input the server representation of the note.
   var Note = function (json) {
+    var thisNote = this;
     this._json = json;
 
     this.getBody = function () {
@@ -68,15 +69,23 @@ angular.module('dyanote')
       this.setParent(archiveNote);
     };
 
+    // Save note after checking its coherence.
+    // This function is private: we decide when to save.
+    var save = function () {
+      thisService.NotesCoherenceTools.removeFakeLinks(thisNote);
+      noteResource.put(json);
+    }
+
     // Upload changes when body or title gets updated.
-    // TODO: this causes far to many HTTP requests, we should
-    // find a better approach.
+    // TODO: this causes far to many HTTP requests
     $rootScope.$watch(function () { return json.body; }, function(newBody, oldBody) {
-      if (newBody !== oldBody) noteResource.put(json);
+      if (newBody !== oldBody)
+        save();
     });
 
     $rootScope.$watch(function () { return json.title; }, function(newTitle, oldTitle) {
-      if (newTitle !== oldTitle) noteResource.put(json);
+      if (newTitle !== oldTitle)
+        save();
     });
   }
 
@@ -135,7 +144,7 @@ angular.module('dyanote')
       body: body,
       parent: parent.getUrl(),
       fakeId: fakeId,
-      fakeUrl: 'https://localhost/' + fakeId + '/' 
+      fakeUrl: 'https://dyanote.com/templink/' + fakeId + '/' 
     };
     // Create new Note with the temporary json
     var note = new Note(json);
@@ -155,5 +164,29 @@ angular.module('dyanote')
   // Get number of notes.
   this.count = function () {
     return notesCounter;
+  }
+
+  // NotesCoherenceTools is a set of utility functions useful to
+  // enforce some constraints on our notes.
+  this.NotesCoherenceTools = {
+
+    // Replace fake links with real links.
+    removeFakeLinks: function (note) {
+      var containsFakeLinks = note.getBody().indexOf('templink') != -1;
+      while (containsFakeLinks) {
+        var match = note.getBody().match(/https:\/\/dyanote\.com\/templink\/(\d+)\//)
+        var fakeId = match[1];
+        var fakeUrl = match[0];
+        var realUrl = thisService.getById(fakeId).getUrl();
+        if (realUrl.indexOf('templink') == -1) {
+          note.setBody(note.getBody().replace(fakeUrl, realUrl));
+          $log.info("removeFakeLinks: replaced " + fakeUrl + " with " + realUrl);
+
+          containsFakeLinks = note.getBody().indexOf('templink') != -1;
+        } else {
+          break;
+        }
+      }
+    }
   }
 })

@@ -9,13 +9,7 @@ angular.module('dyanote')
 
   // Create a link with the currently selected text.
   $scope.applyLink = function () {
-    
-    var note = {
-      title: '',
-      body: '',
-      parentId: $scope.note.id,
-      parent: $scope.note.url
-    }
+    var parent, title, body;
     
     var composer = $scope.editor.composer;
     var selection = composer.selection.getSelection();
@@ -27,28 +21,23 @@ angular.module('dyanote')
                        selection.anchorNode.nodeName == '#text' &&
                        selection.toString().length < 20;
     
+    parent = $scope.note;
     if(isSingleLine) {
       // Make the selected text (without formatting) as the title
-      note.title = selection.toString();
+      title = selection.toString();
+      body = "";
     } else {
-      note.title = 'New note (' + (new Date()).toDateString() + ')';
-      note.body = selection.toHtml();
+      title = 'New note (' + (new Date()).toDateString() + ')';
+      body = selection.toHtml();
+      composer.commands.exec("delete");
     }
-    
-    notes.newNote(note).then(function (note) {
-      $log.info('New note created (' + note.id + '): ' + note.title
-                + (isSingleLine ? ' [Single line]' : ' [Multi line]'));
-      $scope.$emit('$openNote', $scope.note.id, note.id);
-      composer.selection.setSelection(range);
-      if (!isSingleLine) {
-        composer.commands.exec("delete");
-        selection = composer.selection.getSelection();
-      }
-      composer.commands.exec("createLink", { href: note.url, text: note.title });
-    }, function (error) {
-      $log.error('Error creating note: ' + error);
-    });
+    var note = notes.newNote(parent, title, body);
+    console.log(note);
 
+    composer.commands.exec("createLink", { href: note.getUrl(), text: note.getTitle() });
+    $log.info('New note created (' + note.getId() + '): ' + note.getTitle()
+              + (isSingleLine ? ' [Single line]' : ' [Multi line]'));
+    $scope.$emit('$openNote', $scope.note.getId(), note.getId());
   }
 
   // Make currently selected text bold.
