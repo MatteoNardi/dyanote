@@ -1,6 +1,6 @@
 <div class="note-container">
 	<div class="note">
-		<h1>{{ note.getTitle() }}</h1>
+		<input type='text' class='title' ng-model="note.title"/>
 		<span class="glyphicon glyphicon-trash" ng-click="note.archive(); close(note);"></span>
 		<div class="richTextEditor"><textarea></textarea></div>
 	</div>

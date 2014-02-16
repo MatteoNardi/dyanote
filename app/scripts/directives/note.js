@@ -53,11 +53,11 @@ angular.module('dyanote')
         // Sync view -> model
         var updateModel = function () {
           var newValue = scope.editor.parse(scope.editor.getValue());
-          if (scope.note.getBody() != newValue) {
-            console.log('Sync view -> model (' + scope.note.getId() + ')');
+          if (scope.note.body != newValue) {
+            console.log('Sync view -> model (' + scope.note.id + ')');
             console.log(newValue);
             scope.editor.setValue(newValue);
-            scope.note.setBody(newValue);
+            scope.note.body = newValue;
             // Make AngularJS pickup changes
             $timeout(function () {});
           }
@@ -65,10 +65,10 @@ angular.module('dyanote')
 
         // Sync model -> view
         var updateView = function (newValue, oldValue) {
-          newValue = scope.editor.parse(scope.note.getBody());
-          scope.note.setBody(newValue);
+          newValue = scope.editor.parse(scope.note.body);
+          scope.note.body = newValue;
           if (scope.editor.getValue() != newValue) {
-            console.log('Sync model -> view (' + scope.note.getId() + ')');
+            console.log('Sync model -> view (' + scope.note.id + ')');
             console.log(newValue);
             element.find('textarea').html(newValue);
             scope.editor.setValue(newValue);
@@ -78,7 +78,7 @@ angular.module('dyanote')
         scope.editor.on('change', updateModel);
         scope.editor.on('aftercommand:composer', updateModel);
         scope.$apply(function () {
-          scope.$watch('note.getBody()', updateView);
+          scope.$watch('note.body', updateView);
         });
 
 
@@ -86,7 +86,7 @@ angular.module('dyanote')
             event.preventDefault();
             // Use a regex the get the note id, which is the last number in the href.
             var targetNoteId = event.target.getAttribute('href').match(/.*\/(\d+)\/$/)[1];
-            var callerNoteId = scope.note.getId();
+            var callerNoteId = scope.note.id;
             console.log('Note ' + callerNoteId + ' opens ' + targetNoteId);
             scope.$emit('$openNote', callerNoteId, targetNoteId);
             scope.$apply();

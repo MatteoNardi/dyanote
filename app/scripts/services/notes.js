@@ -1,10 +1,13 @@
+
 'use strict';
 
 angular.module('dyanote')
 
+// TODO: Split this class since it's getting far too big.
+
 // notes service manages all notes.
 // It is responsible to enforce coherence in the note set.
-.service('notes', function ($log, $rootScope, noteResource) {
+.service('notes', function ($log, $rootScope, $timeout, noteResource) {
   
   // All our notes
   var notes = {};
@@ -12,83 +15,6 @@ angular.module('dyanote')
   var notesCounter;
   var thisService = this;
 
-  // The Note class.
-  // The constructor takes as input the server representation of the note.
-  var Note = function (json) {
-    var thisNote = this;
-    this._json = json;
-
-    this.getBody = function () {
-      return json.body;
-    }
-
-    this.getTitle = function () {
-      return json.title;
-    }
-
-    this.setBody = function (body) {
-      json.body = body;
-    }
-
-    this.setTitle = function (title) {
-      json.title = title;
-    }
-
-    // Get the note id or fake id
-    // (A note has a fake id until the server acknowledges its creation.)
-    this.getId = function () {
-      return json.id || json.fakeId;
-    };
-
-    this.getUrl = function () {
-      return json.url || json.fakeUrl;
-    };
-
-    this.isRoot = function () {
-      return json.flags && json.flags.indexOf("root") != -1;
-    };
-
-    this.isArchive = function () {
-      return json.flags && json.flags.indexOf("archive") != -1;
-    };
-
-    this.getParent = function () {
-      if (this.isRoot()) throw ("Root note has no parent");
-      if (this.isArchive()) throw ("Archive note has no parent");
-      var parentId = json.parent.match(/.*\/(\d+)\/$/)[1];
-      return thisService.getById(parentId);
-    };
-
-    this.setParent = function (newParent) {
-      var oldParent = this.getParent();
-      json.parent = newParent.getUrl();
-      thisService.NotesCoherenceTools.removeDeadLinks(oldParent);
-      return noteResource.put(json);
-    };
-
-    this.archive = function () {
-      $log.info('Archiving note ' + json.id);
-      this.setParent(archiveNote);
-    };
-
-    // Save note after checking its coherence.
-    // This function is private: we decide when to save.
-    var save = function () {
-      noteResource.put(json);
-    }
-
-    // Upload changes when body or title gets updated.
-    // TODO: this causes far to many HTTP requests
-    $rootScope.$watch(function () { return json.body; }, function(newBody, oldBody) {
-      if (newBody !== oldBody)
-        save();
-    });
-
-    $rootScope.$watch(function () { return json.title; }, function(newTitle, oldTitle) {
-      if (newTitle !== oldTitle)
-        save();
-    });
-  }
 
   // Load all notes
   this.loadAll = function () {
@@ -96,7 +22,7 @@ angular.module('dyanote')
       // Add notes.
       for (var i = 0; i < jsons.length; i++) {
         var note = new Note(jsons[i]);
-        notes[note.getId()] = note;
+        notes[note.id] = note;
         if (note.isRoot())
           rootNote = note;
         if (note.isArchive())
@@ -139,26 +65,23 @@ angular.module('dyanote')
   // Returns a Note with a temporary id (which will get updated
   // once the server responds).
   this.newNote = function (parent, title, body) {
-    var fakeId = Date.now();
     var json = {
       title: title,
       body: body,
-      parent: parent.getUrl(),
-      fakeId: fakeId,
-      fakeUrl: 'https://dyanote.com/templink/' + fakeId + '/'
+      parent: parent.url
     };
-    // Create new Note with the temporary json
-    var note = new Note(json);
+    // Create new fake Note
+    var note = new Note(json, true);
     // Add note to the dictionary using its fake id.
-    notes[note.getId()] = note;
+    notes[note.id] = note;
     notesCounter++;
 
     noteResource.post(json).then(function (json) {
       // Update note to use real server data.
       note._json.id = json.id;
       note._json.url = json.url;
-      notes[note.getId()] = note;
-      thisService.NotesCoherenceTools.removeFakeLinks(note.getParent());
+      notes[note.id] = note;
+      thisService.NotesCoherenceTools.removeFakeLinks(note.parent);
     });
     return note;
   }
@@ -174,17 +97,17 @@ angular.module('dyanote')
 
     // Replace fake links with real links.
     removeFakeLinks: function (note) {
-      var containsFakeLinks = note.getBody().indexOf('templink') != -1;
+      var containsFakeLinks = note.body.indexOf('templink') != -1;
       while (containsFakeLinks) {
-        var match = note.getBody().match(/https:\/\/dyanote\.com\/templink\/(\d+)\//);
+        var match = note.body.match(/https:\/\/dyanote\.com\/templink\/(\d+)\//);
         var fakeId = match[1];
         var fakeUrl = match[0];
-        var realUrl = thisService.getById(fakeId).getUrl();
+        var realUrl = thisService.getById(fakeId).url;
         if (realUrl.indexOf('templink') == -1) {
-          note.setBody(note.getBody().replace(fakeUrl, realUrl));
+          note.body = note.body.replace(fakeUrl, realUrl);
           $log.info("removeFakeLinks: replaced " + fakeUrl + " with " + realUrl);
 
-          containsFakeLinks = note.getBody().indexOf('templink') != -1;
+          containsFakeLinks = note.body.indexOf('templink') != -1;
         } else {
           break;
         }
@@ -195,20 +118,124 @@ angular.module('dyanote')
     removeDeadLinks: function (note) {
       // Search all dead links.
       var deadLinks = [];
-      var body = note.getBody();
+      var body = note.body;
       var regex = /<a href="[^"]+\/(\d+)\/">[^<]*<\/a>/g;
       var match;
       while ((match = regex.exec(body)) !== null)
       {
-        if (thisService.getById(match[1]).getParent() !== note) {
+        if (thisService.getById(match[1]).parent !== note) {
           deadLinks.push(match[0]);
         }
       }
       for (var i = 0; i < deadLinks.length; i++) {
-        $log.info("Removing dead link " + deadLinks[i] + " in note " + note.getId());
+        $log.info("Removing dead link " + deadLinks[i] + " in note " + note.id);
         body = body.replace(deadLinks[i], '');
       };
-      note.setBody(body);
+      note.body = body;
     }
   }
+
+  //
+  // The Note class.
+  //
+  var Note = function () {
+
+    // The constructor takes as input the server representation of the note.
+    var Note = function (json, isFake) {
+      this._json = json;
+      this._private = {};
+
+      if (isFake) {
+        var fakeId = Date.now();
+        this._private.fakeId = fakeId;
+        this._private.fakeUrl = 'https://dyanote.com/templink/' + fakeId + '/';
+      }
+    }
+
+    // Id
+    Object.defineProperty(Note.prototype, 'id', {
+      // Get the note id or fake id
+      // (A note has a fake id until the server acknowledges its creation.)
+      get: function () {
+        return this._json.id || this._private.fakeId;
+      }
+    });
+
+    // Url
+    Object.defineProperty(Note.prototype, 'url', {
+      get: function () {
+        return this._json.url || this._private.fakeUrl;
+      }
+    });
+
+    // Title
+    Object.defineProperty(Note.prototype, 'title', {
+      get: function () {
+        return this._json.title;
+      },
+      set: function (title) {
+        if (this._json.title == title) return;
+        this._json.title = title;
+        save(this);
+      }
+    });
+
+    // Body
+    Object.defineProperty(Note.prototype, 'body', {
+      get: function () {
+        return this._json.body;
+      },
+      set: function (body) {
+        if (this._json.body == body) return;
+        this._json.body = body;
+        save(this);
+      }
+    });
+
+    // Parent
+    Object.defineProperty(Note.prototype, 'parent', {
+      get: function () {
+        if (this.isRoot()) throw ("Root note has no parent");
+        if (this.isArchive()) throw ("Archive note has no parent");
+        var parentId = this._json.parent.match(/.*\/(\d+)\/$/)[1];
+        return thisService.getById(parentId);
+      },
+      set: function (newParent) {
+        var oldParent = this.parent;
+        this._json.parent = newParent.url;
+        thisService.NotesCoherenceTools.removeDeadLinks(oldParent);
+        return save(this);
+      }
+    });
+
+    // Archive note
+    Note.prototype.archive = function () {
+      $log.info('Archiving note ' + this._json.id);
+      this.parent = archiveNote;
+    };
+
+    // Return true if this is the Root note.
+    Note.prototype.isRoot = function () {
+      return this._json.flags && this._json.flags.indexOf("root") != -1;
+    };
+
+    // Return true if this is the Archive note
+    Note.prototype.isArchive = function () {
+      return this._json.flags && this._json.flags.indexOf("archive") != -1;
+    };
+
+
+    // Save note (eventually).
+    var save = function (note) {
+      if (note._private.dirty)
+        return;
+      note._private.dirty = true;
+      $timeout(function () {
+        note._private.dirty = false;
+        noteResource.put(note._json);
+      }, 4000);
+    }
+
+    return Note;
+  } ();
 })

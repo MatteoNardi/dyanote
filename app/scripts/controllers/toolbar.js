@@ -34,10 +34,10 @@ angular.module('dyanote')
     var note = notes.newNote(parent, title, body);
     console.log(note);
 
-    composer.commands.exec('createLink', { href: note.getUrl(), text: note.getTitle() });
-    $log.info('New note created (' + note.getId() + '): ' + note.getTitle()
+    composer.commands.exec('createLink', { href: note.url, text: note.title });
+    $log.info('New note created (' + note.id + '): ' + note.title
               + (isSingleLine ? ' [Single line]' : ' [Multi line]'));
-    $scope.$emit('$openNote', $scope.note.getId(), note.getId());
+    $scope.$emit('$openNote', $scope.note.id, note.id);
   }
 
   // Make currently selected text bold.

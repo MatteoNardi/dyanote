@@ -11,18 +11,20 @@ describe('Service: notes', function () {
     $rootScope,
     $log,
     $q,
+    $timeout,
     rootNote,
     archiveNote,
     note4,
     authorUrl;
 
-  beforeEach(inject(function (_notes_, _noteResource_, _$rootScope_, _$log_, _$q_, SERVER_CONFIG) {
+  beforeEach(inject(function (_notes_, _noteResource_, _$rootScope_, _$log_, _$q_, _$timeout_, SERVER_CONFIG) {
     notes = _notes_;
     noteResource = _noteResource_;
 
     $log = _$log_;
     $rootScope = _$rootScope_;
     $q = _$q_;
+    $timeout = _$timeout_;
 
     // Create a set of notes.
     authorUrl = SERVER_CONFIG.apiUrl + 'users/user@example.com/';
@@ -108,9 +110,10 @@ describe('Service: notes', function () {
 
     spyOn(noteResource, 'put').andReturn();
     var root = notes.getById(rootNote.id);
-    root.setBody("Abracadabra");
+    root.body = "Abracadabra";
     $rootScope.$apply();
 
+    $timeout.flush();
     expect(noteResource.put).toHaveBeenCalledWith(root._json);
   });
 
@@ -120,9 +123,10 @@ describe('Service: notes', function () {
 
     spyOn(noteResource, 'put').andReturn();
     var root = notes.getById(rootNote.id);
-    root.setTitle("Abracadabra");
+    root.title = "Abracadabra";
     $rootScope.$apply();
 
+    $timeout.flush();
     expect(noteResource.put).toHaveBeenCalledWith(root._json);
   });
 
@@ -141,7 +145,8 @@ describe('Service: notes', function () {
     var archive = notes.getById(archiveNote.id);
 
     spyOn(noteResource, 'put').andReturn();
-    note.setParent(archive);
+    note.parent = archive;
+    $timeout.flush();
     expect(noteResource.put).toHaveBeenCalledWith(note._json);
     expect(note._json.parent).toEqual(archiveNote.url);
   });
@@ -155,6 +160,7 @@ describe('Service: notes', function () {
 
     spyOn(noteResource, 'put').andReturn();
     note.archive();
+    $timeout.flush();
     expect(noteResource.put).toHaveBeenCalledWith(note._json);
     expect(note._json.parent).toEqual(archiveNote.url);
   });
@@ -164,13 +170,13 @@ describe('Service: notes', function () {
     $rootScope.$apply();
 
     var note = notes.getById(note4.id);
-    expect(note.getTitle()).toEqual(note4.title);
-    expect(note.getBody()).toEqual(note4.body);
-    expect(note.getId()).toEqual(note4.id);
-    expect(note.getUrl()).toEqual(note4.url);
+    expect(note.title).toEqual(note4.title);
+    expect(note.body).toEqual(note4.body);
+    expect(note.id).toEqual(note4.id);
+    expect(note.url).toEqual(note4.url);
     expect(note.isRoot()).toBe(false);
     expect(note.isArchive()).toBe(false);
-    expect(note.getParent()).toBe(notes.getById(rootNote.id));
+    expect(note.parent).toBe(notes.getById(rootNote.id));
   });
 
   it('should throw when asking for parent of root or archive note', function () {
@@ -180,12 +186,12 @@ describe('Service: notes', function () {
     var root = notes.getById(rootNote.id);
     expect(root.isRoot()).toBe(true);
     expect(root.isArchive()).toBe(false);
-    expect(function () { root.getParent(); }).toThrow("Root note has no parent");
+    expect(function () { root.parent; }).toThrow("Root note has no parent");
 
     var archive = notes.getById(archiveNote.id);
     expect(archive.isRoot()).toBe(false);
     expect(archive.isArchive()).toBe(true);
-    expect(function () { archive.getParent(); }).toThrow("Archive note has no parent"); 
+    expect(function () { archive.parent; }).toThrow("Archive note has no parent"); 
   });
 
   it('should create new notes immediately', function () {
@@ -199,11 +205,11 @@ describe('Service: notes', function () {
     var n5 = notes.newNote(root, "Title", "Body");
 
     expect(noteResource.post).toHaveBeenCalledWith(n5._json);
-    expect(n5.getTitle()).toEqual("Title");
-    expect(n5.getBody()).toEqual("Body");
-    expect(n5.getParent()).toBe(root);
-    expect(n5.getUrl()).toBeTruthy();
-    expect(n5.getId()).toBeTruthy();
+    expect(n5.title).toEqual("Title");
+    expect(n5.body).toEqual("Body");
+    expect(n5.parent).toBe(root);
+    expect(n5.url).toBeTruthy();
+    expect(n5.id).toBeTruthy();
   });
 
   it('should complete newly created notes when server responds', function () {
@@ -222,8 +228,8 @@ describe('Service: notes', function () {
     deferred.resolve(note5);
     $rootScope.$apply();
 
-    expect(n5.getId()).toEqual(5);
-    expect(n5.getUrl()).toEqual(note5.url);
+    expect(n5.id).toEqual(5);
+    expect(n5.url).toEqual(note5.url);
     expect(notes.getById(5)).toBe(n5);
   });
 
@@ -238,7 +244,7 @@ describe('Service: notes', function () {
       var root = notes.getById(rootNote.id);
       var n5 = notes.newNote(root, "Title", "Body");
 
-      root.setBody(root.getBody() + '<a href="' + n5.getUrl() + '">Title</a>');
+      root.body = root.body + '<a href="' + n5.url + '">Title</a>';
 
       var note5 = JSON.parse(JSON.stringify(note4));
       note5.id = 5;
@@ -251,7 +257,7 @@ describe('Service: notes', function () {
       // Now called automatically.
       // notes.NotesCoherenceTools.removeFakeLinks(root);
 
-      expect(root.getBody()).toEqual('Root note<a href="' + n5.getUrl() + '">Title</a>');
+      expect(root.body).toEqual('Root note<a href="' + n5.url + '">Title</a>');
     });
 
     it('should remove dead links using removeDeadLinks', function () {
@@ -260,12 +266,12 @@ describe('Service: notes', function () {
 
       var root = notes.getById(rootNote.id);
       var n4 = notes.getById(note4.id);
-      root.setBody(root.getBody() + '<a href="' + n4.getUrl() + '">Note 4</a>');
-      root.setBody(root.getBody() + '<a href="' + n4.getUrl() + '">Note 4</a>');
+      root.body = root.body + '<a href="' + n4.url + '">Note 4</a>';
+      root.body = root.body + '<a href="' + n4.url + '">Note 4</a>';
       n4.archive();
  
       notes.NotesCoherenceTools.removeDeadLinks(root);
-      expect(root.getBody().indexOf("Note 4")).toEqual(-1);
+      expect(root.body.indexOf("Note 4")).toEqual(-1);
     });
   });
 });

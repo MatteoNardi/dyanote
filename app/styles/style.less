@@ -51,10 +51,19 @@
 	margin: @note-margin 0 @note-margin 0;
 }
 
-.note h1 {
+.note .title {
 	text-align: center;
 	font: 2em @font-family-serif;
 	color: @dyanote-green;
+	margin: 20px auto 10px auto;
+	display: block;
+	border: none;
+	outline: none;
+}
+
+.note .title:focus {
+	border: none;
+	outline: none;
 }
 
 .note .glyphicon-trash {
