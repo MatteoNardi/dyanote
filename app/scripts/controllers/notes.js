@@ -4,7 +4,7 @@ angular.module('dyanote')
 
 // Controller for the notes view.
 // It is responsible for navigation (via breadcrumb or clicked links)
-.controller('NotesCtrl', function ($scope, $log, $location, notes) {
+.controller('NotesCtrl', function ($scope, $log, $location, $timeout, notes) {
   $scope.notes = [];
 
   var req = notes.loadAll();
@@ -44,4 +44,14 @@ angular.module('dyanote')
     $event.preventDefault();
     $scope.$broadcast('$scrollToNote', note);
   };
+
+  $scope.close = function (note) {
+    var pos = $scope.notes.indexOf(note);
+    if (pos > 0) {
+      $scope.$broadcast('$scrollToNote', $scope.notes[pos - 1]);
+      $timeout(function () {
+        $scope.notes = $scope.notes.slice(0, pos);
+      }, 500);
+    }
+  }
 });

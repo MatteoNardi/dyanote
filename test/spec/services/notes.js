@@ -228,32 +228,44 @@ describe('Service: notes', function () {
   });
 
   describe('NotesCoherenceTools', function () {
-    describe('removeFakeLinks', function () {
-      it('should replace links', function () {
-        notes.loadAll();
-        $rootScope.$apply();
+    it('should replace links using removeFakeLinks', function () {
+      notes.loadAll();
+      $rootScope.$apply();
+      var deferred = $q.defer(); 
+      spyOn(noteResource, 'post').andReturn(deferred.promise);
+      spyOn(noteResource, 'put').andReturn();
 
-        var deferred = $q.defer(); 
-        spyOn(noteResource, 'post').andReturn(deferred.promise);
-        spyOn(noteResource, 'put').andReturn();
+      var root = notes.getById(rootNote.id);
+      var n5 = notes.newNote(root, "Title", "Body");
 
-        var root = notes.getById(rootNote.id);
-        var n5 = notes.newNote(root, "Title", "Body");
+      root.setBody(root.getBody() + '<a href="' + n5.getUrl() + '">Title</a>');
 
-        root.setBody(root.getBody() + '<a href="' + n5.getUrl() + '">Title</a>');
-        //console.log(root.getBody());
+      var note5 = JSON.parse(JSON.stringify(note4));
+      note5.id = 5;
+      note5.url = note5.url.replace('/4/', '/5/');
+      note5.parent = note5.url.replace('/4/', '/5/');
+      //console.log(note5.url);
+      deferred.resolve(note5);
+      $rootScope.$apply();
 
-        var note5 = JSON.parse(JSON.stringify(note4));
-        note5.id = 5;
-        note5.url = note5.url.replace('/4/', '/5/');
-        //console.log(note5.url);
-        deferred.resolve(note5);
-        $rootScope.$apply();
+      // Now called automatically.
+      // notes.NotesCoherenceTools.removeFakeLinks(root);
 
-        notes.NotesCoherenceTools.removeFakeLinks(root);
+      expect(root.getBody()).toEqual('Root note<a href="' + n5.getUrl() + '">Title</a>');
+    });
 
-        expect(root.getBody()).toEqual('Root note<a href="' + n5.getUrl() + '">Title</a>');
-      });
+    it('should remove dead links using removeDeadLinks', function () {
+      notes.loadAll();
+      $rootScope.$apply();
+
+      var root = notes.getById(rootNote.id);
+      var n4 = notes.getById(note4.id);
+      root.setBody(root.getBody() + '<a href="' + n4.getUrl() + '">Note 4</a>');
+      root.setBody(root.getBody() + '<a href="' + n4.getUrl() + '">Note 4</a>');
+      n4.archive();
+ 
+      notes.NotesCoherenceTools.removeDeadLinks(root);
+      expect(root.getBody().indexOf("Note 4")).toEqual(-1);
     });
   });
 });

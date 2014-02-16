@@ -1,7 +1,7 @@
 <div class="note-container">
 	<div class="note">
 		<h1>{{ note.getTitle() }}</h1>
-		<span class="glyphicon glyphicon-trash" ng-click="moveToTrash()"></span>
+		<span class="glyphicon glyphicon-trash" ng-click="note.archive(); close(note);"></span>
 		<div class="richTextEditor"><textarea></textarea></div>
 	</div>
 

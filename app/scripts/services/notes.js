@@ -60,12 +60,14 @@ angular.module('dyanote')
     };
 
     this.setParent = function (newParent) {
+      var oldParent = this.getParent();
       json.parent = newParent.getUrl();
+      thisService.NotesCoherenceTools.removeDeadLinks(oldParent);
       return noteResource.put(json);
-      // TODO: make sure the new parent contains a link to this note.
     };
 
     this.archive = function () {
+      $log.info('Archiving note ' + json.id);
       this.setParent(archiveNote);
     };
 
@@ -174,7 +176,7 @@ angular.module('dyanote')
     removeFakeLinks: function (note) {
       var containsFakeLinks = note.getBody().indexOf('templink') != -1;
       while (containsFakeLinks) {
-        var match = note.getBody().match(/https:\/\/dyanote\.com\/templink\/(\d+)\//)
+        var match = note.getBody().match(/https:\/\/dyanote\.com\/templink\/(\d+)\//);
         var fakeId = match[1];
         var fakeUrl = match[0];
         var realUrl = thisService.getById(fakeId).getUrl();
@@ -187,6 +189,26 @@ angular.module('dyanote')
           break;
         }
       }
+    },
+
+    // Remove links to archived notes.
+    removeDeadLinks: function (note) {
+      // Search all dead links.
+      var deadLinks = [];
+      var body = note.getBody();
+      var regex = /<a href="[^"]+\/(\d+)\/">[^<]*<\/a>/g;
+      var match;
+      while ((match = regex.exec(body)) !== null)
+      {
+        if (thisService.getById(match[1]).getParent() !== note) {
+          deadLinks.push(match[0]);
+        }
+      }
+      for (var i = 0; i < deadLinks.length; i++) {
+        $log.info("Removing dead link " + deadLinks[i] + " in note " + note.getId());
+        body = body.replace(deadLinks[i], '');
+      };
+      note.setBody(body);
     }
   }
 })
