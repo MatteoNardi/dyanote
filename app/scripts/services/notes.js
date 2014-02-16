@@ -72,7 +72,6 @@ angular.module('dyanote')
     // Save note after checking its coherence.
     // This function is private: we decide when to save.
     var save = function () {
-      thisService.NotesCoherenceTools.removeFakeLinks(thisNote);
       noteResource.put(json);
     }
 
@@ -144,7 +143,7 @@ angular.module('dyanote')
       body: body,
       parent: parent.getUrl(),
       fakeId: fakeId,
-      fakeUrl: 'https://dyanote.com/templink/' + fakeId + '/' 
+      fakeUrl: 'https://dyanote.com/templink/' + fakeId + '/'
     };
     // Create new Note with the temporary json
     var note = new Note(json);
@@ -157,6 +156,7 @@ angular.module('dyanote')
       note._json.id = json.id;
       note._json.url = json.url;
       notes[note.getId()] = note;
+      thisService.NotesCoherenceTools.removeFakeLinks(note.getParent());
     });
     return note;
   }

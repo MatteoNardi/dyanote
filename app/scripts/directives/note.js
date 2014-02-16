@@ -55,12 +55,11 @@ angular.module('dyanote')
           var newValue = scope.editor.parse(scope.editor.getValue());
           if (scope.note.getBody() != newValue) {
             console.log('Sync view -> model (' + scope.note.getId() + ')');
-            console.log(scope.note.getBody());
             console.log(newValue);
             scope.editor.setValue(newValue);
-            $timeout(function () {
-              scope.note.setBody(newValue);
-            });
+            scope.note.setBody(newValue);
+            // Make AngularJS pickup changes
+            $timeout(function () {});
           }
         }
 
@@ -70,7 +69,6 @@ angular.module('dyanote')
           scope.note.setBody(newValue);
           if (scope.editor.getValue() != newValue) {
             console.log('Sync model -> view (' + scope.note.getId() + ')');
-            console.log(scope.editor.getValue());
             console.log(newValue);
             element.find('textarea').html(newValue);
             scope.editor.setValue(newValue);
