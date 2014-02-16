@@ -25,16 +25,16 @@ angular.module('dyanote')
     if(isSingleLine) {
       // Make the selected text (without formatting) as the title
       title = selection.toString();
-      body = "";
+      body = '';
     } else {
       title = 'New note (' + (new Date()).toDateString() + ')';
       body = selection.toHtml();
-      composer.commands.exec("delete");
+      composer.commands.exec('delete');
     }
     var note = notes.newNote(parent, title, body);
     console.log(note);
 
-    composer.commands.exec("createLink", { href: note.getUrl(), text: note.getTitle() });
+    composer.commands.exec('createLink', { href: note.getUrl(), text: note.getTitle() });
     $log.info('New note created (' + note.getId() + '): ' + note.getTitle()
               + (isSingleLine ? ' [Single line]' : ' [Multi line]'));
     $scope.$emit('$openNote', $scope.note.getId(), note.getId());
@@ -42,12 +42,21 @@ angular.module('dyanote')
 
   // Make currently selected text bold.
   $scope.applyBold = function () {
-    $scope.editor.composer.commands.exec("bold");
+    $scope.editor.composer.commands.exec('bold');
   }
 
   // Make currently selected text italic.
   $scope.applyItalic = function () {
-    $scope.editor.composer.commands.exec("italic");
+    $scope.editor.composer.commands.exec('italic');
   }
-   
+  
+  // Make currently selected text a title.
+  $scope.applyTitle = function () {
+    $scope.editor.composer.commands.exec('formatBlock', 'h1');
+  }
+
+  // Insert unordered list.
+  $scope.addList = function () {
+    $scope.editor.composer.commands.exec('insertUnorderedList');
+  }
 });
