@@ -14,7 +14,7 @@ angular.module('dyanote')
   $scope.passwordErrorMessage = "";
   $scope.errorMessage = "";
   $scope.isLoggingIn = false;
-  $scope.remembar = false;
+  $scope.remember = false;
 
   $scope.login = function () {
     if ($scope.email == "")
@@ -37,7 +37,7 @@ angular.module('dyanote')
     $scope.isLoggingIn = true;
     $scope.errorMessage = "";
 
-    auth.login($scope.email, $scope.password, $scope.remembar).then(function (response) {
+    auth.login($scope.email, $scope.password, $scope.remember).then(function (response) {
       $log.info("Logged in");
       $scope.isLoggingIn = false;
       $location.path('/notes');

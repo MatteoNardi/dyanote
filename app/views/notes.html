@@ -1,10 +1,8 @@
-<div id="notes-container" class="container">
+<div id="notes-container">
 	<div id='breadcrumb'>
 		<ol>
 			<li ng-repeat="note in notes" ng-click="onBreadcrumbItemClicked($event, note)"><p>{{ note.title }}</p></li>
 		</ol>
 	</div>
-	<div ng-repeat="note in notes">
-		<note></note>
-	</div>
+	<note ng-repeat="note in notes"></note>
 </div>
