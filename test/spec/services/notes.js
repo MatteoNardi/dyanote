@@ -36,7 +36,7 @@ describe('Service: notes', function () {
       created: date,
       flags: ['root'],
       title: 'Root',
-      body: 'Root note',
+      body: 'This is the root note',
       author: authorUrl
     };
     archiveNote = {
@@ -46,7 +46,7 @@ describe('Service: notes', function () {
       created: date,
       flags: ['archive'],
       title: 'Archive',
-      body: 'Archive note',
+      body: 'This is the archive note',
       author: authorUrl
     };
     note4 = {
@@ -233,6 +233,26 @@ describe('Service: notes', function () {
     expect(notes.getById(5)).toBe(n5);
   });
 
+  it('should search for notes', function () {
+    notes.loadAll();
+    $rootScope.$apply();
+    var response = notes.search('this is');
+    var ris = [];
+    response.promise.then(function () {
+      ris = response.results;
+    });
+    for (var i = 0; i < 10; i++) {
+      try {
+        $timeout.flush();
+      } catch (e) {}
+      $rootScope.$apply();
+    }
+    expect(ris).toEqual([
+      notes.getById(archiveNote.id),
+      notes.getById(rootNote.id)
+    ]);
+  });
+
   describe('NotesCoherenceTools', function () {
     it('should replace links using removeFakeLinks', function () {
       notes.loadAll();
@@ -257,7 +277,7 @@ describe('Service: notes', function () {
       // Now called automatically.
       // notes.NotesCoherenceTools.removeFakeLinks(root);
 
-      expect(root.body).toEqual('Root note<a href="' + n5.url + '">Title</a>');
+      expect(root.body).toEqual('This is the root note<a href="' + n5.url + '">Title</a>');
     });
 
     it('should remove dead links using removeDeadLinks', function () {

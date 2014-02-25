@@ -82,10 +82,10 @@ describe('Controller: LoginCtrl', function () {
     expect($location.path()).toBe("/notes");
   });
 
-  it('should save user to settings if "remembar me" is checked', function () {
+  it('should save user to settings if "remember me" is checked', function () {
     scope.email = "asd@gmail.com";
     scope.password = "123456";
-    scope.remembar = true;
+    scope.remember = true;
     scope.login();
     expect(auth.login).toHaveBeenCalledWith('asd@gmail.com', '123456', true);
   })

@@ -7,7 +7,7 @@ angular.module('dyanote')
 
 // notes service manages all notes.
 // It is responsible to enforce coherence in the note set.
-.service('notes', function ($log, $rootScope, $timeout, noteResource) {
+.service('notes', function ($log, $rootScope, $timeout, $q, noteResource) {
   
   // All our notes
   var notes = {};
@@ -89,6 +89,52 @@ angular.module('dyanote')
   // Get number of notes.
   this.count = function () {
     return notesCounter;
+  }
+
+  // Search for notes.
+  // Since we don't want to freeze UI, this runs "asynchronously".
+  // Returns {}
+  // {
+  //    results: [list of notes]
+  //    promise: $q promise resolved when search is finished
+  // }
+  // A new search cancels every other running search. 
+  var searchDeferred;
+  this.search = function (text) {
+    // If a search is running, cancel it.
+    if (searchDeferred)
+      searchDeferred.reject('New search requested');
+
+    var regex = new RegExp(text, 'i');
+    var deferred = searchDeferred = $q.defer();
+    var results = [];
+    var keys = Object.keys(notes);
+    var running = true;
+    deferred.promise.catch(function () {
+      running = false;
+    });
+
+    var search_next = function () {
+      if (!running) return;
+      if (keys.length == 0) return deferred.resolve();
+
+      var key = keys.pop();
+      var note = thisService.getById(key);
+      // Search for text in note.
+      if (regex.test(note.title) || regex.test(note.body)) {
+        if (!(note in results))
+          results.push(note);
+      }
+
+      $timeout(search_next, 0);
+    }
+
+    $timeout(search_next, 0);
+
+    return {
+      promise: searchDeferred.promise,
+      results: results
+    }
   }
 
   // NotesCoherenceTools is a set of utility functions useful to

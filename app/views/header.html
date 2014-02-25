@@ -10,6 +10,13 @@
 		<a class="navbar-brand" href="#">Dyanote</a>
 	</div>
 
+	<form id="searchForm" class="navbar-form navbar-left" role="search" ng-if="isAuthenticated()" ng-controller="SearchCtrl">
+		<div class="form-group">
+			<input type="text" class="form-control" placeholder="Search" ng-model="searchText">
+		</div>
+		<div id="searchView" ng-include="'views/search.html'" ng-if="results.length > 0"></div>
+	</form>
+
 	<!-- Collect the nav links, forms, and other content for toggling -->
 	<div class="collapse navbar-collapse" id="togglable-navbar">
 
