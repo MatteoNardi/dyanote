@@ -20,6 +20,7 @@ angular.module('dyanote')
     var isSingleLine = selection.anchorNode === selection.focusNode && 
                        selection.anchorNode.nodeName == '#text' &&
                        selection.toString().length < 20;
+    isSingleLine = true; // Force single line until we fix bugs
     
     parent = $scope.note;
     if(isSingleLine) {

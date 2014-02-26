@@ -43,6 +43,14 @@ angular.module('dyanote')
     });
   }
 
+  // Clear everything (For example after logout)
+  this.clear = function () {
+    notes = {};
+    rootNote = undefined;
+    archiveNote = undefined;
+    notesCounter = 0;
+  }
+
   // Get the one to rule them all.
   this.getRoot = function () {
     return rootNote;
@@ -253,6 +261,10 @@ angular.module('dyanote')
         return save(this);
       }
     });
+
+    Note.prototype.hasParent = function () {
+      return !this.isRoot() && !this.isArchive();
+    };
 
     // Archive note
     Note.prototype.archive = function () {

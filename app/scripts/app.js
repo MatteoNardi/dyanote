@@ -27,6 +27,12 @@ angular.module('dyanote', ['ngRoute', 'LocalStorageModule'])
       templateUrl: 'views/notes.html',
       controller: 'NotesCtrl'
     })
+    // TODO: Archive
+    // TODO: Dyagraph
+    .when('/search', {
+      templateUrl: 'views/search.html',
+      controller: 'SearchCtrl'
+    })
     .otherwise({
       redirectTo: '/login'
     });
