@@ -172,18 +172,20 @@ angular.module('dyanote')
     removeDeadLinks: function (note) {
       // Search all dead links.
       var deadLinks = [];
+      var replacements = [];
       var body = note.body;
-      var regex = /<a href="[^"]+\/(\d+)\/">[^<]*<\/a>/g;
+      var regex = /<a href="[^"]+\/(\d+)\/">([^<]*)<\/a>/g;
       var match;
       while ((match = regex.exec(body)) !== null)
       {
         if (thisService.getById(match[1]).parent !== note) {
           deadLinks.push(match[0]);
+          replacements.push(match[2])
         }
       }
       for (var i = 0; i < deadLinks.length; i++) {
         $log.info("Removing dead link " + deadLinks[i] + " in note " + note.id);
-        body = body.replace(deadLinks[i], '');
+        body = body.replace(deadLinks[i], replacements[i]);
       };
       note.body = body;
     }

@@ -286,12 +286,13 @@ describe('Service: notes', function () {
 
       var root = notes.getById(rootNote.id);
       var n4 = notes.getById(note4.id);
+      var oldBody = root.body;
       root.body = root.body + '<a href="' + n4.url + '">Note 4</a>';
       root.body = root.body + '<a href="' + n4.url + '">Note 4</a>';
       n4.archive();
  
       notes.NotesCoherenceTools.removeDeadLinks(root);
-      expect(root.body.indexOf("Note 4")).toEqual(-1);
+      expect(root.body).toEqual(oldBody + 'Note 4Note 4');
     });
   });
 });
