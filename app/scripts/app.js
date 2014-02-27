@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('dyanote', ['ngRoute', 'LocalStorageModule'])
+angular.module('dyanote', ['ngRoute', 'LocalStorageModule', 'ui.bootstrap'])
 
 .constant('SERVER_CONFIG', {
   apiUrl: 'https://dyanote.herokuapp.com/api/',

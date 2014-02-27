@@ -1,8 +1,28 @@
 
 
-<button type="button" class="btn btn-default" ng-click="newNote()"><span class="glyphicon glyphicon-plus"></span> New</button>
-<button type="button" class="btn btn-default" ng-click="applyLink()"><span class="glyphicon glyphicon-link"></span>Link</button>
-<button type="button" class="btn btn-default" ng-click="applyBold()"><span class="glyphicon glyphicon-bold"></span>Bold</button>
-<button type="button" class="btn btn-default" ng-click="applyItalic()"><span class="glyphicon glyphicon-italic"></span>Italic</button>
-<button type="button" class="btn btn-default" ng-click="applyTitle()"><span class="glyphicon glyphicon-font"></span>Title</button>
-<button type="button" class="btn btn-default" ng-click="addList()"><span class="glyphicon glyphicon-list"></span>List</button>
+
+<button type="button" class="btn btn-default" ng-click="applyLink()"
+        tooltip-html-unsafe="Create a new note and link to it.<strong>Ctrl+L</strong>" tooltip-placement="right" tooltip-popup-delay="500">
+	<span class="glyphicon glyphicon-link"></span>Link
+</button>
+
+<button type="button" class="btn btn-default" ng-click="applyBold()"
+        tooltip-html-unsafe="Make the selected text bold.<strong>Ctrl+B</strong>" tooltip-placement="right" tooltip-popup-delay="500">
+	<span class="glyphicon glyphicon-bold"></span>Bold
+</button>
+
+<button type="button" class="btn btn-default" ng-click="applyItalic()"
+        tooltip-html-unsafe="Make the selected text italic.<strong>Ctrl+I</strong>" tooltip-placement="right" tooltip-popup-delay="500">
+	<span class="glyphicon glyphicon-italic"></span>Italic
+</button>
+
+<button type="button" class="btn btn-default" ng-click="applyTitle()"
+        tooltip-html-unsafe="Make the selected text a title.<strong>Ctrl+T</strong>" tooltip-placement="right" tooltip-popup-delay="500">
+	<span class="glyphicon glyphicon-font"></span>Title
+</button>
+
+<button type="button" class="btn btn-default" ng-click="addList()"
+        tooltip-html-unsafe="Add a bullet list.<strong>Ctrl+L</strong>" tooltip-placement="right" tooltip-popup-delay="500">
+	<span class="glyphicon glyphicon-list"></span>List
+</button>
+

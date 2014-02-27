@@ -132,8 +132,11 @@ angular.module('dyanote')
       var key = keys.pop();
       var note = thisService.getById(key);
       // Search for text in note.
-      if (regex.test(note.title) || regex.test(note.body)) {
-        if (!(note in results))
+      if (!(note in results)) {
+        // Notes matching in title have precedence.
+        if (regex.test(note.title))
+          results.unshift(note);
+        else if (regex.test(note.body))
           results.push(note);
       }
 

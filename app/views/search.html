@@ -1,7 +1,12 @@
 <div id="searchView" ng-controller="SearchCtrl">
-	<label>Type your search terms</label>
-	<input type="text" class="form-control" ng-model="searchText" autofocus>
-	<a href="/notes" shortcut="esc"><span class="glyphicon glyphicon-remove"></span></a>
+	<label for="searchBox">Type your search terms</label>
+	<input id="searchBox" type="text" class="form-control" ng-model="searchText" autofocus>
+
+	<a href="/notes" shortcut="esc" class="close-button"
+	   tooltip-html-unsafe="Go back to your notes.<strong>ESC</strong>" tooltip-placement="left">
+		<span class="glyphicon glyphicon-remove"></span>
+	</a>
+
 	<a ng-click="open(note)" class="result" ng-repeat="note in results">
 		<p>{{ note.title }}</p>
 	</a>
