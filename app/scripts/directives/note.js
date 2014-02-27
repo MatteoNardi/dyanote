@@ -42,10 +42,17 @@ angular.module('dyanote')
     replace: true,
     link: function postLink(scope, element, attrs) {
 
+      // Create Editor
       scope.editor = new wysihtml5.Editor(element.find('textarea')[0], {
         stylesheets: [stylesheetUrl, 'http://fonts.googleapis.com/css?family=Gilda+Display'],
         style: false,
         parserRules:  parserRules,
+      });
+
+      // On destruction, unregister event handlers to avoid memory leaks.
+      element.on('$destroy', function () {
+        scope.editor.stopObserving();
+        element.find('iframe').contents().off();
       });
 
       // When wysihtml5 is loaded, we do the DOM manipulation.
@@ -108,8 +115,6 @@ angular.module('dyanote')
           if (targetNote == scope.note)
             scrollToNote();
         });
-
-        // Todo: make sure these Observer patters don't cause memory leak.
       });
     }
   };

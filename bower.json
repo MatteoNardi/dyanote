@@ -9,7 +9,8 @@
     "angular-cookies": "1.2.7",
     "angular-sanitize": "1.2.7",
     "bootstrap": "~3.0.3",
-    "angular-local-storage": "*"
+    "angular-local-storage": "*",
+    "mousetrap": "~1.4.6"
   },
   "devDependencies": {
     "angular-mocks": "1.2.7",
