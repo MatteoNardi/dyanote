@@ -115,6 +115,10 @@ angular.module('dyanote')
           if (targetNote == scope.note)
             scrollToNote();
         });
+
+        // Get Mousetrap to work within iframes.
+        // https://github.com/ccampbell/mousetrap/issues/48
+        Mousetrap.bindEventsTo(element.find('iframe').contents()[0]);
       });
     }
   };

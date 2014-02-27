@@ -45,8 +45,10 @@
     <script src="bower_components/angular-cookies/angular-cookies.js"></script>
     <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script src="bower_components/angular-local-storage/angular-local-storage.min.js"></script>
-    <script src="bower_components/mousetrap/mousetrap.min.js"></script>
     <script src="extra/wysihtml5-0.3.0.min.js"></script>
+    <!-- Use custom mousetrap which can handle iframes 
+    https://github.com/ccampbell/mousetrap/issues/48 -->
+    <script src="extra/mousetrap.js"></script> 
     <!-- endbuild -->
 
     <!-- build:js scripts/scripts.js -->
