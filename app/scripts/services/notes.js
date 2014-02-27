@@ -73,6 +73,9 @@ angular.module('dyanote')
   // Returns a Note with a temporary id (which will get updated
   // once the server responds).
   this.newNote = function (parent, title, body) {
+    if (!title || title == '')
+      throw 'Title is required';
+
     var json = {
       title: title,
       body: body,
