@@ -2,7 +2,7 @@ angular.module('dyanote')
 
 
 // richTextEditor is a widget using wysihtml5
-.directive('note', function ($location, $timeout) {
+.directive('note', function ($location, $timeout, $window, SERVER_CONFIG) {
 
   // parserRules specifies the allowed tags
   var parserRules = {
@@ -81,15 +81,20 @@ angular.module('dyanote')
           scope.$watch('note.body', updateView);
         });
 
-
-        element.find('iframe').contents().on('click', 'a', function(event){
+        // Intercept clicks on note links
+        element.find('iframe').contents().on('click', 'a', function(event) {
+          var href = event.target.getAttribute('href');
+          if (href.indexOf(SERVER_CONFIG.apiUrl) == -1)
+            $window.open(href);
+          else {
             event.preventDefault();
             // Use a regex the get the note id, which is the last number in the href.
-            var targetNoteId = event.target.getAttribute('href').match(/.*\/(\d+)\/$/)[1];
+            var targetNoteId = href.match(/.*\/(\d+)\/$/)[1];
             var callerNoteId = scope.note.id;
             console.log('Note ' + callerNoteId + ' opens ' + targetNoteId);
             scope.$emit('$openNote', callerNoteId, targetNoteId);
             scope.$apply();
+          }
         });
 
         // Scroll to note on directive creation...
