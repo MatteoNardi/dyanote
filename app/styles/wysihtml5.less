@@ -5,6 +5,7 @@
 
 
 @line-height: 18px;
+@line-color: #eaeeee;
 
 .wysihtml5-editor {
 	border: 0;
@@ -24,8 +25,8 @@
 		linear-gradient(180deg,
 		                transparent,
 		                transparent (@line-height - 2),
-		                #eee (@line-height - 2),
-		                #eee (@line-height - 1),
+		                @line-color (@line-height - 2),
+		                @line-color (@line-height - 1),
 		                transparent (@line-height - 1),
 		                transparent);
 	background-size: 100% @line-height;
@@ -46,5 +47,7 @@
 
 	a {
 		cursor: pointer;
+		color: @dyanote-blue;
+		text-decoration: underline;
 	}
 }

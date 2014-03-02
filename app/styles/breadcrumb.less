@@ -2,22 +2,69 @@
  * Style for the Breadcrumb.
  */
 
-@dash-length: 5px;
+#breadcrumb {
 
-#breadcrumb {	
+	// Dashed line variables.
+	@dash-length: 5px;
+	@space-length: 4px;
+
 	position: fixed;
-	left: 20px;
+	left: @gu;
 	top: @navbar-height;
 	height: 100%;
 	background-image:
 		linear-gradient(0deg,
 		                transparent,
-		                transparent (@dash-length),
-		                @dyanote-yellow-dark (@dash-length),
+		                transparent @space-length,
+		                @dyanote-yellow-dark @space-length,
 		                @dyanote-yellow-dark);
-	background-size: 1px 10px;
+	background-size: 1px (@dash-length + @space-length);
 	background-repeat: repeat-y;
+	background-position: 0 6px;
+
+
+	ol {
+		position: relative;
+		height: 100%;
+		list-style: none;
+		margin: 0;
+		padding: (3 * @gu) @gu;
+	}
+
+	li {
+		height: 3 * @gu;
+		padding: 1px (2 * @gu);
+		background-image:
+			linear-gradient(90deg,
+			                transparent,
+			                transparent @space-length,
+			                @dyanote-yellow-dark @space-length,
+			                @dyanote-yellow-dark);
+		background-size: (@dash-length + @space-length) 1px;
+		background-repeat: repeat-x;
+		background-position: 0px 100%;
+		position: relative;
+		left: -(2 * @gu);
+		cursor: pointer;
+	}
+
+	p {
+		color: @dyanote-green;
+		margin: 0;
+		position: absolute;
+		bottom: -1px;
+	}
+
+	li:hover  {
+		background-image:
+			linear-gradient(90deg,
+			                transparent,
+			                transparent (@dash-length),
+			                @dyanote-green (@dash-length),
+			                @dyanote-green);
+	}
 }
+
 
 /* Show only on large displays */
 @media all and (max-width: 1020px) {
@@ -42,44 +89,4 @@
 	#breadcrumb li {
 		width: 300px;
 	}
-}
-
-
-#breadcrumb ol {
-	position: relative;
-	height: 100%;
-	list-style: none;
-	margin: 0;
-	padding: 40px 10px;
-}
-
-#breadcrumb li {
-	margin: 20px 0;
-	padding: 1px 30px;
-	background-image:
-		linear-gradient(90deg,
-		                transparent,
-		                transparent (@dash-length),
-		                @dyanote-yellow-dark (@dash-length),
-		                @dyanote-yellow-dark);
-	background-size: 10px 1px;
-	background-repeat: repeat-x;
-	background-position: bottom;
-	position: relative;
-	left: -30px;
-	cursor: pointer;
-}
-
-#breadcrumb p {
-	color: @dyanote-green;
-	margin: 0;
-}
-
-#breadcrumb li:hover  {
-	background-image:
-		linear-gradient(90deg,
-		                transparent,
-		                transparent (@dash-length),
-		                @dyanote-green (@dash-length),
-		                @dyanote-green);
 }

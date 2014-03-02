@@ -28,7 +28,7 @@ module.exports = function (grunt) {
           '<%= yeoman.app %>/styles/{,*/}*.css',
           '<%= yeoman.app %>/styles/{,*/}*.less'
         ],
-        tasks: ['less', 'autoprefixer']
+        tasks: ['less:server', 'autoprefixer']
       },
       livereload: {
         options: {
@@ -343,7 +343,7 @@ module.exports = function (grunt) {
 
     grunt.task.run([
       'clean:server',
-      'less',
+      'less:server',
       'copy:server',
       'autoprefixer',
       'connect:livereload',
