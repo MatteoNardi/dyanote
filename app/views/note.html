@@ -1,7 +1,9 @@
 <div class="note-container">
 	<div class="note">
-		<input type='text' class='title' ng-model="note.title"/>
-		<span class="glyphicon glyphicon-trash" ng-click="note.archive(); close(note);" tooltip="Archive note"></span>
+		<div class="note-header">
+			<input type='text' class='title' ng-model="note.title"/>
+			<span class="glyphicon glyphicon-trash" ng-click="note.archive(); close(note);" tooltip="Archive note"></span>
+		</div>
 		<div class="richTextEditor"><textarea>{{note.body}}</textarea></div>
 	</div>
 
