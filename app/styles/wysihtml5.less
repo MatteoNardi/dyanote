@@ -50,4 +50,9 @@
 		color: @dyanote-blue;
 		text-decoration: underline;
 	}
+
+	em, i {
+		// For some reasons italic makes lines bigger.
+		line-height: @line-height - 1px;
+	}
 }
