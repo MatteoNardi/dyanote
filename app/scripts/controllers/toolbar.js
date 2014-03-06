@@ -58,6 +58,18 @@ angular.module('dyanote')
 
   // Insert unordered list.
   $scope.addList = function () {
-    $scope.editor.composer.commands.exec('insertUnorderedList');
+    var composer = $scope.editor.composer;
+    var selection = composer.selection;
+    if (selection.getSelection().isCollapsed)
+      selection.selectNode(selection.getSelectedNode());
+    window.uselect = selection;
+    // TODO: Keep bold/italic formatting, strip other tags
+    // TODO: make a <li> for each selected line
+    var content = selection.getText();
+    var html = '<ul><li>' + content + '</li></ul>'
+    console.log(html);
+
+    composer.commands.exec('delete');
+    composer.commands.exec('insertHTML', html);
   }
 });

@@ -18,7 +18,6 @@ angular.module('dyanote')
         rename_tag: 'em',
       },
       br:     {},
-      div:    {},
       ul:     {},
       ol:     {},
       li:     {},
