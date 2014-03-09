@@ -9,6 +9,7 @@ angular.module('dyanote')
 
   // Create a link with the currently selected text.
   $scope.applyLink = function () {
+    $scope.editor.focus();
     var parent, title, body;
     
     var composer = $scope.editor.composer;
@@ -43,21 +44,25 @@ angular.module('dyanote')
 
   // Make currently selected text bold.
   $scope.applyBold = function () {
-    $scope.editor.composer.commands.exec('bold');
+    $scope.editor.focus();
+    $scope.editor.composer.commands.exec('formatInline', 'strong');
   }
 
   // Make currently selected text italic.
   $scope.applyItalic = function () {
-    $scope.editor.composer.commands.exec('italic');
+    $scope.editor.focus();
+    $scope.editor.composer.commands.exec('formatInline', 'em');
   }
   
   // Make currently selected text a title.
   $scope.applyTitle = function () {
+    $scope.editor.focus();
     $scope.editor.composer.commands.exec('formatBlock', 'h1');
   }
 
   // Insert unordered list.
   $scope.addList = function () {
+    $scope.editor.focus();
     var composer = $scope.editor.composer;
     var selection = composer.selection;
     if (selection.getSelection().isCollapsed)

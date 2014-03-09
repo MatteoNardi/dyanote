@@ -2,7 +2,7 @@ angular.module('dyanote')
 
 
 // richTextEditor is a widget using wysihtml5
-.directive('note', function ($location, $timeout, $window, SERVER_CONFIG) {
+.directive('note', function ($location, $timeout, $window, $log, SERVER_CONFIG) {
 
   // parserRules specifies the allowed tags
   var parserRules = {
@@ -58,11 +58,17 @@ angular.module('dyanote')
       scope.editor.on('load', function () {
         // Sync view -> model
         var updateModel = function () {
-          var newValue = scope.editor.parse(scope.editor.getValue());
+          var newValue = scope.editor.getValue();
+          var parsed = scope.editor.parse(newValue);
+          if (newValue != parsed) {
+            $log.warn('Editor contained invalid tags.');
+            $log.warn(newValue);
+            $log.warn(parsed);
+            var newValue = parsed;
+          }
           if (scope.note.body != newValue) {
             console.log('Sync view -> model (' + scope.note.id + ')');
             console.log(newValue);
-            scope.editor.setValue(newValue);
             scope.note.body = newValue;
             // Make AngularJS pickup changes
             $timeout(function () {});
