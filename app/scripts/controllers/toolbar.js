@@ -62,7 +62,6 @@ angular.module('dyanote')
     var selection = composer.selection;
     if (selection.getSelection().isCollapsed)
       selection.selectNode(selection.getSelectedNode());
-    window.uselect = selection;
     // TODO: Keep bold/italic formatting, strip other tags
     // TODO: make a <li> for each selected line
     var content = selection.getText();
