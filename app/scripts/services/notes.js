@@ -8,7 +8,11 @@ angular.module('dyanote')
   
   // All our notes
   var notes = {};
+  // Notes with unsaved changes.
+  var dirtyNotes = {};
+  // Root  and Archive notes.
   var rootNote, archiveNote;
+  // Number of notes.
   var notesCounter;
 
   // Load all notes
@@ -22,7 +26,11 @@ angular.module('dyanote')
           rootNote = note;
         if (note.isArchive())
           archiveNote = note;
+
+        note.changedSignal.addHandler(onNoteChanged);
+        note.parentChangedSignal.addHandler(onParentChanged);
       }
+
 
       // Make sure we have a Root and an Archive
       if (!rootNote)
@@ -37,6 +45,23 @@ angular.module('dyanote')
       }
     });
   };
+
+  // Handler for noteChanged signal.
+  // We save dirty notes to server every 4 seconds.
+  function onNoteChanged (note) {
+    if (note.id in dirtyNotes)
+      return;
+    dirtyNotes[id] = note;
+    $timeout(function () {
+      delete dirtyNotes[id];
+      noteResource.put(note._json);
+    }, 4000);
+  }
+
+  // Handler for noteParentChanged signal.
+  function onNoteParentChanged (note, oldParent) {
+    notesCoherenceTools.removeDeadLinks(oldParent);
+  }
 
   // Clear everything (For example after logout)
   this.clear = function () {

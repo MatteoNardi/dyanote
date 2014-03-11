@@ -28,6 +28,9 @@ angular.module('dyanote')
       this._private.fakeId = fakeId;
       this._private.fakeUrl = 'https://dyanote.com/templink/' + fakeId + '/';
     }
+
+    this.changedSignal = new Signal();
+    this.parentChangedSignal = new Signal();
   }
 
   // Id
@@ -54,7 +57,7 @@ angular.module('dyanote')
     set: function (title) {
       if (this._json.title == title) return;
       this._json.title = title;
-      save(this);
+      this.changedSignal.fire(this);
     }
   });
 
@@ -66,7 +69,7 @@ angular.module('dyanote')
     set: function (body) {
       if (this._json.body == body) return;
       this._json.body = body;
-      save(this);
+      this.changedSignal.fire(this);
     }
   });
 
@@ -83,10 +86,8 @@ angular.module('dyanote')
     set: function (newParent) {
       var oldParent = this.parent;
       this._json.parent = newParent.url;
-      // TODO: remove this dependency!
-      var notesCoherenceTools = $injector.get('notesCoherenceTools');
-      notesCoherenceTools.removeDeadLinks(oldParent);
-      return save(this);
+      this.changedSignal.fire(this);
+      this.parentChangedSignal.fire(this, oldParent);
     }
   });
 
@@ -113,14 +114,26 @@ angular.module('dyanote')
   };
 
 
-  // Save note (eventually).
-  var save = function (note) {
-    if (note._private.dirty)
-      return;
-    note._private.dirty = true;
-    $timeout(function () {
-      note._private.dirty = false;
-      noteResource.put(note._json);
-    }, 4000);
+  // A simple implementation of the Observer pattern.
+  // This is used for note signals.
+  function Signal () {
+    this.listeners = [];
   }
+
+  Signal.prototype.addHandler = function (fn) {
+    this.listeners.push(fn);
+  };
+
+  Signal.prototype.removeHandler = function (fn) {
+    for (var i in this.listeners)
+      if (this.listeners[i] ==== fn)
+        this.listeners.splice(i, 1);
+  };
+
+  Signal.prototype.fire = function (arg1, arg2) {
+    var length = this.listeners.length;
+    for(var i = 0; i < length; i++){
+      this.listeners[i](arg1, arg2);
+    }
+  };
 });
