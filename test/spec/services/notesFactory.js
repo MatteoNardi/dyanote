@@ -1,18 +1,18 @@
 'use strict';
 
-describe('Service: Notesfactory', function () {
+describe('Service: notesFactory', function () {
 
   // load the service's module
-  beforeEach(module('DyanoteApp'));
+  beforeEach(module('dyanote'));
 
   // instantiate service
-  var Notesfactory;
-  beforeEach(inject(function (_Notesfactory_) {
-    Notesfactory = _Notesfactory_;
+  var notesFactory;
+  beforeEach(inject(function (_notesFactory_) {
+    notesFactory = _notesFactory_;
   }));
 
   it('should do something', function () {
-    expect(!!Notesfactory).toBe(true);
+    expect(!!notesFactory).toBe(true);
   });
 
 });

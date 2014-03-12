@@ -4,24 +4,24 @@ angular.module('dyanote')
 
 // Controller for the notes view.
 // It is responsible for navigation (via breadcrumb or clicked links)
-.controller('NotesCtrl', function ($scope, $log, $location, $timeout, notes, status) {
+.controller('NotesCtrl', function ($scope, $log, $location, $timeout, notesManager, notesGraph, status) {
   $scope.notes = [];
 
   // Load notes
-  if (notes.count() > 0) {
+  if (notesGraph.count() > 0) {
     // Reopen the last opened note if we have one.
     if (!status.currentNote)
-      status.currentNote = notes.getRoot();
+      status.currentNote = notesGraph.getRoot();
     for (var i = status.currentNote; i.hasParent(); i = i.parent)
       $scope.notes.unshift(i);
     $scope.notes.unshift(i);
   } else {
     // Get notes from server if we haven't yet done it.
-    var req = notes.loadAll();
+    var req = notesManager.loadAll();
     req.then(function () {
-      $log.info("Loaded notes: " + notes.count());
-      status.currentNote = notes.getRoot();
-      $scope.notes.push(notes.getRoot());
+      $log.info("Loaded notes: " + notesGraph.count());
+      status.currentNote = notesGraph.getRoot();
+      $scope.notes.push(notesGraph.getRoot());
     }, function (reason) {
       $log.info("Loading notes failed: " + reason);
       $location.path("/login");
@@ -29,8 +29,8 @@ angular.module('dyanote')
   }
 
   $scope.$on('$openNote', function (event, callerNoteId, targetNoteId) {
-    var callerNote = notes.getById(callerNoteId);
-    var targetNote = notes.getById(targetNoteId);
+    var callerNote = notesGraph.getById(callerNoteId);
+    var targetNote = notesGraph.getById(targetNoteId);
     status.currentNote = targetNote;
 
     // If note isn't already open, open it.

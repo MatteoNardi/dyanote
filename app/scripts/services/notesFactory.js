@@ -5,32 +5,40 @@ angular.module('dyanote')
 // notesFactory is responsible for converting notes from
 // their json representation to the more powerfull Note objects.
 // In this service we define the Note class, used all over Dyante.
-.service('notesFactory', function ($log, $timeout, $injector, noteResource) {
+.service('notesFactory', function ($log, $timeout, notesGraph) {
 
   // Return a new Note object created from the json of our REST service.
   this.newNote = function (json) {
-    return new Note(json, false);
+    var note = new Note(json, false);
+    notesGraph.addNote(note);
+    return note;
   }
 
   // Create a new note with a temporary id and url.
   this.newTempNote = function (json) {
-    return new Note(json, true);
+    var note = new Note(json, true);
+    notesGraph.addNote(note);
+    return note;
   }
 
 
   // The Note constructor takes as input the server representation of the note.
-  var Note = function (json, isFake) {
+  var Note = function (json, isTemp) {
     this._json = json;
     this._private = {};
 
-    if (isFake) {
-      var fakeId = Date.now();
-      this._private.fakeId = fakeId;
-      this._private.fakeUrl = 'https://dyanote.com/templink/' + fakeId + '/';
+    this._id = json.id;
+    this._url = json.url;
+    
+    if (isTemp) {
+      var tempId = Date.now();
+      this._tempId = tempId;
+      this._tempUrl = 'https://dyanote.com/templink/' + tempId + '/';
     }
 
     this.changedSignal = new Signal();
     this.parentChangedSignal = new Signal();
+    this.gotFinalIdSignal = new Signal();
   }
 
   // Id
@@ -38,14 +46,28 @@ angular.module('dyanote')
     // Get the note id or fake id
     // (A note has a fake id until the server acknowledges its creation.)
     get: function () {
-      return this._json.id || this._private.fakeId;
+      return this._json.id || this._tempId;
     }
   });
+
+  // Returns true if the note has not been saved on the server yet
+  // (thus it still has a temporary Id and Url)
+  Note.prototype.hasTemporaryId = function () {
+    return !this._json.id;
+  };
+
+  Note.prototype.finalize = function (realId, realUrl) {
+    if (!this.hasTemporaryId())
+      throw 'This note doesnt have temporary id and url'; 
+    this._json.id = realId;
+    this._json.url = realUrl;
+    this.gotFinalIdSignal.fire();
+  };
 
   // Url
   Object.defineProperty(Note.prototype, 'url', {
     get: function () {
-      return this._json.url || this._private.fakeUrl;
+      return this._json.url || this._tempUrl;
     }
   });
 
@@ -79,9 +101,7 @@ angular.module('dyanote')
       if (this.isRoot()) throw ("Root note has no parent");
       if (this.isArchive()) throw ("Archive note has no parent");
       var parentId = this._json.parent.match(/.*\/(\d+)\/$/)[1];
-      // TODO: remove this dependency!
-      var notes = $injector.get('notes');
-      return notes.getById(parentId);
+      return notesGraph.getById(parentId);
     },
     set: function (newParent) {
       var oldParent = this.parent;
@@ -98,9 +118,7 @@ angular.module('dyanote')
   // Archive note
   Note.prototype.archive = function () {
     $log.info('Archiving note ' + this._json.id);
-    // TODO: remove this dependency!
-    var notes = $injector.get('notes');
-    this.parent = notes.getArchive();
+    this.parent = notesGraph.getArchive();
   };
 
   // Return true if this is the Root note.
@@ -126,7 +144,7 @@ angular.module('dyanote')
 
   Signal.prototype.removeHandler = function (fn) {
     for (var i in this.listeners)
-      if (this.listeners[i] ==== fn)
+      if (this.listeners[i] === fn)
         this.listeners.splice(i, 1);
   };
 

@@ -5,7 +5,7 @@ angular.module('dyanote')
 // ToolbarCtrl is the controller of the toolbar and is tightly coupled with WysiHTML5.
 // When a toolbar button is clicked, we update our rich text editor accordingly.
 // $scope.editor must be set by the note directive.
-.controller('ToolbarCtrl', function ($scope, $log, notes) {
+.controller('ToolbarCtrl', function ($scope, $log, notesManager) {
 
   // Create a link with the currently selected text.
   $scope.applyLink = function () {
@@ -33,7 +33,7 @@ angular.module('dyanote')
       body = selection.toHtml();
       composer.commands.exec('delete');
     }
-    var note = notes.newNote(parent, title, body);
+    var note = notesManager.newNote(parent, title, body);
     console.log(note);
 
     composer.commands.exec('createLink', { href: note.url, text: note.title });

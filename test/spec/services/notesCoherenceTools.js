@@ -1,18 +1,19 @@
 'use strict';
 
-describe('Service: Notescoherencetools', function () {
+describe('Service: notesCoherenceTools', function () {
 
   // load the service's module
-  beforeEach(module('DyanoteApp'));
+  beforeEach(module('dyanote'));
 
   // instantiate service
-  var Notescoherencetools;
-  beforeEach(inject(function (_Notescoherencetools_) {
-    Notescoherencetools = _Notescoherencetools_;
+  var notesCoherenceTools;
+  beforeEach(inject(function (_notesCoherenceTools_) {
+    notesCoherenceTools = _notesCoherenceTools_;
   }));
 
   it('should do something', function () {
-    expect(!!Notescoherencetools).toBe(true);
+    expect(!!notesCoherenceTools).toBe(true);
   });
 
 });
+

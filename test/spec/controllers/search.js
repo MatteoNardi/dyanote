@@ -6,14 +6,14 @@ describe('Controller: SearchCtrl', function () {
   beforeEach(module('dyanote'));
 
   var SearchCtrl,
-    notes,
+    notesGraph,
     scope,
     $q,
     $rootScope;
 
   // Initialize the controller and a mock scope
-  beforeEach(inject(function ($controller, _$rootScope_, _notes_, _$q_) {
-    notes = _notes_;
+  beforeEach(inject(function ($controller, _$rootScope_, _notesGraph_, _$q_) {
+    notesGraph = _notesGraph_;
     $q = _$q_;
     $rootScope = _$rootScope_;
     scope = $rootScope.$new();
@@ -25,7 +25,7 @@ describe('Controller: SearchCtrl', function () {
   it('search for notes', function () {
     var deferred = $q.defer();
     var results = [];
-    spyOn(notes, 'search').andCallFake(function (text) {
+    spyOn(notesGraph, 'search').andCallFake(function (text) {
       if (text == 'abracadabra') return {
         results: results,
         promise: deferred.promise

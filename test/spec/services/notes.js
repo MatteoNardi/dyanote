@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Service: notes', function () {
+xdescribe('Service: notes', function () {
 
   // load the service's module
   beforeEach(module('dyanote'));
@@ -17,7 +17,7 @@ describe('Service: notes', function () {
     note4,
     authorUrl;
 
-  beforeEach(inject(function (_notes_, _noteResource_, _$rootScope_, _$log_, _$q_, _$timeout_, SERVER_CONFIG) {
+  beforeEach(inject(function (_notes_, _$rootScope_, _$log_, _$q_, _$timeout_, SERVER_CONFIG) {
     notes = _notes_;
     noteResource = _noteResource_;
 

@@ -7,7 +7,8 @@ describe('Controller: NotesCtrl', function () {
 
   var NotesCtrl,
     scope,
-    notes,
+    notesManager,
+    notesGraph,
     $q,
     $rootScope,
     $location,
@@ -15,18 +16,19 @@ describe('Controller: NotesCtrl', function () {
     rootNote;
 
   // Initialize the controller and a mock scope
-  beforeEach(inject(function ($controller, _$rootScope_, _notes_, _$q_, _$location_) {
+  beforeEach(inject(function ($controller, _$rootScope_, _notesManager_, _notesGraph_, _$q_, _$location_) {
     $q = _$q_
     $rootScope = _$rootScope_;
     $location = _$location_;
-    notes = _notes_;
+    notesManager = _notesManager_;
+    notesGraph = _notesGraph_;
     scope = $rootScope.$new();
 
     rootNote = { title: "Root note", id: 3};
     deferred = $q.defer();
-    spyOn(notes, 'loadAll').andReturn(deferred.promise);
+    spyOn(notesManager, 'loadAll').andReturn(deferred.promise);
 
-    spyOn(notes, 'getRoot').andReturn(rootNote);
+    spyOn(notesGraph, 'getRoot').andReturn(rootNote);
     deferred.resolve();
 
     NotesCtrl = $controller('NotesCtrl', {
@@ -41,7 +43,7 @@ describe('Controller: NotesCtrl', function () {
 
   it('should open new note on $openNote signal', function () {
     var openedNote = { id: 10 };
-    spyOn(notes, 'getById').andCallFake(function(id) {
+    spyOn(notesGraph, 'getById').andCallFake(function(id) {
       return id == rootNote.id ? rootNote :
              id == openedNote.id ? openedNote :
              null;
@@ -55,7 +57,7 @@ describe('Controller: NotesCtrl', function () {
     var unwantedNote = { id: 17 };
     var openedNote = { id: 10 };
     scope.notes = [rootNote, unwantedNote];
-    spyOn(notes, 'getById').andCallFake(function(id) {
+    spyOn(notesGraph, 'getById').andCallFake(function(id) {
       return id == rootNote.id ? rootNote :
              id == openedNote.id ? openedNote :
              id == unwantedNote.id ? unwantedNote :
