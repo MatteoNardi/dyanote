@@ -52,7 +52,7 @@ describe('Service: notesManager', function () {
     expect(msg).toEqual('User is not logged in');
   });
 
-  it('should upload notes to server when body changes', function () {
+  it('should upload notes to server when note changes', function () {
     var deferred = $q.defer();
     spyOn(noteResource, 'getAll').andReturn(deferred.promise);
     var json = {
@@ -72,4 +72,45 @@ describe('Service: notesManager', function () {
     inject(function ($timeout) { $timeout.flush(); });
     expect(noteResource.put).toHaveBeenCalledWith(json);
   });
+
+
+  it('should create new notes immediately', function () {
+    var deferred = $q.defer(); 
+    spyOn(noteResource, 'post').andReturn(deferred.promise);
+
+    var parent = { url: 'http://dyanote.com/parenturl/0/' };
+    var newNote = notesManager.newNote(parent, "Title", "Body");
+
+    expect(noteResource.post).toHaveBeenCalledWith(newNote._json);
+    expect(newNote.title).toEqual("Title");
+    expect(newNote.body).toEqual("Body");
+    expect(newNote.url).toBeTruthy();
+    expect(newNote.id).toBeTruthy();
+  });
+
+  it('should complete newly created notes when server responds', function () {
+    var d = $q.defer();
+    spyOn(noteResource, 'getAll').andReturn(d.promise);
+    var json = {
+      id: 0,
+      url: 'http://dyanote.com/parenturl/0/',
+      title: 'Note title',
+      body: '<h1>Header</h1>..body.'
+    };
+    d.resolve([json]);
+    notesManager.loadAll();
+    $rootScope.$apply();
+
+    var deferred = $q.defer();
+    spyOn(noteResource, 'post').andReturn(deferred.promise);
+    var parent = { url: 'http://dyanote.com/parenturl/0/' };
+    var newNote = notesManager.newNote(parent, "Title", "Body");
+
+    deferred.resolve({'id': 42, 'url': 'http://dyanote.com/parenturl/0/'});
+    $rootScope.$apply();
+
+    expect(newNote.id).toEqual(42);
+    expect(newNote.url).toEqual('http://dyanote.com/parenturl/0/');
+  });
+
 });

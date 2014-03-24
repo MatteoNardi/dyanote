@@ -60,7 +60,7 @@ angular.module('dyanote')
     // Create new fake Note
     var note = notesFactory.newTempNote(json);
     note.changedSignal.addHandler(onNoteChanged);
-    note.parentChangedSignal.addHandler(onParentChanged);
+    note.parentChangedSignal.addHandler(onNoteParentChanged);
 
     noteResource.post(json).then(function (json) {
       // Update note to use real server data.

@@ -67,25 +67,6 @@ xdescribe('Service: notes', function () {
   }));
 
 
-  it('should upload notes to server when title changes', function () {
-    notes.loadAll();
-    $rootScope.$apply();
-
-    spyOn(noteResource, 'put').andReturn();
-    var root = notes.getById(rootNote.id);
-    root.title = "Abracadabra";
-    $rootScope.$apply();
-
-    $timeout.flush();
-    expect(noteResource.put).toHaveBeenCalledWith(root._json);
-  });
-
-  it('should complain when note doesnt exist', function () {
-    notes.loadAll();
-    $rootScope.$apply();
-
-    expect(function () { notes.getById(231421323); }).toThrow('Note 231421323 not found.');
-  });
 
   it('should move notes', function () {
     notes.loadAll();
@@ -144,44 +125,6 @@ xdescribe('Service: notes', function () {
     expect(function () { archive.parent; }).toThrow("Archive note has no parent"); 
   });
 
-  it('should create new notes immediately', function () {
-    notes.loadAll();
-    $rootScope.$apply();
-
-    var deferred = $q.defer(); 
-    spyOn(noteResource, 'post').andReturn(deferred.promise);
-
-    var root = notes.getById(rootNote.id);
-    var n5 = notes.newNote(root, "Title", "Body");
-
-    expect(noteResource.post).toHaveBeenCalledWith(n5._json);
-    expect(n5.title).toEqual("Title");
-    expect(n5.body).toEqual("Body");
-    expect(n5.parent).toBe(root);
-    expect(n5.url).toBeTruthy();
-    expect(n5.id).toBeTruthy();
-  });
-
-  it('should complete newly created notes when server responds', function () {
-    notes.loadAll();
-    $rootScope.$apply();
-
-    var deferred = $q.defer(); 
-    spyOn(noteResource, 'post').andReturn(deferred.promise);
-
-    var root = notes.getById(rootNote.id);
-    var n5 = notes.newNote(root, "Title", "Body");
-
-    var note5 = JSON.parse(JSON.stringify(note4));
-    note5.id = 5;
-    note5.url = note5.url.replace('/4/', '/5/');
-    deferred.resolve(note5);
-    $rootScope.$apply();
-
-    expect(n5.id).toEqual(5);
-    expect(n5.url).toEqual(note5.url);
-    expect(notes.getById(5)).toBe(n5);
-  });
 
 
 
