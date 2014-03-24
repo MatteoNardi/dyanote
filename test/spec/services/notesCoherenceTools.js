@@ -29,5 +29,17 @@ describe('Service: notesCoherenceTools', function () {
     notesCoherenceTools.removeLink(note, oldUrl);
     expect(note.body).toEqual('Abracadabra')
   });
+
+  it('should rename links', function () {
+    var note42 = {
+      title: 'New title',
+      url: 'http://api.dyanote.com/42'
+    };
+    var note = {
+      body: '<a href="http://api.dyanote.com/42">Abracadabra</a>'
+    }
+    notesCoherenceTools.renameLink(note, note42, 'Abracadabra');
+    expect(note.body).toEqual('<a href="http://api.dyanote.com/42">New title</a>')
+  });
 });
 

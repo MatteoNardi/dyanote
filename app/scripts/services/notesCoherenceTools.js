@@ -38,4 +38,30 @@ angular.module('dyanote')
     };
     note.body = body;
   };
+
+  // renameLink changes the content of a link
+  this.renameLink = function (note, targetNote, oldTitle) {
+    var replacement = targetNote.title;
+    if (!targetNote.title) replacement = '...';
+
+    var body = note.body;
+    var deadLinks = [];
+
+
+    var regex = new RegExp('<a href="' + targetNote.url + '">([^<]*)<\/a>', 'g');
+    var match;
+    while ((match = regex.exec(body)) !== null)
+    {
+      // We don't rename links the user has manually changed (maybe he wants
+      // the link text to be different to the linked page title)
+      // If the link text is too short we assume an error has occurred
+      // and the user wants the link text to be replaced.
+      if(match[1] == oldTitle || match[1].length < 5)
+        deadLinks.push(match[0]);
+    }
+    for (var i = 0; i < deadLinks.length; i++) {
+      body = body.replace(deadLinks[i], '<a href="' + targetNote.url + '">' + replacement + '<\/a>');
+    };
+    note.body = body;
+  }
 });

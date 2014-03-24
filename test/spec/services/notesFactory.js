@@ -83,4 +83,13 @@ describe('Service: notesFactory', function () {
     expect(archiveNote.isArchive()).toBe(true);
     expect(function () { archiveNote.parent; }).toThrow("Archive note has no parent"); 
   });
+
+  it('should fire signal when title changes', function () {
+    var called = false;
+    note2.titleChangedSignal.addHandler(function () {
+      called = true;
+    });
+    note2.title = "New title for note 2";
+    expect(called).toBe(true);
+  });
 });

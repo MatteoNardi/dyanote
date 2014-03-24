@@ -7,16 +7,18 @@ describe('Service: notesManager', function () {
     notesGraph,
     noteResource,
     notesFactory,
+    notesCoherenceTools,
     $q,
     $rootScope;
 
-  beforeEach(inject(function (_$q_, _$rootScope_, _notesManager_, _notesGraph_, _noteResource_, _notesFactory_) {
+  beforeEach(inject(function (_$q_, _$rootScope_, _notesManager_, _notesGraph_, _noteResource_, _notesFactory_, _notesCoherenceTools_) {
     $q = _$q_;
     $rootScope = _$rootScope_;
     notesManager = _notesManager_;
     notesGraph = _notesGraph_;
     noteResource = _noteResource_;
     notesFactory = _notesFactory_;
+    notesCoherenceTools = _notesCoherenceTools_;
   }));
 
   it('should load notes from server', function () {
@@ -29,7 +31,8 @@ describe('Service: notesManager', function () {
     var signal = { addHandler: function () {} };
     spyOn(notesFactory, 'newNote').andReturn({
       changedSignal: signal,
-      parentChangedSignal: signal
+      parentChangedSignal: signal,
+      titleChangedSignal: signal
     });
     spyOn(signal, 'addHandler');
 
@@ -57,6 +60,7 @@ describe('Service: notesManager', function () {
     spyOn(noteResource, 'getAll').andReturn(deferred.promise);
     var json = {
       id: 0,
+      url: 'http://dyanote.com/note/0/',
       title: 'Note title',
       body: '<h1>Header</h1>..body.'
     };
@@ -73,6 +77,28 @@ describe('Service: notesManager', function () {
     expect(noteResource.put).toHaveBeenCalledWith(json);
   });
 
+  it('should remove dead links when note is moved', function () {
+    var parent = {
+      url: 'http://dyanote.com/parenturl/0/'
+    }
+    var note = notesManager.newNote(parent, "Title", "Body");
+    spyOn(notesCoherenceTools, 'removeLink');
+    spyOn(notesGraph, 'getById').andReturn(parent);
+    note.parent = { title: 'New parent'};
+    expect(notesCoherenceTools.removeLink).toHaveBeenCalledWith(parent, note.url);
+  });
+
+  it('should rename links when note title changes', function () {
+    var parent = {
+      url: 'http://dyanote.com/parenturl/0/'
+    }
+    var notes = notesManager.newNote(parent, "Title", "Body");
+    spyOn(notesCoherenceTools, 'renameLink');
+    spyOn(notesGraph, 'getById').andReturn(parent);
+    notes.title = 'New Title';
+
+    expect(notesCoherenceTools.renameLink).toHaveBeenCalledWith(parent, notes, 'Title');
+  });
 
   it('should create new notes immediately', function () {
     var deferred = $q.defer(); 
@@ -112,5 +138,4 @@ describe('Service: notesManager', function () {
     expect(newNote.id).toEqual(42);
     expect(newNote.url).toEqual('http://dyanote.com/parenturl/0/');
   });
-
 });

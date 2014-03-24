@@ -38,6 +38,7 @@ angular.module('dyanote')
     }
 
     this.changedSignal = new Signal();
+    this.titleChangedSignal = new Signal();
     this.parentChangedSignal = new Signal();
     this.gotFinalIdSignal = new Signal();
   }
@@ -82,8 +83,10 @@ angular.module('dyanote')
     },
     set: function (title) {
       if (this._json.title == title) return;
+      var oldTitle = this._json.title;
       this._json.title = title;
       this.changedSignal.fire(this);
+      this.titleChangedSignal.fire(this, oldTitle);
     }
   });
 
@@ -104,6 +107,7 @@ angular.module('dyanote')
     get: function () {
       if (this.isRoot()) throw ("Root note has no parent");
       if (this.isArchive()) throw ("Archive note has no parent");
+      //Todo: what if it has no parent? A hard to understand exception is thrown.
       var parentId = this._json.parent.match(/.*\/(\d+)\/$/)[1];
       return notesGraph.getById(parentId);
     },

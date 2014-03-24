@@ -15,8 +15,7 @@ angular.module('dyanote')
       // Add notes.
       for (var i = 0; i < jsons.length; i++) {
         var note = notesFactory.newNote(jsons[i]);
-        note.changedSignal.addHandler(onNoteChanged);
-        note.parentChangedSignal.addHandler(onNoteParentChanged);
+        connectSignals(note);
       }
 
       // Make sure we have a Root and an Archive
@@ -26,6 +25,12 @@ angular.module('dyanote')
         $log.error('Archive note not found');
     });
   };
+
+  function connectSignals (note) {
+    note.changedSignal.addHandler(onNoteChanged);
+    note.parentChangedSignal.addHandler(onNoteParentChanged);
+    note.titleChangedSignal.addHandler(onNoteTitleChanged);
+  }
 
   // Handler for noteChanged signal.
   // We save dirty notes to server every 4 seconds.
@@ -40,9 +45,19 @@ angular.module('dyanote')
     }, 4000);
   }
 
-  // Handler for noteParentChanged signal.
+  // When the parent of a note changes, we remove the dead links.
   function onNoteParentChanged (note, oldParent) {
-    notesCoherenceTools.removeDeadLinks(oldParent, note.url);
+    notesCoherenceTools.removeLink(oldParent, note.url);
+  }
+
+  // When the title of a note changes, we rename the links to it.
+  function onNoteTitleChanged (note, oldTitle) {
+    // Note might have no parent
+    try {
+      notesCoherenceTools.renameLink(note.parent, note, oldTitle);
+    } catch (e) {
+      $log.warn('Note has no parent: cant rename link');
+    }
   }
 
   // Create a new note with the given parent, title and body.
@@ -59,8 +74,7 @@ angular.module('dyanote')
     };
     // Create new fake Note
     var note = notesFactory.newTempNote(json);
-    note.changedSignal.addHandler(onNoteChanged);
-    note.parentChangedSignal.addHandler(onNoteParentChanged);
+    connectSignals(note);
 
     noteResource.post(json).then(function (json) {
       // Update note to use real server data.
