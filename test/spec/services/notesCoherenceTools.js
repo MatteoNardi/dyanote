@@ -11,9 +11,23 @@ describe('Service: notesCoherenceTools', function () {
     notesCoherenceTools = _notesCoherenceTools_;
   }));
 
-  it('should do something', function () {
-    expect(!!notesCoherenceTools).toBe(true);
+  it('should replace links using convertLink', function () {
+    var fakeUrl = 'http://api.dyanote.com/123901283';
+    var realUrl = 'http://api.dyanote.com/42';
+    var note = {
+      body: '<a href="' + fakeUrl + '">Abracadabra</a>'
+    }
+    notesCoherenceTools.convertLink(note, fakeUrl, realUrl);
+    expect(note.body).toEqual('<a href="' + realUrl + '">Abracadabra</a>')
   });
 
+  it('should remove dead links using removeLink', function () {
+    var oldUrl = 'http://api.dyanote.com/42';
+    var note = {
+      body: '<a href="' + oldUrl + '">Abracadabra</a>'
+    }
+    notesCoherenceTools.removeLink(note, oldUrl);
+    expect(note.body).toEqual('Abracadabra')
+  });
 });
 

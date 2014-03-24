@@ -42,7 +42,7 @@ angular.module('dyanote')
 
   // Handler for noteParentChanged signal.
   function onNoteParentChanged (note, oldParent) {
-    notesCoherenceTools.removeDeadLinks(oldParent);
+    notesCoherenceTools.removeDeadLinks(oldParent, note.url);
   }
 
   // Create a new note with the given parent, title and body.
@@ -64,8 +64,10 @@ angular.module('dyanote')
 
     noteResource.post(json).then(function (json) {
       // Update note to use real server data.
-      note.finalize(json.id, json.url)
-      notesCoherenceTools.removeFakeLinks(note.parent);
+      var realUrl = json.url;
+      var fakeUrl = note.url;
+      note.finalize(json.id, realUrl)
+      notesCoherenceTools.convertLink(note.parent, fakeUrl, realUrl);
     });
     return note;
   };
