@@ -30,7 +30,8 @@ angular.module('dyanote')
   // Handler for noteChanged signal.
   // We save dirty notes to server every 4 seconds.
   function onNoteChanged (note) {
-    if (note.id in dirtyNotes)
+    var id = note.id;
+    if (id in dirtyNotes)
       return;
     dirtyNotes[id] = note;
     $timeout(function () {

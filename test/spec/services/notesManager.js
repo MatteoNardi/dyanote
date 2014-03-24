@@ -41,4 +41,35 @@ describe('Service: notesManager', function () {
     expect(signal.addHandler).toHaveBeenCalled();
   });
 
+  it('should fail if user is not logged in', function () {
+    spyOn(noteResource, 'getAll').andReturn($q.reject("User is not logged in"));
+    var promise = notesManager.loadAll();
+    var msg;
+    promise.catch(function (reason) {
+      msg = reason;
+    });
+    $rootScope.$apply();
+    expect(msg).toEqual('User is not logged in');
+  });
+
+  it('should upload notes to server when body changes', function () {
+    var deferred = $q.defer();
+    spyOn(noteResource, 'getAll').andReturn(deferred.promise);
+    var json = {
+      id: 0,
+      title: 'Note title',
+      body: '<h1>Header</h1>..body.'
+    };
+    deferred.resolve([json]);
+
+    notesManager.loadAll();
+    $rootScope.$apply();
+
+    spyOn(noteResource, 'put').andReturn();
+
+    notesGraph.getById(0).title = 'New Title';
+    $rootScope.$apply();
+    inject(function ($timeout) { $timeout.flush(); });
+    expect(noteResource.put).toHaveBeenCalledWith(json);
+  });
 });

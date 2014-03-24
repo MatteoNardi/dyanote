@@ -24,6 +24,7 @@ angular.module('dyanote')
 
   // The Note constructor takes as input the server representation of the note.
   var Note = function (json, isTemp) {
+    // Todo: remove _json
     this._json = json;
     this._private = {};
 
@@ -46,7 +47,10 @@ angular.module('dyanote')
     // Get the note id or fake id
     // (A note has a fake id until the server acknowledges its creation.)
     get: function () {
-      return this._json.id || this._tempId;
+      if (this._json.id === undefined)
+        return this._tempId;
+      else
+        return this._json.id;
     }
   });
 

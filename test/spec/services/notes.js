@@ -67,31 +67,6 @@ xdescribe('Service: notes', function () {
   }));
 
 
-
-  it('should fail if user is not logged in', function () {
-    noteResource.getAll.andReturn($q.reject("User is not logged in"));
-    var promise = notes.loadAll();
-    var msg;
-    promise.catch(function (reason) {
-      msg = reason;
-    });
-    $rootScope.$apply();
-    expect(msg).toEqual('User is not logged in');
-  });
-
-  it('should upload notes to server when body changes', function () {
-    notes.loadAll();
-    $rootScope.$apply();
-
-    spyOn(noteResource, 'put').andReturn();
-    var root = notes.getById(rootNote.id);
-    root.body = "Abracadabra";
-    $rootScope.$apply();
-
-    $timeout.flush();
-    expect(noteResource.put).toHaveBeenCalledWith(root._json);
-  });
-
   it('should upload notes to server when title changes', function () {
     notes.loadAll();
     $rootScope.$apply();
