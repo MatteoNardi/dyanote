@@ -5,7 +5,7 @@ angular.module('dyanote')
 // notesGraph is the container of all the notes.
 // It allows to get special notes (Root and Archive),
 // and search notes by Id or text.
-.service('notesGraph', function () {
+.service('notesGraph', function ($q, $timeout) {
 
   // All our notes
   var notes = {};
@@ -15,7 +15,7 @@ angular.module('dyanote')
   var notesCounter = 0;
 
   // Add a new note to the graph.
-  this.addNote  = function (note) {
+  this.add  = function (note) {
     if (note.id in notes)
       throw 'A note with the given Id already exists';
     notes[note.id] = note;

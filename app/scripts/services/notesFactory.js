@@ -10,14 +10,14 @@ angular.module('dyanote')
   // Return a new Note object created from the json of our REST service.
   this.newNote = function (json) {
     var note = new Note(json, false);
-    notesGraph.addNote(note);
+    notesGraph.add(note);
     return note;
   }
 
   // Create a new note with a temporary id and url.
   this.newTempNote = function (json) {
     var note = new Note(json, true);
-    notesGraph.addNote(note);
+    notesGraph.add(note);
     return note;
   }
 

@@ -67,31 +67,6 @@ xdescribe('Service: notes', function () {
   }));
 
 
-  it('should load notes from server', function () {
-    notes.loadAll();
-    $rootScope.$apply();
-    expect(notes.count()).toBe(3);
-  });
-
-  it('should allow to get notes by id', function () {
-    notes.loadAll();
-    $rootScope.$apply();
-    expect(JSON.stringify(notes.getById(1)._json)).toEqual(JSON.stringify(rootNote));
-    expect(JSON.stringify(notes.getById(4)._json)).toEqual(JSON.stringify(note4));
-    expect(function () { notes.getById(42); }).toThrow('Note 42 not found.');
-  });
-
-  it('should allow to get root note', function () {
-    notes.loadAll();
-    $rootScope.$apply();
-    expect(JSON.stringify(notes.getRoot()._json)).toEqual(JSON.stringify(rootNote));
-  });
-
-  it('should allow to get archive note', function () {
-    notes.loadAll();
-    $rootScope.$apply();
-    expect(JSON.stringify(notes.getArchive()._json)).toEqual(JSON.stringify(archiveNote));
-  });
 
   it('should fail if user is not logged in', function () {
     noteResource.getAll.andReturn($q.reject("User is not logged in"));
@@ -233,25 +208,7 @@ xdescribe('Service: notes', function () {
     expect(notes.getById(5)).toBe(n5);
   });
 
-  it('should search for notes', function () {
-    notes.loadAll();
-    $rootScope.$apply();
-    var response = notes.search('this is');
-    var ris = [];
-    response.promise.then(function () {
-      ris = response.results;
-    });
-    for (var i = 0; i < 10; i++) {
-      try {
-        $timeout.flush();
-      } catch (e) {}
-      $rootScope.$apply();
-    }
-    expect(ris).toEqual([
-      notes.getById(archiveNote.id),
-      notes.getById(rootNote.id)
-    ]);
-  });
+
 
   describe('NotesCoherenceTools', function () {
     it('should replace links using removeFakeLinks', function () {
