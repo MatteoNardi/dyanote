@@ -4,7 +4,7 @@
 			<input type='text' class='title' ng-model="note.title"/>
 			<span class="glyphicon glyphicon-trash" ng-click="note.archive(); close(note);" tooltip="Archive note"></span>
 		</div>
-		<div class="richTextEditor"><textarea>{{note.body}}</textarea></div>
+		<div class="richTextEditor" contenteditable="true"></div>
 	</div>
 
 	<div ng-include="'views/toolbar.html'" class="toolbar" ng-controller="ToolbarCtrl"></div>

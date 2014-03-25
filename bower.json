@@ -11,7 +11,8 @@
     "bootstrap": "~3.0.3",
     "angular-local-storage": "*",
     "mousetrap": "~1.4.6",
-    "angular-bootstrap": "~0.10.0"
+    "angular-bootstrap": "~0.10.0",
+    "scribe": "~0.1.4"
   },
   "devDependencies": {
     "angular-mocks": "1.2.7",

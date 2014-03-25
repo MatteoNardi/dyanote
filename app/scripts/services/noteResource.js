@@ -30,7 +30,7 @@ angular.module('dyanote')
 
   // Update note.
   this.put = function (note) {
-    $log.info("Updating note " + note.id);
+    $log.info('Saving note ' + note.id + ": " + note.body);
     return $http.put(note.url, note);
   }
 });
