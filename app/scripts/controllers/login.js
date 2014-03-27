@@ -8,41 +8,45 @@ angular.module('dyanote')
     $location.path('/notes');
   }
 
-  $scope.email = "";
-  $scope.password = "";
-  $scope.emailErrorMessage = "";
-  $scope.passwordErrorMessage = "";
-  $scope.errorMessage = "";
-  $scope.isLoggingIn = false;
-  $scope.remember = false;
+  var form = {
+    email: '',
+    password: '',
+    emailErrorMessage: '',
+    passwordErrorMessage: '',
+    errorMessage: '',
+    isLoggingIn: false,
+    remember: false
+  }
+
+  $scope.form = form;
 
   $scope.login = function () {
-    if ($scope.email == "")
-      $scope.emailErrorMessage = "Email address is required";
-    else if (! /\S+@\S+\.\S+/.test($scope.email))
-      $scope.emailErrorMessage = "This is not a valid mail address";
+    if (form.email == "")
+      form.emailErrorMessage = "Email address is required";
+    else if (! /\S+@\S+\.\S+/.test(form.email))
+      form.emailErrorMessage = "This is not a valid mail address";
     else
-      $scope.emailErrorMessage = "";
+      form.emailErrorMessage = "";
 
-    if ($scope.password == "")
-      $scope.passwordErrorMessage = "Password is required";
-    else if ($scope.password.length < 4)
-      $scope.passwordErrorMessage = "Password is too short";
+    if (form.password == "")
+      form.passwordErrorMessage = "Password is required";
+    else if (form.password.length < 4)
+      form.passwordErrorMessage = "Password is too short";
     else
-      $scope.passwordErrorMessage = "";
+      form.passwordErrorMessage = "";
 
-    if($scope.emailErrorMessage != "" || $scope.passwordErrorMessage != "")
+    if(form.emailErrorMessage != "" || form.passwordErrorMessage != "")
       return;
 
-    $scope.isLoggingIn = true;
-    $scope.errorMessage = "";
+    form.isLoggingIn = true;
+    form.errorMessage = "";
 
-    auth.login($scope.email, $scope.password, $scope.remember).then(function (response) {
+    auth.login(form.email, form.password, form.remember).then(function (response) {
       $log.info("Logged in");
-      $scope.isLoggingIn = false;
+      form.isLoggingIn = false;
       $location.path('/notes');
     }, function (response) {
-      $scope.errorMessage = "Wrong username or password";
+      form.errorMessage = "Wrong username or password";
     });
   }
 });

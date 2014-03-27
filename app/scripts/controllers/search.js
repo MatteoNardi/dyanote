@@ -10,7 +10,11 @@ angular.module('dyanote')
   if (notesGraph.count() == undefined)
     notesManager.loadAll();
 
-  $scope.$watch('searchText', function (newValue, oldValue) {
+  $scope.input = {
+    searchTerms: ''
+  };
+
+  $scope.$watch('input.searchTerms', function (newValue, oldValue) {
     var text = newValue;
     if (!text) {
       $scope.isLoading = false;

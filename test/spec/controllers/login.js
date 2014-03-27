@@ -5,8 +5,13 @@ describe('Controller: LoginCtrl', function () {
   // load the controller's module
   beforeEach(module('dyanote'));
 
-  var LoginCtrl, createController,
-    scope, $log, $location, auth, loginResponse;
+  var LoginCtrl,
+    createController,
+    scope,
+    $log,
+    $location,
+    auth,
+    loginResponse;
 
   // Initialize the controller and a mock scope
   beforeEach(inject(function ($controller, $rootScope, _$log_, _$location_, $q, _auth_) {
@@ -34,48 +39,48 @@ describe('Controller: LoginCtrl', function () {
   });
 
   it('should require mail', function () {
-    scope.email = "";
+    scope.form.email = "";
     scope.login();
-    expect(scope.emailErrorMessage).toBe("Email address is required");
+    expect(scope.form.emailErrorMessage).toBe("Email address is required");
   });
 
   it('should require password', function () {
-    scope.password = "";
+    scope.form.password = "";
     scope.login();
-    expect(scope.passwordErrorMessage).toBe("Password is required");
+    expect(scope.form.passwordErrorMessage).toBe("Password is required");
   });
 
   it('should require acceptable emails and passwords', function () {
-    scope.email = "asd@";
-    scope.password = "123";
+    scope.form.email = "asd@";
+    scope.form.password = "123";
     scope.login();
-    expect(scope.emailErrorMessage).toBe("This is not a valid mail address");
-    expect(scope.passwordErrorMessage).toBe("Password is too short");
+    expect(scope.form.emailErrorMessage).toBe("This is not a valid mail address");
+    expect(scope.form.passwordErrorMessage).toBe("Password is too short");
   });
 
   it('should display loading animation', function () {
-    scope.email = "asd@gmail.com";
-    scope.password = "123456";
-    expect(scope.isLoggingIn).toBe(false);
+    scope.form.email = "asd@gmail.com";
+    scope.form.password = "123456";
+    expect(scope.form.isLoggingIn).toBe(false);
     scope.login();
-    expect(scope.isLoggingIn).toBe(true);
+    expect(scope.form.isLoggingIn).toBe(true);
     loginResponse.resolve();
     scope.$apply();
-    expect(scope.isLoggingIn).toBe(false);
+    expect(scope.form.isLoggingIn).toBe(false);
   });
 
   it('should display error message on failed login', function () {
-    scope.email = "asd@gmail.com";
-    scope.password = "123456";
+    scope.form.email = "asd@gmail.com";
+    scope.form.password = "123456";
     scope.login();
     loginResponse.reject();
     scope.$apply();
-    expect(scope.errorMessage).toBe("Wrong username or password");
+    expect(scope.form.errorMessage).toBe("Wrong username or password");
   });
 
   it('should change view on success', function () {
-    scope.email = "asd@gmail.com";
-    scope.password = "123456";
+    scope.form.email = "asd@gmail.com";
+    scope.form.password = "123456";
     scope.login();
     loginResponse.resolve();
     scope.$apply();
@@ -83,9 +88,9 @@ describe('Controller: LoginCtrl', function () {
   });
 
   it('should save user to settings if "remember me" is checked', function () {
-    scope.email = "asd@gmail.com";
-    scope.password = "123456";
-    scope.remember = true;
+    scope.form.email = "asd@gmail.com";
+    scope.form.password = "123456";
+    scope.form.remember = true;
     scope.login();
     expect(auth.login).toHaveBeenCalledWith('asd@gmail.com', '123456', true);
   })

@@ -2,10 +2,35 @@
 
 angular.module('dyanote')
 
-// ToolbarCtrl is the controller of the toolbar and is tightly coupled with WysiHTML5.
+// ToolbarCtrl is the controller of the toolbar and is tightly coupled with Scribe.
 // When a toolbar button is clicked, we update our rich text editor accordingly.
-// $scope.editor must be set by the note directive.
+// $scope.scribe must be set to the currently focused editor.
 .controller('ToolbarCtrl', function ($scope, $log, notesManager) {
+
+
+  /**
+   * All: Executing a heading command inside a list element corrupts the markup.
+   * Disabling for now.
+   */
+  boldCommand.queryEnabled = function () {
+    var selection = new scribe.api.Selection();
+    var listNode = selection.getContaining(function (node) {
+      return node.nodeName === 'OL' || node.nodeName === 'UL';
+    });
+
+    return scribe.api.Command.prototype.queryEnabled.apply(this, arguments)
+      && scribe.allowsBlockElements() && ! listNode;
+  };
+
+  // Returns the currently focused editor
+  var getScribe = function () {
+    console.log($scope.scribe)
+    // TODO: fail if scope.scribe doesnt contain window.getSelection()
+    if ($scope.scribe)
+      return $scope.scribe
+    else 
+      throw 'No scribe editor focused';
+  }
 
   // Create a link with the currently selected text.
   $scope.applyLink = function () {
@@ -44,8 +69,18 @@ angular.module('dyanote')
 
   // Make currently selected text bold.
   $scope.applyBold = function () {
-    $scope.editor.focus();
-    $scope.editor.composer.commands.exec('formatInline', 'strong');
+    var scribe = getScribe();
+    scribe.transactionManager.run(function () {
+      var selection = new scribe.api.Selection();
+      if (!! selection.getContaining(function (node) {
+        return node.nodeName === nodeName;
+      })) {
+        scribe.api.Command.prototype.execute.call(this, '<p>');
+      } else {
+        scribe.api.Command.prototype.execute.call(this, '<strong>');
+        
+      }
+    });
   }
 
   // Make currently selected text italic.
@@ -76,4 +111,5 @@ angular.module('dyanote')
     composer.commands.exec('delete');
     composer.commands.exec('insertHTML', html);
   }
+
 });

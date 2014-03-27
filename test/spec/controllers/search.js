@@ -32,7 +32,7 @@ describe('Controller: SearchCtrl', function () {
       }
     });
 
-    scope.searchText = 'abracadabra';
+    scope.input.searchTerms = 'abracadabra';
     $rootScope.$apply();
     expect(scope.isLoading).toBe(true);
     expect(scope.results.length).toBe(0);
@@ -55,7 +55,7 @@ describe('Controller: SearchCtrl', function () {
     scope.results = ['r1', 'r2'];
     scope.isLoading = true;
 
-    scope.searchText = '';
+    scope.input.searchTerms = '';
     $rootScope.$apply();
 
     expect(scope.results.length).toBe(0);

@@ -1,43 +1,42 @@
 angular.module('dyanote')
 
-// richTextEditor is a widget using Scribe
-.directive('note', function ($location, $timeout, $window, $log) {
+// richTextEditor is a widget using Scribe (https://github.com/guardian/scribe),
+// which basically is a wrapper around contentEditable.
+// This directive setups Scribe, provides two-way data binding to note's body
+// and adds basic behavior (clicking links and focusing notes)
+.directive('editor', function ($location, $timeout, $window, $log, dyanoteScribePlugin) {
   return {
-    templateUrl: 'views/note.html',
-    restrict: 'E',
-    replace: true,
+    restrict: 'A',
     link: function postLink(scope, element, attrs) {
       
-      var editor = element.find('.richTextEditor');
-
       // Setup Scribe
       require(['scribe'], function (Scribe) {
-        var scribe = new Scribe(editor[0], {
+        var scribe = new Scribe(element[0], {
           allowBlockElements: false
         });
+        // Use our plugin (defined in the scribeCommand directive)
+        scribe.use(dyanoteScribePlugin);
+        element[0].scribe = scribe;
         $window['scribe' + scope.note.id] = scribe;
-      });
-
-      // On destruction, unregister event handlers to avoid memory leaks.
-      element.on('$destroy', function () {
-        element.off();
-        editor.off();
+        element.on('focus', function () {
+          scope.$parent.scribe = scribe;
+        });
       });
 
       // TODO: we should validate markup!
 
       // Sync view -> model
-      editor.on('input', function () {
-        if (scope.note.body != editor.html()) {
-          scope.note.body = editor.html();
+      element.on('input', function () {
+        if (scope.note.body != element.html()) {
+          scope.note.body = element.html();
         }
       });
 
       // Model -> View
       scope.$watch('note.body', function (newValue, oldValue) {
-        if (editor.html() != newValue) {
+        if (element.html() != newValue) {
           console.log('Sync model -> view (' + scope.note.id + ')');
-          editor.html(newValue)
+          element.html(newValue)
         }
       });
 

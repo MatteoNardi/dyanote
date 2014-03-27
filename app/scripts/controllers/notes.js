@@ -57,7 +57,9 @@ angular.module('dyanote')
     $scope.$broadcast('$scrollToNote', note);
   };
 
-  $scope.close = function (note) {
+  $scope.archive = function (note) {
+    note.archive();
+    // Close note
     var pos = $scope.notes.indexOf(note);
     if (pos > 0) {
       status.currentNote = $scope.notes[pos - 1];

@@ -11,7 +11,7 @@ angular.module('dyanote')
 
   return {
     restrict: 'A',
-    link: function postLink(scope, element, attrs) {
+    link: function (scope, element, attrs) {
       // Bind shortcut to click event.
       Mousetrap.bind(attrs.shortcut, function (e) {
         e.preventDefault();

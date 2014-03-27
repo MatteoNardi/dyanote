@@ -4,5 +4,16 @@
 			<li ng-repeat="note in notes" ng-click="onBreadcrumbItemClicked($event, note)"><p>{{ note.title }}</p></li>
 		</ol>
 	</div>
-	<note ng-repeat="note in notes"></note>
+	
+	<div ng-include="'views/toolbar.html'" class="toolbar"></div>
+
+	<div class="note-container" ng-repeat="note in notes">
+		<div class="note">
+			<div class="note-header">
+				<input type='text' class='title' ng-model="note.title"/>
+				<span class="glyphicon glyphicon-trash" ng-click="archive(note)" tooltip="Archive note"></span>
+			</div>
+			<div editor class="richTextEditor" contenteditable="true"></div>
+		</div>
+	</div>
 </div>
