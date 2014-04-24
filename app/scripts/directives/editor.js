@@ -29,6 +29,7 @@ angular.module('dyanote')
       element.on('input', function () {
         if (scope.note.body != element.html()) {
           scope.note.body = element.html();
+          scope.$apply();
         }
       });
 
@@ -58,7 +59,7 @@ angular.module('dyanote')
 
       // Scroll to note on directive creation...
       var scrollToNote = function () {
-        jQuery("html,body").animate({scrollTop: element.offset().top - 90}, 400);
+        jQuery("html,body").animate({scrollTop: element.parent().offset().top - 90}, 400);
         // Note: this 90px magic number shoud be @navbar-height + @note-margin in style.less 
       };
       scrollToNote();
