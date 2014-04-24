@@ -33,7 +33,7 @@ angular.module('dyanote')
 // This is our plugin to Scribe.
 .constant('dyanoteScribePlugin', function (scribe) {
 
-  // Todo: remove this
+  // Returns the html currently selected in the browser.
   function getSelectionHtml() {
     var html = "";
     if (typeof window.getSelection != "undefined") {
@@ -53,26 +53,62 @@ angular.module('dyanote')
     return html;
   }
 
-  // Return a Scribe command formatting the given tag.
-  var formattingCommand = function (tag) {
-    var command = new scribe.api.SimpleCommand('insertHTML', 'asdasd');
+  // Returns a tag free version of the given HTML.
+  function removeTags (html) {
+    var regex = /(<([^>]+)>)/ig;
+    return html.replace(regex, "");
+  }
+
+  // Surrounds the given html with fake tags used to save and restore selection.
+  function addSelectionTags (html) {
+    var startTag = '<b class="selectionStart" display="none">...</b>';
+    var endTag = '<b class="selectionEnd" display="none">...</b>';
+    return startTag + html + endTag;
+  }
+
+  // Restores selection and removes the selection tags
+  function restoreSelection () {
+    var range = document.createRange();
+    range.setStartAfter($('.selectionStart')[0]);
+    range.setEndBefore($('.selectionEnd')[0]);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    // Delete selection tags
+    $('.selectionStart, .selectionEnd').remove();
+  }
+
+  // Title command: h1 tag.
+  // Execution will remove all contained tags.
+  // Execution preserves selection.
+  // Fixme: Should work on lines, not selected text.
+  scribe.commands['title'] = (function () {
+    // TODO: disable if selection spans multiple rows.
+    // TODO: disable if selection is inside or contains links or lists.
+    // TODO: If selected row already is a title, execute should remove it.
+    var command = new scribe.api.SimpleCommand('insertHTML', 'h1');
     
     // Executes the command.
     command.execute = function () {
       if (this.queryState()) {
-        scribe.commands['formatBlock'].execute('<p>');
-        // Does this work?
-        //scribe.api.Command.prototype.execute.call(this, '<p>');
+
       } else {
-        var html = '<' + tag + '>' + getSelectionHtml() + '</' + tag + '>';
+        var html = getSelectionHtml();
+        html = removeTags(html);
+        html = '<h1>' + html + '</h1>';
+        html = addSelectionTags(html);
         scribe.api.Command.prototype.execute.call(this, html);
+        restoreSelection();
       }
     };
+
+    command.queryState = function () {
+    }
     
     return command;
-  }
+  })();
 
-  scribe.commands['bold'] = formattingCommand('strong');
-  scribe.commands['italic'] = formattingCommand('em');
-  scribe.commands['title'] = formattingCommand('h1');
+  //scribe.commands['bold'] = formattingCommand('strong');
+  //scribe.commands['italic'] = formattingCommand('em');
+  //scribe.commands['title'] = formattingCommand('h1');
 });
