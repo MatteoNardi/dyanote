@@ -19,7 +19,11 @@ module.exports = function(config) {
       'app/bower_components/angular-bootstrap/ui-bootstrap.js',
       'app/extra/*.js',
       'app/scripts/*.js',
-      'app/scripts/**/*.js',
+      'app/scripts/controllers/*.js',
+      'app/scripts/directives/*.js',
+      'app/scripts/services/*.js',
+      'app/scripts/scribe/*.js',
+      'app/scripts/scribe/commands/*.js',
       'test/mock/**/*.js',
       'test/spec/**/*.js'
     ],

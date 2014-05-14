@@ -4,7 +4,7 @@ angular.module('dyanote')
 // which basically is a wrapper around contentEditable.
 // This directive setups Scribe, provides two-way data binding to note's body
 // and adds basic behavior (clicking links and focusing notes)
-.directive('editor', function ($location, $timeout, $window, $log, dyanoteScribePlugin) {
+.directive('editor', function ($location, $timeout, $window, $log) {
   return {
     restrict: 'A',
     link: function postLink(scope, element, attrs) {
@@ -15,7 +15,7 @@ angular.module('dyanote')
           allowBlockElements: false
         });
         // Use our plugin (defined in the scribeCommand directive)
-        scribe.use(dyanoteScribePlugin);
+        scribe.use(dyanote.scribe.plugin);
         element[0].scribe = scribe;
         $window['scribe' + scope.note.id] = scribe;
         element.on('focus', function () {
