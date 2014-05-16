@@ -9,7 +9,7 @@ dyanote = {
       // Commands will be inserted here 
     },
     plugin: function (scribe) {
-      // scribe.use(dyanote.scribe.commands.link);
+      scribe.use(dyanote.scribe.commands.link);
       // scribe.use(dyanote.scribe.commands.list);
       scribe.use(dyanote.scribe.commands.title);
     }
