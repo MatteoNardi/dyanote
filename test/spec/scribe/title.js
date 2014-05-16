@@ -150,7 +150,7 @@ describe ('Scribe title command', function () {
     range.setEndAfter(editor.find('strong')[1]);
 
     scribe.commands['title'].execute();
-    expect(editor.html()).toEqual('<em>Text0 <br><strong></strong></em><em></em><strong></strong><h1>Text1 Text2 Text3 </h1>Text4');
+    expect(editor.html()).toEqual('<em>Text0 <br><strong></strong></em><em></em><strong></strong><h1>Text1 Text2 Text3 Text4</h1>');
   });
 
   it('should remove h1 on re-execution', function () {

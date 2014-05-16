@@ -20,6 +20,8 @@ dyanote.scribe.commands.title = function (scribe) {
   // Executes the command.
   command.execute = function () {
     var analysis = command.analyze();
+    // console.log(analysis);
+    // return;
     var data = analysis.data;
 
     // If a title is selected, we undo it.
@@ -28,6 +30,7 @@ dyanote.scribe.commands.title = function (scribe) {
       scribe.transactionManager.run(function () {
         utils.replaceWithChildren(undoableElement);
       });
+      return;
     }
 
     if (!analysis.enabled)
@@ -67,6 +70,11 @@ dyanote.scribe.commands.title = function (scribe) {
     var ancestor = range.commonAncestorContainer;
 
     var title = undefined
+    
+    if (ancestor.nodeType == utils.TEXT_NODE)
+      if (ancestor.parentNode.tagName == 'H1')
+        title = ancestor.parentNode;
+
     if (ancestor.nodeType == utils.ELEMENT_NODE) {
       if (ancestor.tagName == 'H1')
         title = ancestor;
@@ -100,8 +108,30 @@ dyanote.scribe.commands.title = function (scribe) {
     var range = window.getSelection().getRangeAt(0);
     var A = range.startContainer;
     var B = range.endContainer;
+    var startOffset = range.startOffset;
+    var endOffset = range.endOffset;
     var ancestor = range.commonAncestorContainer;
     var affectedNodes = [];
+
+    // We want A and B to be ELEMENT nodes.
+    if (A.nodeType == utils.TEXT_NODE) {
+      startOffset = utils.getOffset(A);
+      A = A.parentNode;
+    }
+    if (B.nodeType == utils.TEXT_NODE) {
+      endOffset = utils.getOffset(B) + 1;
+      B = B.parentNode;
+    }
+    if (ancestor.nodeType == utils.TEXT_NODE) {
+      ancestor = ancestor.parentNode;
+    }
+    // console.log({
+    //   A: A,
+    //   B: B,
+    //   startOffset: startOffset,
+    //   endOffset: endOffset,
+    //   ancestor: ancestor
+    // })
 
     // Utility functions used in the algorithm.
 
@@ -122,15 +152,16 @@ dyanote.scribe.commands.title = function (scribe) {
               throw 'Invalid tag inside selection: ' + node.tagName;
           }
           break;
+        case utils.COMMENT_NODE:
+          break;
         default:
-          throw 'Unknown node type: ' + node.nodeType;        
+          throw 'Unknown node type: ' + node.nodeType;  
       }
     }
 
     // Returns the offset of the checked subtree relative to the ancestor.   
     // Throws excetion if invalid node is found.
     var checkUp = function (node, offset, step) {
-      // console.log(node);
       // console.log(node.tagName + ' (' + offset + ') ' + step);
       if (node == ancestor)
         return offset;
@@ -146,7 +177,7 @@ dyanote.scribe.commands.title = function (scribe) {
     var findUp = function (node, offset, step) {
       // Since checkUp has already been execuded, we cas assume node is
       // either STRONG, EM or scribe.el
-
+      // console.log('----------' + offset + ' - ' + step);
       for (var i = offset + step; i >= 0 && i < node.childNodes.length; i += step) {
         if (findDown(node.childNodes[i], step))
           return;
@@ -179,7 +210,6 @@ dyanote.scribe.commands.title = function (scribe) {
       else throw 'Invalid tag inside line: ' + node.tagName;
     }
 
-
     // Execution
     try {
       // Check range extremes are contained in the scribe editor.
@@ -188,11 +218,11 @@ dyanote.scribe.commands.title = function (scribe) {
       if (!scribe.el.contains(B))
         throw 'Extreme B is out of Scribe editor';
       
-      checkAllDescendants(A.childNodes[range.startOffset]);
-      checkAllDescendants(B.childNodes[range.endOffset -1]);
+      checkAllDescendants(A.childNodes[startOffset]);
+      checkAllDescendants(B.childNodes[endOffset -1]);
 
-      var offsetA = checkUp(A, range.startOffset, +1, ancestor);
-      var offsetB = checkUp(B, range.endOffset,   -1, ancestor);
+      var offsetA = checkUp(A, startOffset, +1, ancestor);
+      var offsetB = checkUp(B, endOffset,   -1, ancestor);
 
       // Check all descendants of ancestor between A and B
       for (var i = offsetA + 1; i < offsetB - 1; i++) {
@@ -200,10 +230,8 @@ dyanote.scribe.commands.title = function (scribe) {
       }
 
       // Enlarge selection to include all line
-      findUp(A, range.startOffset, -1);
-      findUp(B, range.endOffset, +1);
-
-
+      findUp(A, startOffset, -1);
+      findUp(B, endOffset -1, +1);
 
       return {
         enabled: true,
