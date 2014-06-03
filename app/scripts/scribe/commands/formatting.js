@@ -76,7 +76,8 @@ var formatting = function (tagname) {
       while (toProcess.length > 0) {
         var element = toProcess.shift();
 
-        if (element == scribe.el || isFormatting(element)) {
+        if (element == scribe.el || isFormatting(element) || element.tagName == 'LI') 
+        {
           var toAddOffsets = [];
           for (var child = element.firstChild; child; child = child.nextSibling) {
             var posA = A.compareDocumentPosition(child);
@@ -90,6 +91,10 @@ var formatting = function (tagname) {
             if (child == A || child == B)
               toAddOffsets.push(utils.getOffset(child));
 
+            // If child is list, process it later
+            if (child.tagName && child.tagName == 'UL')
+              toProcess.push(child);
+
             // If child contains extreme, process it later
             if ((posA | posB) & utils.DOCUMENT_POSITION_CONTAINS)
               toProcess.push(child);
@@ -102,15 +107,20 @@ var formatting = function (tagname) {
               if (child.tagName == tagname.toUpperCase())
                 rem.push(child);
 
-              // If it is some other formatting, add it
-              else if (isFormatting(child))
+              // If it is text or some other formatting, add it
+              else if (child.nodeType == utils.TEXT_NODE || isFormatting(child))
                 toAddOffsets.push(utils.getOffset(child));
             }
           }
-
           // Add contiguous elements to result
           addContiguousOffsets(toAddOffsets, element, add);
         }
+        // In a lists, we process all list items 
+        else if (element.tagName == 'UL') {
+          for (var el = element.firstChild; el; el = el.nextSibling)
+            toProcess.push(el);
+        }
+        else throw 'Unknown element';
       }
 
       // If we contained tagname tags, remove them.

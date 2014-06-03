@@ -100,4 +100,28 @@ describe ('Scribe title command', function () {
     expect(editor.html()).toEqual('Th<em>is </em><h1>html contains a title</h1><em> insi</em>de');
   });
 
+  it('should work well with lists', function () {
+    editor.html(
+      'Buy:'                +
+        '<ul>'              +
+          '<li>Milk</li>'   +
+          '<li>Coffee</li>' +
+          '<li>Apples</li>' +
+        '</ul>'             +
+      '..as soon as possible!'
+    );
+    range.setStart(editor.contents()[0], 2);
+    range.setEnd(editor.contents()[2], 4);
+
+    scribe.commands['strong'].execute();
+    expect(editor.html()).toEqual(
+      'Bu<strong>y:</strong>'                +
+        '<ul>'                               +
+          '<li><strong>Milk</strong></li>'   +
+          '<li><strong>Coffee</strong></li>' +
+          '<li><strong>Apples</strong></li>' +
+        '</ul>'                              +
+      '<strong>..as</strong> soon as possible!'
+    );
+  });
 });
