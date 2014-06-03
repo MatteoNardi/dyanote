@@ -77,4 +77,27 @@ describe ('Scribe title command', function () {
     scribe.commands['em'].execute();
     expect(editor.html()).toEqual('This <strong>html <em>has some</em></strong><em> formatting</em>');
   });
+
+  it('should remove formatting if executed again', function () {
+    editor.html(
+      'This <em>html has some</em> formatting'
+    );
+    range.setStart(editor.contents()[0], 2);
+    range.setEnd(editor.contents()[2], 5);
+
+    scribe.commands['em'].execute();
+    expect(editor.html()).toEqual('This html has some formatting');
+  });
+
+  it('should ignore h1', function () {
+    editor.html(
+      'This <h1>html contains a title</h1> inside'
+    );
+    range.setStart(editor.contents()[0], 2);
+    range.setEnd(editor.contents()[2], 5);
+
+    scribe.commands['em'].execute();
+    expect(editor.html()).toEqual('Th<em>is </em><h1>html contains a title</h1><em> insi</em>de');
+  });
+
 });

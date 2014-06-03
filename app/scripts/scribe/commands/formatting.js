@@ -26,6 +26,11 @@ var formatting = function (tagname) {
           for (var j = item.start; j < item.end; j++)
             element.appendChild(element.nextSibling);
         }
+
+        // Remove formatting to all analysis.data.rem elements
+        for (var i = 0; i < data.rem.length; i++) {
+          utils.replaceWithChildren(data.rem[i]);
+        }
       });
     };
 
@@ -89,35 +94,28 @@ var formatting = function (tagname) {
             if ((posA | posB) & utils.DOCUMENT_POSITION_CONTAINS)
               toProcess.push(child);
 
-            // If child is formatting and included between extremes, add it
-            if (isFormatting(child) && 
-                posA == utils.DOCUMENT_POSITION_FOLLOWING &&
+            // If child is included between extremes, consider it
+            if (posA == utils.DOCUMENT_POSITION_FOLLOWING &&
                 posB == utils.DOCUMENT_POSITION_PRECEDING)
             {
-              toAddOffsets.push(utils.getOffset(child));
+              // If is our formatting, remove it
+              if (child.tagName == tagname.toUpperCase())
+                rem.push(child);
+
+              // If it is some other formatting, add it
+              else if (isFormatting(child))
+                toAddOffsets.push(utils.getOffset(child));
             }
           }
 
           // Add contiguous elements to result
-          var start = undefined;
-          for (var i = 0; i < toAddOffsets.length; i++) {
-            if (start == undefined) {
-              start = toAddOffsets[i];
-            }
-            if ((i > 0 && toAddOffsets[i] != toAddOffsets[i-1] + 1) ||
-                 i == toAddOffsets.length -1)
-            {
-
-              add.push({
-                el: element,
-                start: start,
-                end: (toAddOffsets[i-1] || start) + 1
-              });
-              start = toAddOffsets[i];
-            }
-          }
+          addContiguousOffsets(toAddOffsets, element, add);
         }
       }
+
+      // If we contained tagname tags, remove them.
+      if (rem.length > 0)
+        add = [];
 
       return { 
         enabled: true,
@@ -127,6 +125,31 @@ var formatting = function (tagname) {
           rem: rem
         }
       };
+    }
+
+    // Utility function used in analyze.
+    var addContiguousOffsets = function (offsets, element, result){
+      var start = undefined;
+      for (var i = 0; i < offsets.length; i++) {
+        if (start == undefined) {
+          start = offsets[i];
+        }
+        if (i > 0 && offsets[i] != offsets[i-1] + 1) {
+          result.push({
+            el: element,
+            start: start,
+            end: (offsets[i-1] || start) + 1
+          });
+          start = offsets[i];
+        }
+        if (i == offsets.length -1) {
+          result.push({
+            el: element,
+            start: start,
+            end: offsets[i] + 1
+          });
+        }
+      }
     }
   };
 }
