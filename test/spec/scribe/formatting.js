@@ -45,12 +45,12 @@ describe ('Scribe title command', function () {
     expect(editor.html()).toEqual('This <em>html has no</em> formatting');
   });
 
-  it('should add formatting on simple selection', function () {
+  it('should add formatting on selection containing other formatting', function () {
     editor.html(
       'This html has <strong>some</strong> formatting'
     );
     range.setStart(editor.contents()[0], 5);
-    range.setEnd(editor.contents()[1], 1);
+    range.setEnd(editor.contents()[2], 0);
 
     scribe.commands['em'].execute();
     expect(editor.html()).toEqual('This <em>html has <strong>some</strong></em> formatting');

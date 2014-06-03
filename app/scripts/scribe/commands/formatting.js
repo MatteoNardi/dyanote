@@ -50,50 +50,74 @@ var formatting = function (tagname) {
     //   }
     // }
     command.analyze = function () {
-      var range = window.getSelection().getRangeAt(0);
-      var A = range.startContainer;
-      var B = range.endContainer;
-      var startOffset = range.startOffset;
-      var endOffset = range.endOffset;
-      var ancestor = range.commonAncestorContainer;
-      var add = [];
-      var rem = [];
+      var range = window.getSelection().getRangeAt(0),
+        A,
+        B,
+        add = [],
+        rem = [];
 
-
-      if (B.nodeType == utils.TEXT_NODE) {
-        var splitted = B.splitText(endOffset);
-        B = B.parentNode;
-        endOffset = utils.getOffset(splitted);
-      }
-      if (A.nodeType == utils.TEXT_NODE) {
-        var splitted = A.splitText(startOffset);
-        A = A.parentNode;
-        startOffset = utils.getOffset(splitted);
-        if (A == B) endOffset++;
-      }
-      if (A == B) {
-        ancestor = A;
+      // Split start and end text nodes
+      if (range.startContainer.nodeType == utils.TEXT_NODE &&
+          range.endContainer.nodeType == utils.TEXT_NODE)
+      {
+        A = range.startContainer.splitText(range.startOffset);
+        B = range.endContainer.splitText(range.endOffset).previousSibling;
+      } else {
+        throw 'A and B must be text nodes!'
       }
 
-      // Case 2: common ancestor is Scribe element
-      var it = A;
-      var offsetA = startOffset;
-      while (it != ancestor) {
-        offsetA = utils.getOffset(it);
-        it = it.parentNode;
-      };
-      it = B;
-      var offsetB = endOffset;
-      while (it != ancestor) {
-        offsetB = utils.getOffset(it) + 1;
-        it = it.parentNode;
-      };
+      var toProcess = [scribe.el];
 
-      add.push({
-        el: ancestor,
-        start: offsetA,
-        end: offsetB
-      });
+      while (toProcess.length > 0) {
+        var element = toProcess.shift();
+
+        if (element == scribe.el || isFormatting(element)) {
+          var toAddOffsets = [];
+          for (var child = element.firstChild; child; child = child.nextSibling) {
+            var posA = A.compareDocumentPosition(child);
+            var posB = B.compareDocumentPosition(child);
+            
+            // Elements before range start or after range end should be ignored
+            if (posA == utils.DOCUMENT_POSITION_PRECEDING || posB == utils.DOCUMENT_POSITION_FOLLOWING)
+              continue;
+
+            // If child is range start or end, add it.
+            if (child == A || child == B)
+              toAddOffsets.push(utils.getOffset(child));
+
+            // If child contains extreme, process it later
+            if ((posA | posB) & utils.DOCUMENT_POSITION_CONTAINS)
+              toProcess.push(child);
+
+            // If child is formatting and included between extremes, add it
+            if (isFormatting(child) && 
+                posA == utils.DOCUMENT_POSITION_FOLLOWING &&
+                posB == utils.DOCUMENT_POSITION_PRECEDING)
+            {
+              toAddOffsets.push(utils.getOffset(child));
+            }
+          }
+
+          // Add contiguous elements to result
+          var start = undefined;
+          for (var i = 0; i < toAddOffsets.length; i++) {
+            if (start == undefined) {
+              start = toAddOffsets[i];
+            }
+            if ((i > 0 && toAddOffsets[i] != toAddOffsets[i-1] + 1) ||
+                 i == toAddOffsets.length -1)
+            {
+
+              add.push({
+                el: element,
+                start: start,
+                end: (toAddOffsets[i-1] || start) + 1
+              });
+              start = toAddOffsets[i];
+            }
+          }
+        }
+      }
 
       return { 
         enabled: true,
@@ -103,20 +127,14 @@ var formatting = function (tagname) {
           rem: rem
         }
       };
-
-      /*
-      function process (parent, child, next) {
-        console.log(parent.nodeType)
-        if (parent == ancestor) return child;
-        if (parent.nodeType == utils.TEXT_NODE) {
-          console.log("fu")
-        }
-      }
-      process(A, A.childNodes[range.startOffset], 'nextSibling');
-      process(B, B.childNodes[range.endOffset], 'previousSibling');
-      */
     }
   };
+}
+
+// Returns true if node is a formatting node. 
+var isFormatting = function (node) {
+  return node.nodeType == node.ELEMENT_NODE &&
+         (node.tagName == 'STRONG' || node.tagName == 'EM');
 }
 
 dyanote.scribe.commands.strong = formatting('strong');
