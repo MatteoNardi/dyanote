@@ -71,31 +71,29 @@ var formatting = function (tagname) {
         startOffset = utils.getOffset(splitted);
         if (A == B) endOffset++;
       }
+      if (A == B) {
+        ancestor = A;
+      }
 
       // Case 2: common ancestor is Scribe element
-      if (ancestor == scribe.el || (A == scribe.el && B == scribe.el)) {
-        var it = A;
-        var offsetA = startOffset;
-        while (it != scribe.el) {
-          offsetA = utils.getOffset(it);
-          it = it.parentNode;
-        };
-        it = B;
-        var offsetB = endOffset;
-        while (it != scribe.el) {
-          offsetB = utils.getOffset(it) + 1;
-          it = it.parentNode;
-        };
+      var it = A;
+      var offsetA = startOffset;
+      while (it != ancestor) {
+        offsetA = utils.getOffset(it);
+        it = it.parentNode;
+      };
+      it = B;
+      var offsetB = endOffset;
+      while (it != ancestor) {
+        offsetB = utils.getOffset(it) + 1;
+        it = it.parentNode;
+      };
 
-        for (var i = startOffset; i < endOffset; i++) {
-          // Todo: check node for ul etc.
-        }
-        add.push({
-          el: scribe.el,
-          start: offsetA,
-          end: offsetB
-        });
-      }
+      add.push({
+        el: ancestor,
+        start: offsetA,
+        end: offsetB
+      });
 
       return { 
         enabled: true,

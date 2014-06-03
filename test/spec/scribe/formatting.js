@@ -55,4 +55,26 @@ describe ('Scribe title command', function () {
     scribe.commands['em'].execute();
     expect(editor.html()).toEqual('This <em>html has <strong>some</strong></em> formatting');
   });
+
+  it('should add formatting inside other formatting', function () {
+    editor.html(
+      'This <strong>html has some</strong> formatting'
+    );
+    range.setStart(editor.find('strong').contents()[0], 5);
+    range.setEnd(editor.find('strong').contents()[0], 8);
+
+    scribe.commands['em'].execute();
+    expect(editor.html()).toEqual('This <strong>html <em>has</em> some</strong> formatting');
+  });
+
+  it('should allow formatting intersections', function () {
+    editor.html(
+      'This <strong>html has some</strong> formatting'
+    );
+    range.setStart(editor.find('strong').contents()[0], 5);
+    range.setEnd(editor.contents()[2], 11);
+
+    scribe.commands['em'].execute();
+    expect(editor.html()).toEqual('This <strong>html <em>has some</em></strong><em> formatting</em>');
+  });
 });
