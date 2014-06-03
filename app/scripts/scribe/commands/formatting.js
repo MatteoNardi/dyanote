@@ -116,10 +116,11 @@ var formatting = function (tagname) {
           addContiguousOffsets(toAddOffsets, element, add);
         }
         // In a lists, we process all list items 
-        else if (element.tagName == 'UL') {
+        else if (element.tagName == 'UL')
           for (var el = element.firstChild; el; el = el.nextSibling)
             toProcess.push(el);
-        }
+        // Ignore links
+        else if (element.tagName == 'A') continue;
         else throw 'Unknown element';
       }
 
