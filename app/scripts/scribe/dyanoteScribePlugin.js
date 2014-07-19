@@ -12,7 +12,6 @@ dyanote = {
       scribe.use(dyanote.scribe.commands.link);
       scribe.use(dyanote.scribe.commands.strong);
       scribe.use(dyanote.scribe.commands.em);
-      // scribe.use(dyanote.scribe.commands.list);
       scribe.use(dyanote.scribe.commands.title);
     }
   }

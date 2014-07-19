@@ -55,7 +55,7 @@ var formatting = function (tagname) {
     //   }
     // }
     command.analyze = function () {
-      var range = window.getSelection().getRangeAt(0),
+      var range = utils.getRange(),
         A,
         B,
         add = [],

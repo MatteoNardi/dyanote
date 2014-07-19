@@ -1,5 +1,5 @@
 
-describe ('Scribe title command', function () {
+describe ('Scribe formatting commands', function () {
 
   var scribe,
     editor,
@@ -12,6 +12,14 @@ describe ('Scribe title command', function () {
     spyOn(window, 'getSelection').andReturn({
       getRangeAt: function () {
         return range;
+      },
+      containsNode: function (node) {
+        console.log(node);
+        console.log(range.isPointInRange(node, 0));
+        console.log(range.startContainer.compareDocumentPosition(node))
+        console.log(range.endContainer.compareDocumentPosition(node))
+        return (range.startContainer.compareDocumentPosition(node) & 4) &&
+               (range.endContainer.compareDocumentPosition(node) & 2);
       }
     })
 
@@ -123,5 +131,16 @@ describe ('Scribe title command', function () {
         '</ul>'                              +
       '<strong>..as</strong> soon as possible!'
     );
+  });
+
+  xit('should work well with range in scribe element', function () {
+    editor.html(
+      'This <br/>html contains line breaks<br/> inside'
+    );
+    range.setStart(editor[0], 2);
+    range.setEnd(editor[0], 3);
+
+    scribe.commands['em'].execute();
+    expect(editor.html()).toEqual('This <br/><em>html contains line breaks</em><br/> inside');
   });
 });

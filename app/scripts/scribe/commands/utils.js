@@ -97,6 +97,35 @@ dyanote.scribe.utils = {
       node.parentNode.insertBefore(child, node);
     }
     node.parentNode.removeChild(node);
+  },
+
+  // Return the currently selected range forcing text node extremes.
+  getRange: function () {
+    var selection = window.getSelection(),
+      range = selection.getRangeAt(0),
+      root = range.commonAncestorContainer,
+      result = document.createRange(),
+      insideSelection = function (node) {
+        if (selection.containsNode(node))
+          return NodeFilter.FILTER_ACCEPT
+        else
+          return NodeFilter.FILTER_SKIP;        
+      },
+      walker = document.createTreeWalker(
+        root, NodeFilter.SHOW_TEXT, { acceptNode: insideSelection }
+      );
+
+    if (range.startContainer.nodeType == dyanote.scribe.utils.TEXT_NODE)
+      result.setStart(range.startContainer, range.startOffset);
+    else
+      result.setStart(walker.firstChild(), 0);
+
+    if (range.endContainer.nodeType == dyanote.scribe.utils.TEXT_NODE)
+      result.setEnd(range.endContainer, range.endOffset);
+    else
+      result.setEnd(walker.lastChild() || walker.currentNode, walker.currentNode.length);
+
+    return result;
   }
 }
 
