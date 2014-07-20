@@ -1,17 +1,20 @@
 'use strict';
 
 describe('Service: auth', function () {
-
-  // load the service's module
   beforeEach(module('dyanote'));
 
-  // instantiate service
-  var auth, localStorageService, $httpBackend, $http;
-  beforeEach(inject(function ($injector) {
-    auth = $injector.get('auth');
-    $httpBackend = $injector.get('$httpBackend');
-    $http = $injector.get('$http');
-    localStorageService = $injector.get('localStorageService');
+  var auth,
+    localStorageService,
+    $httpBackend,
+    $http,
+    API_URL;
+
+  beforeEach(inject(function (_auth_, _$httpBackend_, _$http_, _localStorageService_, _SERVER_CONFIG_) {
+    auth = _auth_;
+    $httpBackend = _$httpBackend_;
+    $http = _$http_;
+    localStorageService = _localStorageService_;
+    API_URL = _SERVER_CONFIG_.apiUrl;
   }));
 
   afterEach(function() {
@@ -28,7 +31,7 @@ describe('Service: auth', function () {
   });
 
   it('should login', function () {
-    $httpBackend.expect('POST', 'https://dyanote.herokuapp.com/api/oauth2/access_token/')
+    $httpBackend.expect('POST', API_URL + 'users/username/login/')
       .respond(200, {"access_token": "<your-access-token>", "scope": "read", "expires_in": 86399, "refresh_token": "<your-refresh-token>"});
     auth.login('username', '123123');
     
@@ -38,7 +41,7 @@ describe('Service: auth', function () {
   });
 
   it('should add auth headers', function () {
-    $httpBackend.expect('POST', 'https://dyanote.herokuapp.com/api/oauth2/access_token/')
+    $httpBackend.expect('POST', API_URL + 'users/username/login/')
       .respond(200, {"access_token": "<your-access-token>", "scope": "read", "expires_in": 86399, "refresh_token": "<your-refresh-token>"});
     auth.login('username', '123123');
 
@@ -52,7 +55,7 @@ describe('Service: auth', function () {
 
   it('should save user to local storage', function () {
     spyOn(localStorageService, 'add').andReturn(false);
-    $httpBackend.expect('POST', 'https://dyanote.herokuapp.com/api/oauth2/access_token/')
+    $httpBackend.expect('POST', API_URL + 'users/username/login/')
       .respond(200, {"access_token": "<your-access-token>", "scope": "read", "expires_in": 86399, "refresh_token": "<your-refresh-token>"});
     auth.login('username', '123123', true);
     $httpBackend.flush();
@@ -79,4 +82,12 @@ describe('Service: auth', function () {
     spyOn(localStorageService, 'get').andReturn(null);
     expect(auth.loadFromSettings()).toBe(false);
   });
+
+  it('should register new users', function () {
+    $httpBackend.expect('POST', API_URL + 'users/', '{"email":"username","password":"123123"}')
+      .respond(200);
+    
+    auth.register('username', '123123');
+    $httpBackend.flush();
+  })
 });

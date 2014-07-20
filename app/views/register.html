@@ -1,1 +1,19 @@
-<p>This is the register view.</p>
+<form id='register-box' role="form" ng-submit="register()">
+  <div class="form-group">
+	  <span class="help-block label-warning">{{ form.errorMessage }}</span>
+    <label for="email">Email address</label>
+    <input type="email" class="form-control" id="email" placeholder="Enter email" ng-model="form.email">
+    <span class="help-block label-warning">{{ form.emailErrorMessage }}</span>
+  </div>
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" class="form-control" id="password" placeholder="Password" ng-model="form.password">
+    <span class="help-block label-warning">{{ form.passwordErrorMessage }}</span>
+  </div>
+  <div class="form-group">
+    <label for="password">Repeat password</label>
+    <input type="password" class="form-control" id="password_check" placeholder="Repeat password" ng-model="form.passwordCheck">
+    <span class="help-block label-warning">{{ form.passwordCheckErrorMessage }}</span>
+  </div>
+  <button type="submit" class="btn btn-default">Register</button>
+</form>

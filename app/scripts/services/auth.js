@@ -27,16 +27,16 @@ angular.module('dyanote')
 
   // Attempt to authenticate a user by the given email and password
   this.login = function (email, password, remembar) {
-    var loginUrl = SERVER_CONFIG.apiUrl + "oauth2/access_token/";
-    var data = "client_id=" + encodeURIComponent(SERVER_CONFIG.clientId)
-      + "&client_secret=" + encodeURIComponent(SERVER_CONFIG.clientSecret)
-      + "&grant_type=password"
-      + "&username=" + encodeURIComponent(email)
-      + "&password=" + encodeURIComponent(password);
+    var loginUrl = SERVER_CONFIG.apiUrl + 'users/' + email + '/login/';
+    var data = 'client_id=' + encodeURIComponent(SERVER_CONFIG.clientId)
+      + '&client_secret=' + encodeURIComponent(SERVER_CONFIG.clientSecret)
+      + '&grant_type=password'
+      + '&username=' + encodeURIComponent(email)
+      + '&password=' + encodeURIComponent(password);
 
     var _this = this;
-    return $http.post(loginUrl, data, {"headers": {"Content-Type": "application/x-www-form-urlencoded"}}).then(function (response) {
-      $log.info("Login successful");
+    return $http.post(loginUrl, data, {'headers': {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (response) {
+      $log.info('Login successful');
       currentUser.email = email;
       currentUser.authToken = response.data.access_token;
       updateHttpHeaders.call(_this);
@@ -47,6 +47,16 @@ angular.module('dyanote')
       }
     });
   };
+
+  // Register a new user
+  this.register = function (email, password) {
+    var registerUrl = SERVER_CONFIG.apiUrl + 'users/';
+    var data = {
+      'email': email,
+      'password': password
+    };
+    return $http.post(registerUrl, data);
+  }
 
   // Give up trying to login and clear the retry queue
   this.cancelLogin = function () {
@@ -80,16 +90,16 @@ angular.module('dyanote')
   // When an item is added to the retry queue, user needs to login again.
   authRetryQueue.onItemAddedCallbacks.push(function(retryItem) {
     if ( authRetryQueue.hasMore() ) {
-      $location.path("/login");
+      $location.path('/login');
     }
   });
 
   // Configure Angular to send user credentials in each http request.
   var updateHttpHeaders = function () {
     if(auth.isAuthenticated())
-      $http.defaults.headers.common["Authorization"] = "Bearer " + currentUser.authToken;
+      $http.defaults.headers.common['Authorization'] = 'Bearer ' + currentUser.authToken;
     else
-      delete $http.defaults.headers.common["Authorization"];
+      delete $http.defaults.headers.common['Authorization'];
   }
 
   // At startup we should load settings
