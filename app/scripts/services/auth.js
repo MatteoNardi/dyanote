@@ -56,7 +56,7 @@ angular.module('dyanote')
       'password': password
     };
     return $http.post(registerUrl, data);
-  }
+  };
 
   // Give up trying to login and clear the retry queue
   this.cancelLogin = function () {
