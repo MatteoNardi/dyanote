@@ -1,6 +1,8 @@
+"use strict";
+
 // This is a Scribe plugin.
 // This code is exported to the global namespace.
-dyanote = {
+var dyanote = {
   scribe: {
     utils: {
       // Utility functions will be inserted here
