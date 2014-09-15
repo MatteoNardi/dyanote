@@ -1,6 +1,5 @@
 <form id='register-box' role="form" ng-submit="register()">
   <div class="form-group">
-	  <span class="help-block label-warning">{{ form.errorMessage }}</span>
     <label for="email">Email address</label>
     <input type="email" class="form-control" id="email" placeholder="Enter email" ng-model="form.email">
     <span class="help-block label-warning">{{ form.emailErrorMessage }}</span>
@@ -14,7 +13,12 @@
     <label for="password">Repeat password</label>
     <input type="password" class="form-control" id="password_check" placeholder="Repeat password" ng-model="form.passwordCheck">
     <span class="help-block label-warning">{{ form.passwordCheckErrorMessage }}</span>
+	  <span class="help-block label-warning">{{ form.errorMessage }}</span>
   </div>
-  <button type="submit" class="btn btn-default">Register</button>
+  <button type="submit" class="btn btn-default" ng-disabled="form.isRegistering">
+    {{(form.isRegistering) && (form.successMessage == "") && 'Registering...' || 'Register'}}
+    <img ng-show="form.isRegistering" src="images/Ajax-loader.gif">
+  </button>
+  <span class="label-info">{{ form.successMessage }}</span>
 </form>
 <a href="/login">Login</a>

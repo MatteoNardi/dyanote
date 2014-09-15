@@ -70,7 +70,7 @@ module.exports = function (grunt) {
             return [
               lrSnippet,
               modRewrite([
-                '!\\.html|\\.js|\\.css|\\woff|\\ttf|\\swf$ /index.html'
+                '!\\.html|\\.gif|\\.js|\\.css|\\woff|\\ttf|\\swf$ /index.html'
               ]),
               mountFolder(connect, '.tmp'),
               mountFolder(connect, yeomanConfig.app)
@@ -310,6 +310,10 @@ module.exports = function (grunt) {
           // Fonts
           src: '<%= yeoman.dist %>/styles/fonts/*',
           dest: '<%= timestamp %>/styles/fonts/',
+        }, {
+          // Images
+          src: '<%= yeoman.dist %>/images/*',
+          dest: '<%= timestamp %>/images/',
         }, {
           // JS (scripts)
           src: '<%= yeoman.dist %>/scripts/*',

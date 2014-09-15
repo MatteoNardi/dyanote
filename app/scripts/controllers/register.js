@@ -15,7 +15,9 @@ angular.module('dyanote')
     passwordCheckErrorMessage: '',
 
     successMessage: '',
-    errorMessage: ''
+    errorMessage: '',
+
+    isRegistering: false
   }
   $scope.form = form;
 
@@ -31,10 +33,13 @@ angular.module('dyanote')
     else {
       form.emailErrorMessage = '';
       form.emailCheckErrorMessage = '';
+      form.isRegistering = true;
 
       auth.register(form.email, form.password).success(function() {
+        form.isRegistering = false;
         form.successMessage = 'You received an activation mail.';
       }).error(function (data, code) {
+        form.isRegistering = false;
         if (code == 409 /*CONFLICT*/) {
           form.emailErrorMessage = 'This mail address is already in use';
         } else {

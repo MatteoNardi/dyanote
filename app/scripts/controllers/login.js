@@ -46,6 +46,7 @@ angular.module('dyanote')
       form.isLoggingIn = false;
       $location.path('/notes');
     }, function (response) {
+      form.isLoggingIn = false;
       form.errorMessage = "Wrong username or password";
     });
   }
