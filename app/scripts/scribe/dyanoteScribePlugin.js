@@ -11,6 +11,7 @@ var dyanote = {
       // Commands will be inserted here 
     },
     plugin: function (scribe) {
+      scribe.use(dyanote.scribe.sanitizer);
       scribe.use(dyanote.scribe.commands.link);
       scribe.use(dyanote.scribe.commands.strong);
       scribe.use(dyanote.scribe.commands.em);
