@@ -88,11 +88,7 @@ angular.module('dyanote')
   };
 
   // When an item is added to the retry queue, user needs to login again.
-  authRetryQueue.onItemAddedCallbacks.push(function(retryItem) {
-    if ( authRetryQueue.hasMore() ) {
-      $location.path('/login');
-    }
-  });
+  authRetryQueue.onItemAddedCallbacks.push(auth.logout);
 
   // Configure Angular to send user credentials in each http request.
   var updateHttpHeaders = function () {
