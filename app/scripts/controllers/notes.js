@@ -68,6 +68,11 @@ angular.module('dyanote')
         $scope.notes = $scope.notes.slice(0, pos);
       }, 500);
     }
+  };
+
+  // Show a dialog to move the note to a new parent.
+  $scope.showMoveDialog = function (note) {
+    console.log('show move dialog', note);
   }
 })
 
