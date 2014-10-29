@@ -3,26 +3,32 @@
 
 <button type="button" class="btn btn-default" shortcut="ctrl+l" scribe-command="link"
         tooltip-html-unsafe="Create a new note and link to it.<strong>Ctrl+L</strong>" tooltip-placement="right" tooltip-popup-delay="500">
-	<span class="glyphicon glyphicon-link"></span>Link
+    <span class="glyphicon glyphicon-link"></span>Link
 </button>
 
 <button type="button" class="btn btn-default" shortcut="ctrl+b" scribe-command="strong"
         tooltip-html-unsafe="Make the selected text bold.<strong>Ctrl+B</strong>" tooltip-placement="right" tooltip-popup-delay="500">
-	<span class="glyphicon glyphicon-bold"></span>Bold
+    <span class="glyphicon glyphicon-bold"></span>Bold
 </button>
 
 <button type="button" class="btn btn-default" shortcut="ctrl+i" scribe-command="em"
         tooltip-html-unsafe="Make the selected text italic.<strong>Ctrl+I</strong>" tooltip-placement="right" tooltip-popup-delay="500">
-	<span class="glyphicon glyphicon-italic"></span>Italic
+    <span class="glyphicon glyphicon-italic"></span>Italic
 </button>
 
-<button type="button" class="btn btn-default" scribe-command="title"
-        tooltip-html-unsafe="Make the selected text a title." tooltip-placement="right" tooltip-popup-delay="500">
-	<span class="glyphicon glyphicon-font"></span>Title
+<button type="button" class="btn btn-default" shortcut="ctrl+t" scribe-command="title"
+        tooltip-html-unsafe="Make the selected text a title.<strong>Ctrl+T</strong>" tooltip-placement="right" tooltip-popup-delay="500">
+    <span class="glyphicon glyphicon-font"></span>Title
+</button>
+
+<button type="button" class="btn btn-default" shortcut="ctrl+e" scribe-command="insertUnorderedList"
+        tooltip-html-unsafe="Add a bullet list.<strong>Ctrl+E</strong>" tooltip-placement="right" tooltip-popup-delay="500">
+    <span class="glyphicon glyphicon-list"></span>List
 </button>
 
 <button type="button" class="btn btn-default" ng-click="showMoveDialog(note)"
         tooltip-html-unsafe="Move to another note" tooltip-placement="right" tooltip-popup-delay="500">
-	<span class="glyphicon glyphicon-move"></span>Move
+    <span class="glyphicon glyphicon-move"></span>Move
 </button>
+
 

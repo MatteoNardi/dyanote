@@ -1,24 +1,24 @@
 <form id='login-box' role="form" ng-submit="login()">
-  <div class="form-group">
-    <label for="email">Email address</label>
-    <input type="email" class="form-control" id="email" placeholder="Enter email" ng-model="form.email">
-    <span class="help-block label-warning">{{ form.emailErrorMessage }}</span>
-  </div>
-  <div class="form-group">
-    <label for="password">Password</label>
-    <input type="password" class="form-control" id="password" placeholder="Password" ng-model="form.password">
-    <span class="help-block label-warning">{{ form.passwordErrorMessage }}</span>
-    <span class="help-block label-warning">{{ form.errorMessage }}</span>
-  </div>
-  <div class="checkbox">
-    <label>
-      <input type="checkbox" ng-model="form.remember"> Remember me.
-    </label>
-  </div>
-  <button type="submit" class="btn btn-default" ng-disabled="form.isLoggingIn">
-    {{(form.isLoggingIn) && 'Loggin in...' || 'Login'}}
-    <img ng-show="form.isLoggingIn" src="images/Ajax-loader.gif">
-  </button>
-  <span class="label-info">{{ form.successMessage }}</span>
+    <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" class="form-control" id="email" placeholder="Enter email" ng-model="form.email">
+        <span class="help-block label-warning">{{ form.emailErrorMessage }}</span>
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" placeholder="Password" ng-model="form.password">
+        <span class="help-block label-warning">{{ form.passwordErrorMessage }}</span>
+        <span class="help-block label-warning">{{ form.errorMessage }}</span>
+    </div>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" ng-model="form.remember"> Remember me.
+        </label>
+    </div>
+    <button type="submit" class="btn btn-default" ng-disabled="form.isLoggingIn">
+        {{(form.isLoggingIn) && 'Loggin in...' || 'Login'}}
+        <img ng-show="form.isLoggingIn" src="images/Ajax-loader.gif">
+    </button>
+    <span class="label-info">{{ form.successMessage }}</span>
 </form>
 <a href="/register">Register</a>

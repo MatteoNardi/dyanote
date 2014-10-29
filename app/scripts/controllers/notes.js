@@ -73,7 +73,7 @@ angular.module('dyanote')
   // Show a dialog to move the note to a new parent.
   $scope.showMoveDialog = function (note) {
     console.log('show move dialog', note);
-  }
+  };
 })
 
 // This variable holds the currently opened note.

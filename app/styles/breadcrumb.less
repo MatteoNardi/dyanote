@@ -4,90 +4,90 @@
 
 #breadcrumb {
 
-	// Dashed line variables.
-	@dash-length: 5px;
-	@space-length: 4px;
+    // Dashed line variables.
+    @dash-length: 5px;
+    @space-length: 4px;
 
-	position: fixed;
-	left: @gu;
-	top: @navbar-height;
-	height: 100%;
-	background-image:
-		linear-gradient(0deg,
-		                transparent,
-		                transparent @space-length,
-		                @dyanote-yellow-dark @space-length,
-		                @dyanote-yellow-dark);
-	background-size: 1px (@dash-length + @space-length);
-	background-repeat: repeat-y;
-	background-position: 0 6px;
+    position: fixed;
+    left: @gu;
+    top: @navbar-height;
+    height: 100%;
+    background-image:
+        linear-gradient(0deg,
+                        transparent,
+                        transparent @space-length,
+                        @dyanote-yellow-dark @space-length,
+                        @dyanote-yellow-dark);
+    background-size: 1px (@dash-length + @space-length);
+    background-repeat: repeat-y;
+    background-position: 0 6px;
 
 
-	ol {
-		position: relative;
-		height: 100%;
-		list-style: none;
-		margin: 0;
-		padding: (3 * @gu) @gu;
-	}
+    ol {
+        position: relative;
+        height: 100%;
+        list-style: none;
+        margin: 0;
+        padding: (3 * @gu) @gu;
+    }
 
-	li {
-		height: 3 * @gu;
-		padding: 1px (2 * @gu);
-		background-image:
-			linear-gradient(90deg,
-			                transparent,
-			                transparent @space-length,
-			                @dyanote-yellow-dark @space-length,
-			                @dyanote-yellow-dark);
-		background-size: (@dash-length + @space-length) 1px;
-		background-repeat: repeat-x;
-		background-position: 0px 100%;
-		position: relative;
-		left: -(2 * @gu);
-		cursor: pointer;
-	}
+    li {
+        height: 3 * @gu;
+        padding: 1px (2 * @gu);
+        background-image:
+            linear-gradient(90deg,
+                            transparent,
+                            transparent @space-length,
+                            @dyanote-yellow-dark @space-length,
+                            @dyanote-yellow-dark);
+        background-size: (@dash-length + @space-length) 1px;
+        background-repeat: repeat-x;
+        background-position: 0px 100%;
+        position: relative;
+        left: -(2 * @gu);
+        cursor: pointer;
+    }
 
-	p {
-		color: @dyanote-green;
-		margin: 0;
-		position: absolute;
-		bottom: -1px;
-		white-space: nowrap;
-	}
+    p {
+        color: @dyanote-green;
+        margin: 0;
+        position: absolute;
+        bottom: -1px;
+        white-space: nowrap;
+    }
 
-	li:hover  {
-		background-image:
-			linear-gradient(90deg,
-			                transparent,
-			                transparent (@dash-length),
-			                @dyanote-green (@dash-length),
-			                @dyanote-green);
-	}
+    li:hover  {
+        background-image:
+            linear-gradient(90deg,
+                            transparent,
+                            transparent (@dash-length),
+                            @dyanote-green (@dash-length),
+                            @dyanote-green);
+    }
 }
 
 
 /* Show only on large displays */
 @media all and (max-width: 1020px) {
-	#breadcrumb {	
-		display: none;
-	}
+    #breadcrumb {    
+        display: none;
+    }
 }
 
 @media all and (min-width: 1020px) {
-	#notes-container .note-container {
-		margin-left: 200px;
-	}
-	#breadcrumb li {
-		width: 200px;
-	}
+    #notes-container .note-container {
+        margin-left: 200px;
+    }
+    #breadcrumb li {
+        width: 200px;
+    }
 }
 
 @media all and (min-width: 1120px) {
-	#notes-container .note-container {
-		margin-left: 300px;
-	}
-	#breadcrumb li {
-		width: 300px;
-	}
+    #notes-container .note-container {
+        margin-left: 300px;
+    }
+    #breadcrumb li {
+        width: 300px;
+    }
 }

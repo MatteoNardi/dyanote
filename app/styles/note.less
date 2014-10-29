@@ -4,62 +4,62 @@
 
 
 .note-container {
-	position: relative;
-	width: 38 * @gu;
-	margin-left: auto;
-	margin-right: auto;
+    position: relative;
+    width: 38 * @gu;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .note {
-	display: block;
-	position: relative;
-	width: 38 * @gu;
-	background-color: white;
-	border: 1px solid @dyanote-yellow-dark;
-	padding: (@gu * 2) @gu;
-	box-shadow: 0 0 20px @dyanote-yellow-dark;
-	margin: @note-margin 0 @note-margin 0;
+    display: block;
+    position: relative;
+    width: 38 * @gu;
+    background-color: white;
+    border: 1px solid @dyanote-yellow-dark;
+    padding: (@gu * 2) @gu;
+    box-shadow: 0 0 20px @dyanote-yellow-dark;
+    margin: @note-margin 0 @note-margin 0;
 
-	.note-header {
-		position: relative;
+    .note-header {
+        position: relative;
 
-		.title {
-			text-align: center;
-			font: 1.7em @font-family-serif;
-			color: @dyanote-green;
-			display: inline-block;
-			width: 30 * @gu;
-			height: 3 * @gu;
-			margin: 0 0 0 (3 * @gu);
-			border: none;
-			outline: none;
-		}
+        .title {
+            text-align: center;
+            font: 1.7em @font-family-serif;
+            color: @dyanote-green;
+            display: inline-block;
+            width: 30 * @gu;
+            height: 3 * @gu;
+            margin: 0 0 0 (3 * @gu);
+            border: none;
+            outline: none;
+        }
 
-		.title:focus {
-			border: none;
-			outline: none;
-		}
+        .title:focus {
+            border: none;
+            outline: none;
+        }
 
-		.glyphicon-trash {
-			position: absolute;
-			top: auto;
-			right: @gu;
-			bottom: @gu;
-			opacity: .5;
-			transition: opacity .5s;
-		}
+        .glyphicon-trash {
+            position: absolute;
+            top: auto;
+            right: @gu;
+            bottom: @gu;
+            opacity: .5;
+            transition: opacity .5s;
+        }
 
-		.glyphicon-trash:hover {
-			opacity: 1;
-			cursor: pointer;
-		}
-	}
+        .glyphicon-trash:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+    }
 }
 
 
 .richTextEditor {
-	height: 38 * @gu;
-	padding-top: 12px;
+    height: 38 * @gu;
+    padding-top: 12px;
 }
 /* Force wysihtml5 to expand its frame. */
 .richTextEditor .wysihtml5-sandbox { width: 100%; height: 100%; }
