@@ -92,4 +92,12 @@ describe('Service: notesFactory', function () {
     note2.title = "New title for note 2";
     expect(called).toBe(true);
   });
+
+  it('should contain list of children', function () {
+    expect(rootNote.children).toContain(note2);
+    expect(archiveNote.children.length).toBe(0);
+    note2.archive();
+    expect(rootNote.children.length).toBe(0);
+    expect(archiveNote.children).toContain(note2);
+  });
 });

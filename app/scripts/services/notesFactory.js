@@ -114,6 +114,10 @@ angular.module('dyanote')
     set: function (newParent) {
       var oldParent = this.parent;
       this._json.parent = newParent.url;
+      if ('_private' in oldParent)
+        delete oldParent._private.children;
+      if ('_private' in newParent)
+        delete newParent._private.children;
       this.changedSignal.fire(this);
       this.parentChangedSignal.fire(this, oldParent);
     }
@@ -122,6 +126,21 @@ angular.module('dyanote')
   Note.prototype.hasParent = function () {
     return !this.isRoot() && !this.isArchive();
   };
+
+  // Children
+  Object.defineProperty(Note.prototype, 'children', {
+    get: function () {
+      var me = this;
+      if (!this._private.children) {
+        this._private.children = notesGraph.getNotes().filter(function (note) {
+          try {
+            return me == note.parent;
+          } catch (e) {};
+        });
+      }
+      return this._private.children;
+    }
+  });
 
   // Archive note
   Note.prototype.archive = function () {

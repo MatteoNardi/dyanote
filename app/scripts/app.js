@@ -9,8 +9,8 @@ angular.module('dyanote', ['ngRoute', 'LocalStorageModule', 'ui.bootstrap'])
   clientSecret: 'cf3aba97518712959062b52dc5c524dd4f6741bd'
 
   // apiUrl: 'http://localhost:5000/api/',
-  // clientId: '00d4f7b617b9c4434d52',
-  // clientSecret: '64d86e2fe1709a8340b91463a6a3c9fb927591fc'
+  // clientId: 'bb05c6ab017f50116084',
+  // clientSecret: '4063c2648cdd7f2e4dae563da80a516f2eb6ebb6'
 })
 
 .config(function ($routeProvider) {
