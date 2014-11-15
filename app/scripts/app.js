@@ -27,16 +27,15 @@ angular.module('dyanote', ['ngRoute', 'LocalStorageModule', 'ui.bootstrap'])
       templateUrl: 'views/logout.html',
       controller: 'LogoutCtrl'
     })
-    .when('/register', {
-      templateUrl: 'views/register.html',
-      controller: 'RegisterCtrl'
-    })
     .when('/notes', {
       templateUrl: 'views/notes.html',
       controller: 'NotesCtrl'
     })
     // TODO: Archive
-    // TODO: Dyagraph
+    .when('/dyagraph', {
+      templateUrl: 'views/dyagraph.html',
+      controller: 'DyagraphCtrl'
+    })
     .when('/search', {
       templateUrl: 'views/search.html',
       controller: 'SearchCtrl'

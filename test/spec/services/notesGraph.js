@@ -36,6 +36,15 @@ describe('Service: notesGraph', function () {
     expect(function () { notesGraph.getById(42); }).toThrow('Note 42 not found.');
   });
 
+  it('should allow to get all notes', function () {
+    notesGraph.add(rootNote);
+    notesGraph.add(archiveNote);
+    var notes = notesGraph.getNotes();
+    expect(notes.length).toBe(2);
+    expect(notes).toContain(rootNote);
+    expect(notes).toContain(archiveNote);
+  });
+
   it('should allow to get root note', function () {
     notesGraph.add(rootNote);
     notesGraph.add(archiveNote);

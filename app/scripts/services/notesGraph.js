@@ -48,6 +48,14 @@ angular.module('dyanote')
     notesCounter = 0;
   };
 
+  // Get list of all notes
+  this.getNotes = function () {
+    var list = [];
+    for (var i in notes)
+      list.push(notes[i]);
+    return list;
+  }
+
   // Get the one to rule them all.
   this.getRoot = function () {
     return rootNote;
