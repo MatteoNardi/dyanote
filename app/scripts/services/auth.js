@@ -6,9 +6,9 @@ angular.module('dyanote')
 // - Log user in and out of Dyanote
 // - Load user session from local storage
 // - Add authentication headers to all http requests.
-.service('auth', function ($http, $location, $log, localStorageService, authRetryQueue, SERVER_CONFIG) {
+.service('auth', function ($http, $location, $log, localStorageService, httpFailureInterceptor, SERVER_CONFIG) {
 
-  var auth = this;
+  var me = this;
 
   // Information about the current user
   var currentUser = {
@@ -25,6 +25,9 @@ angular.module('dyanote')
     return !!currentUser.authToken;
   };
 
+  // List of callbacks executed after a successful login
+  this.onLogin = [];
+
   // Attempt to authenticate a user by the given email and password
   this.login = function (email, password, remembar) {
     var loginUrl = SERVER_CONFIG.apiUrl + 'users/' + email + '/login/';
@@ -34,14 +37,17 @@ angular.module('dyanote')
       + '&username=' + encodeURIComponent(email)
       + '&password=' + encodeURIComponent(password);
 
-    var _this = this;
-    return $http.post(loginUrl, data, {'headers': {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (response) {
+    var headers = {
+      'headers': {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    };
+    return $http.post(loginUrl, data, headers).then(function (response) {
       $log.info('Login successful');
       currentUser.email = email;
       currentUser.authToken = response.data.access_token;
-      updateHttpHeaders.call(_this);
-      // We've successfully authenticated: retry all failed tasks.
-      authRetryQueue.retryAll();
+      updateHttpHeaders.call(me);
+      me.onLogin.forEach(function (cb) { cb(); })
       if (remembar) {
         localStorageService.add('currentUser', currentUser);
       }
@@ -56,11 +62,6 @@ angular.module('dyanote')
       'password': password
     };
     return $http.post(registerUrl, data);
-  };
-
-  // Give up trying to login and clear the retry queue
-  this.cancelLogin = function () {
-    authRetryQueue.cancelAll();
   };
 
   // Logout the current user
@@ -82,17 +83,14 @@ angular.module('dyanote')
         authToken: stored.authToken
       }
     }
-    if (auth.isAuthenticated)
+    if (me.isAuthenticated)
       updateHttpHeaders();
-    return auth.isAuthenticated();
+    return me.isAuthenticated();
   };
-
-  // When an item is added to the retry queue, user needs to login again.
-  authRetryQueue.onItemAddedCallbacks.push(auth.logout);
 
   // Configure Angular to send user credentials in each http request.
   var updateHttpHeaders = function () {
-    if(auth.isAuthenticated())
+    if(me.isAuthenticated())
       $http.defaults.headers.common['Authorization'] = 'Bearer ' + currentUser.authToken;
     else
       delete $http.defaults.headers.common['Authorization'];
@@ -100,4 +98,18 @@ angular.module('dyanote')
 
   // At startup we should load settings
   this.loadFromSettings();
+})
+
+// Add interceptor to automatic1ally logout when server returns a 401 error.
+.service('httpFailureInterceptor', function () {
+  this.onErrorCallback = function () {};
+  this.responseError = function(response) {
+    if (request.status === 401) {
+      $log.warn("Intercepted failed request");
+      this.onErrorCallback();
+    }
+  };
+})
+.config(function($httpProvider) {
+  $httpProvider.interceptors.push('httpFailureInterceptor');
 });

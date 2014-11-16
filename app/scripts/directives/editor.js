@@ -52,7 +52,7 @@ angular.module('dyanote')
           var targetNoteId = href.match(/.*\/(\d+)\/$/)[1];
           var callerNoteId = scope.note.id;
           console.log('Note ' + callerNoteId + ' opens ' + targetNoteId);
-          scope.$emit('$openNote', callerNoteId, targetNoteId);
+          scope.$emit('openNote', callerNoteId, targetNoteId);
           scope.$apply();
         }
       });

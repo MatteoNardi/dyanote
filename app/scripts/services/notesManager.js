@@ -4,13 +4,23 @@ angular.module('dyanote')
 
 // notesManager is responsible for loading notes on startup,
 // creating and saving notes.  
-.service('notesManager', function ($log, $rootScope, $timeout, $q, noteResource, notesFactory, notesGraph, notesCoherenceTools) {
-  
+.service('notesManager', function ($log, $timeout, $q, auth, openNotes, noteResource, notesFactory, notesGraph, notesCoherenceTools) {
+  var me = this;
+  console.log('notesManager')
+
+  function init () {
+    console.log('init')
+    if (auth.isAuthenticated)
+      me.loadAll();
+    auth.onLogin.push(me.loadAll);
+  }
+
   // Notes with unsaved changes.
   var dirtyNotes = {};
 
   // Load all notes
   this.loadAll = function () {
+    console.log('loading notes')
     return noteResource.getAll().then(function (jsons) {
       // Add notes.
       for (var i = 0; i < jsons.length; i++) {
@@ -23,6 +33,9 @@ angular.module('dyanote')
         $log.error('Root note not found');
       if (!notesGraph.getArchive())
         $log.error('Archive note not found');
+
+      $log.info("Notes loaded: " + notesGraph.count());
+      openNotes.open(notesGraph.getRoot());
     });
   };
 
@@ -85,4 +98,6 @@ angular.module('dyanote')
     });
     return note;
   };
+
+  init();
 })

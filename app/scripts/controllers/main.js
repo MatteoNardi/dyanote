@@ -2,7 +2,18 @@
 
 angular.module('dyanote')
 
-.controller('MainCtrl', function ($scope, auth) {
-  $scope.isAuthenticated = auth.isAuthenticated;
-  $scope.username = auth.getEmail();
+// The main controller which bootstraps Dyanote.
+// It stores on its scope some global variables shared by all
+// controllers.
+.controller('MainCtrl', function ($scope, auth, notesManager) {
+  // Global variables
+  // FIX THIS
+  $scope.app = {
+    user: {
+      isAuthenticated: auth.isAuthenticated(),
+      email: auth.getEmail()
+    },
+    loading: true,
+    currentNote: undefined
+  };
 });

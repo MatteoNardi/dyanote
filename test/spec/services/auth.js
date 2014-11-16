@@ -40,6 +40,20 @@ describe('Service: auth', function () {
     expect(auth.isAuthenticated()).toBe(true);
   });
 
+  it('should execute onLogin callback on login', function () {
+    var callbackCalled = false;
+    auth.onLogin.push(function() {
+      callbackCalled = true;
+    });
+    $httpBackend.expect('POST', API_URL + 'users/username/login/')
+      .respond(200, {"access_token": "<your-access-token>", "scope": "read", "expires_in": 86399, "refresh_token": "<your-refresh-token>"});
+    auth.login('username', '123123');
+    
+    $httpBackend.flush();
+    
+    expect(callbackCalled).toBe(true);
+  });
+
   it('should add auth headers', function () {
     $httpBackend.expect('POST', API_URL + 'users/username/login/')
       .respond(200, {"access_token": "<your-access-token>", "scope": "read", "expires_in": 86399, "refresh_token": "<your-refresh-token>"});

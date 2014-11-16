@@ -3,13 +3,7 @@
 angular.module('dyanote')
 
 // SearchCtrl is responsible for searching notes.
-.controller('SearchCtrl', function ($scope, $location, $log, notesGraph, notesManager, status) {
-
-  // Todo: doing this everywhere is ugly, find another solution.
-  // Load notes if needed
-  if (notesGraph.count() == undefined)
-    notesManager.loadAll();
-
+.controller('SearchCtrl', function ($scope, $location, $log, notesGraph, notesManager, $rootScope) {
   $scope.input = {
     searchTerms: ''
   };
@@ -32,7 +26,7 @@ angular.module('dyanote')
 
   $scope.open = function (note) {
     console.log(note);
-    status.currentNote = note;
+    $rootScope.currentNote = note;
     $location.path('/notes');
   }
 
