@@ -3,7 +3,7 @@
 angular.module('dyanote')
 
 // The interactive graph displaying all notes.
-.directive('dyagraph', function ($window, $timeout, notesGraph) {
+.directive('dyagraph', function ($window, $timeout, $location, notesGraph, openNotes) {
   return {
     restrict: 'EA',
     link: function (scope, element, attrs) {
@@ -20,10 +20,19 @@ angular.module('dyanote')
         }
       });
 
+      var clickhandler = function (data) {
+        scope.$apply(function () {
+          var note = data.obj;
+          openNotes.open(data.note);
+          $location.path('/notes');
+        });
+      };
+
       scope.render = function () {
         var getHierarchy = function (note) {
           var obj = {
             name: note.title,
+            note: note,
             children: []
           };
           note.children.forEach(function (child) {
@@ -57,6 +66,7 @@ angular.module('dyanote')
         var newnode = node.enter().append('g').attr('class', 'node');
         newnode.append('circle').attr('r', 4.5);
         newnode.append('text');
+        newnode.on('click', clickhandler);
         // UPDATE
         link.transition().attr('d', diagonal);
         node.transition().attr('transform', function(d) { return 'translate(' + d.y + ',' + d.x + ')'; })
@@ -66,7 +76,7 @@ angular.module('dyanote')
         // EXIT
         link.exit().remove();
         node.exit().remove();
-      }
+      };
 
       scope.render();
     }

@@ -104,7 +104,7 @@ angular.module('dyanote')
 .service('httpFailureInterceptor', function () {
   this.onErrorCallback = function () {};
   this.responseError = function(response) {
-    if (request.status === 401) {
+    if (response.status === 401) {
       $log.warn("Intercepted failed request");
       this.onErrorCallback();
     }

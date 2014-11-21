@@ -9,7 +9,6 @@ angular.module('dyanote')
   console.log('notesManager')
 
   function init () {
-    console.log('init')
     if (auth.isAuthenticated)
       me.loadAll();
     auth.onLogin.push(me.loadAll);
@@ -20,7 +19,6 @@ angular.module('dyanote')
 
   // Load all notes
   this.loadAll = function () {
-    console.log('loading notes')
     return noteResource.getAll().then(function (jsons) {
       // Add notes.
       for (var i = 0; i < jsons.length; i++) {
