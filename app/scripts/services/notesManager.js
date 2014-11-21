@@ -6,7 +6,6 @@ angular.module('dyanote')
 // creating and saving notes.  
 .service('notesManager', function ($log, $timeout, $q, auth, openNotes, noteResource, notesFactory, notesGraph, notesCoherenceTools) {
   var me = this;
-  console.log('notesManager')
 
   function init () {
     if (auth.isAuthenticated)
