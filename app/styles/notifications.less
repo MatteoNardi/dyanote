@@ -1,0 +1,39 @@
+
+#notifications {
+    
+    position: absolute;
+    top: 60px;
+    right: 40px;
+    width: 300px;
+
+    .notification {
+
+        border-radius: 4px;
+        border: 1px solid @dyanote-yellow;
+        padding: @gu/2 @gu; 
+        margin: @gu/2;
+
+        p {
+
+        }
+
+        button {
+            margin-right: @gu;
+        }
+    }
+
+    .warn {
+        background-color: #faa;
+        border-color: darken(#faa, 10%);
+    }
+
+    .success {
+        background-color: #afa;
+        border-color: darken(#afa, 10%);
+    }
+
+    .info {
+        background-color: #aaf;
+        border-color: darken(#aaf, 10%);
+    }
+}
