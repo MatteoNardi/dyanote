@@ -21,7 +21,6 @@ angular.module('dyanote')
     return note;
   }
 
-
   // The Note constructor takes as input the server representation of the note.
   var Note = function (json, isTemp) {
     // Todo: remove _json
@@ -32,7 +31,8 @@ angular.module('dyanote')
     this._url = json.url;
     
     if (isTemp) {
-      var tempId = Date.now();
+      var rand = Math.round(Math.random() * 100);
+      var tempId = Date.now() * 100 + rand;
       this._tempId = tempId;
       this._tempUrl = 'https://dyanote.com/templink/' + tempId + '/';
     }

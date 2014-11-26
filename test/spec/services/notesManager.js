@@ -4,6 +4,7 @@ describe('Service: notesManager', function () {
   beforeEach(module('dyanote'));
 
   var notesManager,
+    notifications,
     notesGraph,
     noteResource,
     notesFactory,
@@ -11,9 +12,10 @@ describe('Service: notesManager', function () {
     $q,
     $rootScope;
 
-  beforeEach(inject(function (_$q_, _$rootScope_, _notesManager_, _notesGraph_, _noteResource_, _notesFactory_, _notesCoherenceTools_) {
+  beforeEach(inject(function (_$q_, _$rootScope_, _notesManager_, _notifications_, _notesGraph_, _noteResource_, _notesFactory_, _notesCoherenceTools_) {
     $q = _$q_;
     $rootScope = _$rootScope_;
+    notifications = _notifications_;
     notesManager = _notesManager_;
     notesGraph = _notesGraph_;
     noteResource = _noteResource_;
@@ -82,10 +84,27 @@ describe('Service: notesManager', function () {
       url: 'http://dyanote.com/parenturl/0/'
     }
     var note = notesManager.newNote(parent, "Title", "Body");
+    var newParent = notesManager.newNote(parent, "New Parent", "...");
     spyOn(notesCoherenceTools, 'removeLink');
     spyOn(notesGraph, 'getById').andReturn(parent);
-    note.parent = { title: 'New parent'};
+    note.parent = newParent;
     expect(notesCoherenceTools.removeLink).toHaveBeenCalledWith(parent, note.url);
+  });
+
+  it('should show notification when note is moved', function () {
+    spyOn(notifications, 'warn');
+    var parent = {
+      url: 'http://dyanote.com/parenturl/0/'
+    }
+    var note = notesManager.newNote(parent, "Title", "Body");
+    var newParent = notesManager.newNote(parent, "New Parent", "...");
+    spyOn(notesCoherenceTools, 'removeLink');
+    spyOn(notesGraph, 'getById').andCallFake(function(id) {
+      if (id == 0) return parent;
+      else return newParent;
+    });
+    note.parent = newParent;
+    expect(notifications.warn).toHaveBeenCalledWith('"Title" was moved to "New Parent"');
   });
 
   it('should rename links when note title changes', function () {

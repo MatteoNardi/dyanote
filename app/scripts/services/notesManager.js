@@ -4,7 +4,7 @@ angular.module('dyanote')
 
 // notesManager is responsible for loading notes on startup,
 // creating and saving notes.  
-.service('notesManager', function ($log, $timeout, $q, auth, openNotes, noteResource, notesFactory, notesGraph, notesCoherenceTools) {
+.service('notesManager', function ($log, $timeout, $q, auth, notifications, openNotes, noteResource, notesFactory, notesGraph, notesCoherenceTools) {
   var me = this;
 
   function init () {
@@ -57,6 +57,7 @@ angular.module('dyanote')
 
   // When the parent of a note changes, we remove the dead links.
   function onNoteParentChanged (note, oldParent) {
+    notifications.warn('"' + note.title + '" was moved to "' + note.parent.title + '"');
     notesCoherenceTools.removeLink(oldParent, note.url);
   }
 
@@ -85,7 +86,6 @@ angular.module('dyanote')
     // Create new fake Note
     var note = notesFactory.newTempNote(json);
     connectSignals(note);
-
     noteResource.post(json).then(function (json) {
       // Update note to use real server data.
       var realUrl = json.url;
