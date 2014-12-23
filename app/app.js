@@ -16,28 +16,28 @@ angular.module('dyanote', ['ngRoute', 'LocalStorageModule'])
 .config(function ($routeProvider) {
   $routeProvider
     .when('/login', {
-      templateUrl: 'views/login.html',
+      templateUrl: 'login/login.html',
       controller: 'LoginCtrl'
     })
     .when('/register', {
-      templateUrl: 'views/register.html',
+      templateUrl: 'register/register.html',
       controller: 'RegisterCtrl'
     })
     .when('/logout', {
-      templateUrl: 'views/logout.html',
+      templateUrl: 'logout/logout.html',
       controller: 'LogoutCtrl'
     })
     .when('/notes', {
-      templateUrl: 'views/notes.html',
+      templateUrl: 'notes/notes.html',
       controller: 'NotesCtrl'
     })
     // TODO: Archive
     .when('/dyagraph', {
-      templateUrl: 'views/dyagraph.html',
+      templateUrl: 'dyagraph/dyagraph.html',
       controller: 'DyagraphCtrl'
     })
     .when('/search', {
-      templateUrl: 'views/search.html',
+      templateUrl: 'search/search.html',
       controller: 'SearchCtrl'
     })
     .otherwise({

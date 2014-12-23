@@ -6,17 +6,24 @@
     "url": "https://github.com/MatteoNardi/dyanote.git"
   },
   "devDependencies": {
-    "karma": "~0.12.28",
-    "karma-jasmine": "~0.3.2",
-    "karma-phantomjs-launcher": "~0.1.4",
-    "gulp": "~3.8.10",
     "angular": "~1.3.8",
     "angular-route": "~1.3.8",
     "angular-mocks": "~1.3.8",
     "angular-local-storage": "~0.1.5",
-    "karma-chrome-launcher": "~0.1.7"
+    "gulp": "~3.8.10",
+    "gulp-concat": "~2.4.2",
+    "express": "~4.10.6",
+    "del": "~1.1.0",
+    "karma": "~0.12.28",
+    "karma-jasmine": "~0.3.2",
+    "karma-phantomjs-launcher": "~0.1.4",
+    "karma-chrome-launcher": "~0.1.7",
+    "open": "0.0.5",
+    "gulp-angular-templatecache": "~1.5.0",
+    "event-stream": "~3.1.7"
   },
   "engines": {
     "node": ">=0.8.0"
-  }
+  },
+  "dependencies": {}
 }

@@ -1,0 +1,28 @@
+{
+  "sources": {
+    "index": [
+      "app/index.html"
+    ],
+    "dyanote": [
+      "app/app.js",
+      "app/services/*.service.js",
+      "app/components/*/*.controller.js",
+      "app/components/*/*.directive.js",
+      "**/scribe/*.js",
+      "**/scribe/commands/utils.js",
+      "**/scribe/commands/formatting.js",
+      "**/scribe/commands/link.js",
+      "**/scribe/commands/title.js"
+    ],
+    "templates": [
+      "app/components/**/*.html"
+    ],
+    "vendor": [
+      "node_modules/angular/angular.js",
+      "node_modules/angular-route/angular-route.js",
+      "node_modules/angular-mocks/angular-mocks.js",
+      "node_modules/angular-local-storage/dist/angular-local-storage.js",
+      "resources/js/*.js"
+    ]
+  } 
+}
