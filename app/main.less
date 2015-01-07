@@ -16,18 +16,19 @@
 
 html, body { height: 100%; }
 #main {	height: 100%; }
-@import "bootstrap-customization.less";
+@import "../resources/style/bootstrap-customization.less";
 
 // Main styling
-@import "login.less";
-@import "header.less";
-@import "notifications.less";
-@import "splashscreen.less";
-@import "search.less";
-@import "notes.less";
-@import "breadcrumb.less";
-@import "note.less";
-@import "toolbar.less";
-@import "tooltips.less";
-@import "editor.less";
-@import "dyagraph.less";
+@import "components/dyagraph/dyagraph.less";
+@import "components/header/header.less";
+@import "components/login/login.less";
+@import "components/notes/breadcrumb.less";
+@import "components/notes/editor.less";
+@import "components/notes/note.less";
+@import "components/notes/notes.less";
+@import "components/notes/toolbar.less";
+@import "components/notifications/notifications.less";
+@import "components/search/search.less";
+@import "components/splashscreen/splashscreen.less";
+@import "components/tooltips/tooltips.less";
+
