@@ -12,9 +12,6 @@ var sources = require('./config.json').sources;
 gulp.task('server', function () {
   var app = express();
   app.use(express.static('dist'));
-  app.use(function (req, res) {
-    res.redirect('/');
-  });
   app.listen(9000);
   open('http://localhost:9000/');
 });
@@ -22,6 +19,8 @@ gulp.task('server', function () {
 gulp.task('build', [
   'index',
   'style',
+  'fonts',
+  'images',
   'js:vendor',
   'js:dyanote',
   'watch'
@@ -43,8 +42,18 @@ gulp.task('style', function () {
   gulp.src(sources.styles)
     .pipe(concat('style.less'))
     .pipe(less())
-    .pipe(gulp.dest('dist/build'))
-})
+    .pipe(gulp.dest('dist/build'));
+});
+
+gulp.task('fonts', function () {
+  gulp.src(sources.fonts)
+    .pipe(gulp.dest('dist/build/fonts'));
+});
+
+gulp.task('images', function () {
+  gulp.src(sources.images)
+    .pipe(gulp.dest('dist/build/images'));
+});
 
 gulp.task('js:vendor', function () {
   gulp.src(sources.vendor)

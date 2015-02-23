@@ -98,16 +98,19 @@ angular.module('dyanote')
 
   // At startup we should load settings
   this.loadFromSettings();
+  httpFailureInterceptor.onErrorCallback = this.logout;
 })
 
 // Add interceptor to automatic1ally logout when server returns a 401 error.
-.service('httpFailureInterceptor', function () {
+.service('httpFailureInterceptor', function ($log, $q) {
+  var me = this;
   this.onErrorCallback = function () {};
   this.responseError = function(response) {
     if (response.status === 401) {
       $log.warn("Intercepted failed request");
-      this.onErrorCallback();
+      me.onErrorCallback();
     }
+    return $q.reject(response);
   };
 })
 .config(function($httpProvider) {

@@ -13,6 +13,7 @@ angular.module('dyanote')
       return $q.reject("User is not logged in");
 
     var url = SERVER_CONFIG.apiUrl + 'users/' + auth.getEmail() + '/pages/';
+    
     return $http.get(url).then(function (result) {
       return result.data;
     });

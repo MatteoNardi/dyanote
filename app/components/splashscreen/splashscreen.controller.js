@@ -23,6 +23,7 @@ angular.module('dyanote')
   $http.get(SERVER_CONFIG.apiUrl).success(function() {
     finish();
   }).error(function() {
+    finish();
     $scope.loading = false;
   });
 });

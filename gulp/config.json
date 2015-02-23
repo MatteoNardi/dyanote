@@ -20,10 +20,16 @@
     "styles": [
       "app/main.less"
     ],
+    "fonts": [
+      "resources/style/fonts/*"
+    ],
+    "images": [
+      "resources/images/*"
+    ],
     "vendor": [
+      "node_modules/jquery/dist/jquery.min.js",
       "node_modules/angular/angular.js",
       "node_modules/angular-route/angular-route.js",
-      "node_modules/angular-mocks/angular-mocks.js",
       "node_modules/angular-local-storage/dist/angular-local-storage.js",
       "node_modules/mousetrap/mousetrap.js",
       "resources/js/*.js"
