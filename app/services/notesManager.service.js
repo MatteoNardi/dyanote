@@ -7,10 +7,16 @@ angular.module('dyanote')
 .service('notesManager', function ($log, $timeout, $q, auth, notifications, openNotes, noteResource, notesFactory, notesGraph, notesCoherenceTools) {
 
   this.init = function () {
-    if (auth.isAuthenticated) {
-      this.loadAll();
-    }
-    auth.onLogin.push(this.loadAll.bind(this));
+    var loadNotes = function () {
+      $log.info('Retrieving all notes...');
+      this.loadAll().then(function () {
+        $log.info("Notes loaded: " + notesGraph.count());
+      }, function () {
+        $log.error("Loading notes failed");
+      });
+    }.bind(this);
+    if (auth.isAuthenticated) loadNotes();
+    auth.onLogin.push(loadNotes);
   }
 
   // Notes with unsaved changes.
@@ -18,7 +24,6 @@ angular.module('dyanote')
 
   // Load all notes
   this.loadAll = function () {
-    $log.info('Retrieving all notes...');
     return noteResource.getAll().then(function (jsons) {
       // Add notes.
       for (var i = 0; i < jsons.length; i++) {
@@ -32,10 +37,9 @@ angular.module('dyanote')
       if (!notesGraph.getArchive())
         $log.error('Archive note not found');
 
-      $log.info("Notes loaded: " + notesGraph.count());
       openNotes.open(notesGraph.getRoot());
     }, function (reason) {
-      console.log('fail:',reason);
+      return $q.reject(reason);
     });
   };
 

@@ -34,7 +34,6 @@ angular.module('dyanote', ['ngRoute', 'LocalStorageModule', 'ui.bootstrap'])
     // TODO: Archive
     .when('/dyagraph', {
       templateUrl: 'dyagraph/dyagraph.html',
-      controller: 'DyagraphCtrl'
     })
     .when('/search', {
       templateUrl: 'search/search.html',
