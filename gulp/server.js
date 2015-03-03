@@ -39,7 +39,7 @@ gulp.task('index', function () {
 });
 
 gulp.task('style', function () {
-  gulp.src(sources.styles)
+  gulp.src('app/main.less')
     .pipe(concat('style.less'))
     .pipe(less())
     .pipe(gulp.dest('dist/build'));

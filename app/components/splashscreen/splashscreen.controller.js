@@ -24,6 +24,5 @@ angular.module('dyanote')
     finish();
   }).error(function() {
     finish();
-    $scope.loading = false;
   });
 });

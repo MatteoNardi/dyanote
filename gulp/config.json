@@ -18,7 +18,7 @@
       "app/components/**/*.html"
     ],
     "styles": [
-      "app/main.less"
+      "app/**/*.less"
     ],
     "fonts": [
       "resources/style/fonts/*"
@@ -32,6 +32,8 @@
       "node_modules/angular-route/angular-route.js",
       "node_modules/angular-local-storage/dist/angular-local-storage.js",
       "node_modules/mousetrap/mousetrap.js",
+      "node_modules/angular-bootstrap/dist/ui-bootstrap.min.js",
+      "node_modules/angular-bootstrap/dist/ui-bootstrap-tpls.min.js",
       "resources/js/*.js"
     ]
   } 

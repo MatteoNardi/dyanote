@@ -7,9 +7,7 @@ angular.module('dyanote')
 .service('notesManager', function ($log, $timeout, $q, auth, notifications, openNotes, noteResource, notesFactory, notesGraph, notesCoherenceTools) {
 
   this.init = function () {
-    console.log('init')
     if (auth.isAuthenticated) {
-      console.log('immediato')
       this.loadAll();
     }
     auth.onLogin.push(this.loadAll.bind(this));
@@ -20,9 +18,8 @@ angular.module('dyanote')
 
   // Load all notes
   this.loadAll = function () {
-    console.log('load all')
+    $log.info('Retrieving all notes...');
     return noteResource.getAll().then(function (jsons) {
-      console.log('loading notes');
       // Add notes.
       for (var i = 0; i < jsons.length; i++) {
         var note = notesFactory.newNote(jsons[i]);
