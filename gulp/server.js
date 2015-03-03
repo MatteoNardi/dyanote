@@ -3,17 +3,19 @@ var gulp = require('gulp'),
   templateCache = require('gulp-angular-templatecache'),
   del = require('del'),
   es = require('event-stream'),
-  express = require('express'),
+  webserver = require('gulp-webserver');
   open = require('open'),
   less = require('gulp-less');;
 
 var sources = require('./config.json').sources;
 
 gulp.task('server', function () {
-  var app = express();
-  app.use(express.static('dist'));
-  app.listen(9000);
-  open('http://localhost:9000/');
+  gulp.src('dist/')
+    .pipe(webserver({
+      livereload: true,
+      open: true,
+      fallback: 'index.html'
+    }));
 });
 
 gulp.task('build', [
