@@ -30,7 +30,7 @@ gulp.task('watch', function () {
   gulp.watch(sources.vendor, ['js:vendor']);
   gulp.watch(sources.dyanote.concat(sources.templates), ['js:dyanote']);
   gulp.watch(sources.index, ['index']);
-  gulp.watch(sources.styles, ['style']);
+  gulp.watch(['app/**/*.less'], ['style']);
 });
 
 gulp.task('index', function () {

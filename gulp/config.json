@@ -17,11 +17,9 @@
     "templates": [
       "app/components/**/*.html"
     ],
-    "styles": [
-      "app/**/*.less"
-    ],
     "fonts": [
-      "resources/style/fonts/*"
+      "node_modules/font-awesome/fonts/*",
+      "node_modules/bootstrap/fonts/*"
     ],
     "images": [
       "resources/images/*"
@@ -32,6 +30,7 @@
       "node_modules/angular-route/angular-route.js",
       "node_modules/angular-local-storage/dist/angular-local-storage.js",
       "node_modules/mousetrap/mousetrap.js",
+      "node_modules/d3/d3.min.js",
       "node_modules/angular-bootstrap/dist/ui-bootstrap.min.js",
       "node_modules/angular-bootstrap/dist/ui-bootstrap-tpls.min.js",
       "resources/js/*.js"
