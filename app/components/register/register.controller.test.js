@@ -1,9 +1,9 @@
 'use strict';
 
-describe('Controller: RegisterCtrl', function () {
+describe('Controller: RegisterController', function () {
   beforeEach(module('dyanote'));
 
-  var RegisterCtrl,
+  var RegisterController,
     scope,
     auth,
     deferred;
@@ -12,7 +12,7 @@ describe('Controller: RegisterCtrl', function () {
   beforeEach(inject(function ($controller, $rootScope, $q, _auth_) {
     auth = _auth_;
     scope = $rootScope.$new();
-    RegisterCtrl = $controller('RegisterCtrl', {
+    RegisterController = $controller('RegisterController', {
       $scope: scope
     });
 

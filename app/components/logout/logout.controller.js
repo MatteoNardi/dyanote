@@ -2,7 +2,7 @@
 
 angular.module('dyanote')
 
-.controller('LogoutCtrl', function ($scope, $log, $location, auth, notesGraph) {
+.controller('LogoutController', function ($scope, $log, $location, auth, notesGraph) {
   auth.logout();
   notesGraph.clear();
   $log.info('Logout');

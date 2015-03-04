@@ -1,4 +1,4 @@
-<div id="notifications" ng-controller="NotificationsCtrl">
+<div id="notifications" ng-controller="NotificationsController">
     <div ng-repeat="notification in notifications" class="notification {{ notification.type }}" >
         <p>{{ notification.label }}</p>
         <button ng-repeat="action in notification.actions"

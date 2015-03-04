@@ -3,7 +3,7 @@
 angular.module('dyanote')
 
 // The controller for registering new users.
-.controller('RegisterCtrl', function ($scope, $log, auth) {
+.controller('RegisterController', function ($scope, $log, auth) {
 
   var form = {
     email: '',

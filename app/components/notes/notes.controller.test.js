@@ -1,11 +1,11 @@
 'use strict';
 
-describe('Controller: NotesCtrl', function () {
+describe('Controller: NotesController', function () {
 
   // load the controller's module
   beforeEach(module('dyanote'));
 
-  var NotesCtrl,
+  var NotesController,
     scope,
     notesGraph,
     openNotes,
@@ -36,7 +36,7 @@ describe('Controller: NotesCtrl', function () {
     spyOn(notesGraph, 'getRoot').and.returnValue(rootNote);
     spyOn(notesGraph, 'count').and.returnValue(1);
 
-    NotesCtrl = $controller('NotesCtrl', {
+    NotesController = $controller('NotesController', {
       $scope: scope
     });
     $rootScope.$apply();

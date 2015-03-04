@@ -14,7 +14,7 @@ gulp.task('test', function (done) {
     frameworks: ['jasmine'],
     files: [
       'node_modules/angular/angular.js',
-      'node_modules/angular-route/angular-route.js',
+      "node_modules/angular-new-router/dist/router.es5.js",
       'node_modules/angular-mocks/angular-mocks.js',
       "node_modules/angular-bootstrap/dist/ui-bootstrap.min.js",
       'node_modules/angular-local-storage/dist/angular-local-storage.js',

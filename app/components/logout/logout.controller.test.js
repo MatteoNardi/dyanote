@@ -1,17 +1,17 @@
 'use strict';
 
-describe('Controller: LogoutCtrl', function () {
+describe('Controller: LogoutController', function () {
 
   // load the controller's module
   beforeEach(module('dyanote'));
 
-  var LogoutCtrl,
+  var LogoutController,
     scope;
 
   // Initialize the controller and a mock scope
   beforeEach(inject(function ($controller, $rootScope) {
     scope = $rootScope.$new();
-    LogoutCtrl = $controller('LogoutCtrl', {
+    LogoutController = $controller('LogoutController', {
       $scope: scope
     });
   }));

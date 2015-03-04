@@ -3,7 +3,7 @@
 angular.module('dyanote')
 
 // Connects notifications template with notifications service
-.controller('NotificationsCtrl', function ($scope, $timeout, notifications) {
+.controller('NotificationsController', function ($scope, $timeout, notifications) {
   $scope.notifications = [];
 
   $scope.$watch(function () {

@@ -18,6 +18,14 @@ gulp.task('server', function () {
     }));
 });
 
+gulp.task('server:nofallback', function () {
+  gulp.src('dist/')
+    .pipe(webserver({
+      livereload: true,
+      open: true
+    }));
+});
+
 gulp.task('build', [
   'index',
   'style',

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('dyanote', ['ngRoute', 'LocalStorageModule', 'ui.bootstrap'])
+angular.module('dyanote', ['ngNewRouter', 'LocalStorageModule', 'ui.bootstrap'])
 
 .constant('SERVER_CONFIG', {
   // apiUrl: 'https://dyanote.herokuapp.com/api/',
@@ -13,42 +13,29 @@ angular.module('dyanote', ['ngRoute', 'LocalStorageModule', 'ui.bootstrap'])
   clientSecret: '4063c2648cdd7f2e4dae563da80a516f2eb6ebb6'
 })
 
-.config(function ($routeProvider) {
-  $routeProvider
-    .when('/login', {
-      templateUrl: 'login/login.html',
-      controller: 'LoginCtrl'
-    })
-    .when('/register', {
-      templateUrl: 'register/register.html',
-      controller: 'RegisterCtrl'
-    })
-    .when('/logout', {
-      templateUrl: 'logout/logout.html',
-      controller: 'LogoutCtrl'
-    })
-    .when('/notes', {
-      templateUrl: 'notes/notes.html',
-      controller: 'NotesCtrl'
-    })
-    // TODO: Archive
-    .when('/dyagraph', {
-      templateUrl: 'dyagraph/dyagraph.html',
-    })
-    .when('/search', {
-      templateUrl: 'search/search.html',
-      controller: 'SearchCtrl'
-    })
-    .otherwise({
-      redirectTo: '/login'
-    });
-})
-
 .config(function ($locationProvider) {
   $locationProvider.html5Mode(true);
   $locationProvider.hashPrefix('!');
 })
 
-.controller('MainCtrl', function (notesManager, $scope) {
-  notesManager.init();
+.config(function ($componentLoaderProvider) {
+  // The default mapping is to ./components/<name>/<name>.html, but
+  // our build system and gulp-angular-templatecache can only map to
+  // components/<name>/<name>.html without the './' prefix.
+  $componentLoaderProvider.setTemplateMapping(function (name) {
+    return name + '/' + name + '.html';
+  });
+})
+
+.controller('MainController', function ($router) {
+  $router.config([
+    { path: '/', redirectTo: '/login'},
+
+    { path: '/login', component: 'login'},
+    { path: '/register', component: 'register'},
+    { path: '/logout', component: 'logout'},
+    { path: '/notes', component: 'notes'},
+    { path: '/archive', component: 'archive'},
+    { path: '/search', component: 'search'},
+  ])
 });

@@ -2,7 +2,7 @@
 
 angular.module('dyanote')
 
-.controller('SplashScreenCtrl', function ($scope, $http, $interval, SERVER_CONFIG) {
+.controller('SplashscreenController', function ($scope, $http, $interval, SERVER_CONFIG) {
   $scope.loading = true;
   $scope.percentage = 0;
 

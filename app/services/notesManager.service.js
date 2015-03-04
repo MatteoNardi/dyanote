@@ -6,19 +6,6 @@ angular.module('dyanote')
 // creating and saving notes.  
 .service('notesManager', function ($log, $timeout, $q, auth, notifications, openNotes, noteResource, notesFactory, notesGraph, notesCoherenceTools) {
 
-  this.init = function () {
-    var loadNotes = function () {
-      $log.info('Retrieving all notes...');
-      this.loadAll().then(function () {
-        $log.info("Notes loaded: " + notesGraph.count());
-      }, function () {
-        $log.error("Loading notes failed");
-      });
-    }.bind(this);
-    if (auth.isAuthenticated) loadNotes();
-    auth.onLogin.push(loadNotes);
-  }
-
   // Notes with unsaved changes.
   var dirtyNotes = {};
 

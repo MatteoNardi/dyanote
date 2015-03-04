@@ -1,11 +1,11 @@
 'use strict';
 
-describe('Controller: LoginCtrl', function () {
+describe('Controller: LoginController', function () {
 
   // load the controller's module
   beforeEach(module('dyanote'));
 
-  var LoginCtrl,
+  var LoginController,
     createController,
     scope,
     $log,
@@ -24,16 +24,16 @@ describe('Controller: LoginCtrl', function () {
 
     scope = $rootScope.$new();
     createController = function () {
-      return $controller('LoginCtrl', {
+      return $controller('LoginController', {
         $scope: scope,
       });
     }
-    LoginCtrl = createController();
+    LoginController = createController();
   }));
 
   it('should redirect to notes if user is already logged in', function () {
     auth.loadFromSettings.and.returnValue(true);
-    LoginCtrl = createController();
+    LoginController = createController();
     expect($log.warn.logs.shift().shift()).toBe('User is already logged in');
     expect($location.path()).toBe('/notes');
   });

@@ -4,7 +4,25 @@ angular.module('dyanote')
 
 // Controller for the notes view.
 // It is responsible for navigation (via breadcrumb or clicked links)
-.controller('NotesCtrl', function ($scope, $log, $location, $timeout, openNotes, notesGraph) {
+.controller('NotesController', function ($scope, $log, $location, $timeout, openNotes, notesGraph, notesManager, auth) {
+  this.canActivate = function () {
+    if (notesGraph.count()) {
+      $log.info('NotesController canActivate: true (notes already loaded)');
+      return true;
+    }
+    if (!auth.isAuthenticated()) {
+      $log.warn('NotesController canActivate: false (user not logged in)');
+      return false;
+    }
+    return notesManager.loadAll().then(function () {
+      $log.info('NotesController canActivate: true (loaded notes)');
+      return false;
+    }, function () {
+      $log.warn('NotesController canActivate: false (cant read notes)');
+      return false;
+    });
+  }
+
   $scope.notes = openNotes.notes;
 
   $scope.$on('openNote', function (event, callerNoteId, targetNoteId) {

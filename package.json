@@ -28,7 +28,8 @@
     "d3": "~3.5.5",
     "font-awesome": "~4.3.0",
     "bootstrap": "~3.3.2",
-    "gulp-webserver": "~0.9.0"
+    "gulp-webserver": "~0.9.0",
+    "angular-new-router": "~0.4.0"
   },
   "engines": {
     "node": ">=0.8.0"
