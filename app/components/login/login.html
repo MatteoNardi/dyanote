@@ -1,24 +1,35 @@
-<form id='login-box' role="form" ng-submit="login.login()">
+<form id='login-box' name='loginForm' role="form" ng-submit="login.login(loginForm)">
+    
+    <!-- Email -->
     <div class="form-group">
         <label for="email">Email address</label>
-        <input type="email" class="form-control" id="email" placeholder="Enter email" ng-model="login.form.email">
-        <span class="help-block label-warning">{{ login.form.emailErrorMessage }}</span>
+        <input type="email" ng-model="login.form.email" required
+            class="form-control" placeholder="Enter email"  >
+
     </div>
+
+    <!-- Password -->
     <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" class="form-control" id="password" placeholder="Password" ng-model="login.form.password">
-        <span class="help-block label-warning">{{ login.form.passwordErrorMessage }}</span>
-        <span class="help-block label-warning">{{ login.form.errorMessage }}</span>
+        <input type="password" ng-model="login.form.password" required
+            class="form-control" placeholder="Password">
+
     </div>
+
+    <!-- Remember me -->
     <div class="checkbox">
         <label>
             <input type="checkbox" ng-model="login.form.remember"> Remember me.
         </label>
     </div>
-    <button type="submit" class="btn btn-default" ng-disabled="login.form.isLoggingIn">
+
+    <!-- Login -->
+    <button type="submit" ng-disabled="login.form.isLoggingIn"
+        class="btn btn-default">
         {{(login.form.isLoggingIn) && 'Loggin in...' || 'Login'}}
-        <i class="fa fa-spinner fa-pulse"></i>
+        <i ng-show="login.form.isLoggingIn" class="fa fa-spinner fa-pulse"></i>
     </button>
-    <span class="label-info">{{ login.form.successMessage }}</span>
+    
+    <!-- <span class="label-info">{{ login.form.successMessage }}</span> -->
 </form>
 <a href="/register">Register</a>

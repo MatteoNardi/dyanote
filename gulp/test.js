@@ -35,10 +35,10 @@ gulp.task('test', function (done) {
       // 'app/**/components/**/*.test.js'
     ],
     port: 8080,
-    autoWatch: false,
+    autoWatch: true,
     // browsers: ['PhantomJS'],
     browsers: ['Chrome'],
-    singleRun: true
+    singleRun: false
   }, function () {
     done ();
   });

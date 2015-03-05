@@ -6,7 +6,8 @@ var gulp = require('gulp'),
   webserver = require('gulp-webserver');
   open = require('open'),
   less = require('gulp-less'),
-  babel = require('gulp-babel');
+  babel = require('gulp-babel'),
+  sourcemaps = require('gulp-sourcemaps');
 
 var sources = require('./config.json').sources;
 
@@ -73,11 +74,12 @@ gulp.task('js:vendor', function () {
 });
 
 gulp.task('js:dyanote', function () {
-  var js = gulp.src(sources.dyanote).pipe(babel());
-  var templates = gulp.src(sources.templates).pipe(templateCache({
-    module: 'dyanote'
-  }));
+  var js = gulp.src(sources.dyanote);
+  var templates = gulp.src(sources.templates).pipe(templateCache({ module: 'dyanote' }));
   es.merge(js, templates)
-    .pipe(concat('dyanote.js'))
+    .pipe(sourcemaps.init())
+      .pipe(babel())
+      .pipe(concat('dyanote.js'))
+    .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('dist/build'));
 });
