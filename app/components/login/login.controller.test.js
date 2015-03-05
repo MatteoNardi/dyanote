@@ -5,37 +5,24 @@ describe('Controller: LoginController', function () {
   // load the controller's module
   beforeEach(module('dyanote'));
 
-  var LoginController,
-    createController,
-    scope,
-    $log,
-    $location,
-    auth,
-    loginResponse;
 
   // Initialize the controller and a mock scope
   beforeEach(inject(function ($controller, $rootScope, _$log_, _$location_, $q, _auth_) {
-    loginResponse = $q.defer();
-    $log = _$log_;
-    $location = _$location_;
-    auth = _auth_;
-    spyOn(auth, 'loadFromSettings').and.returnValue(false);
-    spyOn(auth, 'login').and.returnValue(loginResponse.promise);
-
-    scope = $rootScope.$new();
-    createController = function () {
-      return $controller('LoginController', {
-        $scope: scope,
-      });
-    }
-    LoginController = createController();
+    new LoginController()
+    // throw new Error("shit")
+    // createController = function () {
+    //   return $controller('LoginController', {
+    //     $scope: scope,
+    //   });
+    // }
+    // LoginController = createController();
   }));
 
-  it('should redirect to notes if user is already logged in', function () {
-    auth.loadFromSettings.and.returnValue(true);
-    LoginController = createController();
-    expect($log.warn.logs.shift().shift()).toBe('User is already logged in');
-    expect($location.path()).toBe('/notes');
+  iit('should redirect to notes if user is already logged in', function () {
+    // auth.loadFromSettings.and.returnValue(true);
+    // LoginController = createController();
+    // expect($log.warn.logs.shift().shift()).toBe('User is already logged in');
+    // expect($location.path()).toBe('/notes');
   });
 
   it('should require mail', function () {

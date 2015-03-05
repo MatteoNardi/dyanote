@@ -1,9 +1,5 @@
 var gulp = require('gulp');
 var karma = require('karma').server;
-      'node_modules/angular/angular.js',
-      'node_modules/angular-route/angular-route.js',
-      'node_modules/angular-mocks/angular-mocks.js',
-      'node_modules/angular-local-storage/dist/angular-local-storage.js',
 
 /**
 * Run test once and exit
@@ -11,7 +7,7 @@ var karma = require('karma').server;
 gulp.task('test', function (done) {
   karma.start({
     basePath: '',
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'source-map-support'],
     files: [
       'node_modules/angular/angular.js',
       "node_modules/angular-new-router/dist/router.es5.js",
@@ -21,13 +17,27 @@ gulp.task('test', function (done) {
       'app/app.js',
       'app/**/*.js'
     ],
+    preprocessors: {
+      "app/**/*.js": ["babel"]
+    },
+    "babelPreprocessor": {
+      options: {
+        sourceMap: "inline"
+      },
+      filename: function(file) {
+        return file.originalPath.replace(/\.js$/, ".es5.js");
+      },
+      sourceFileName: function(file) {
+        return file.originalPath;
+      }
+    },
     exclude: [
       // 'app/**/components/**/*.test.js'
     ],
     port: 8080,
     autoWatch: false,
-    browsers: ['PhantomJS'],
-    // browsers: ['Chrome'],
+    // browsers: ['PhantomJS'],
+    browsers: ['Chrome'],
     singleRun: true
   }, function () {
     done ();

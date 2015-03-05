@@ -5,7 +5,8 @@ var gulp = require('gulp'),
   es = require('event-stream'),
   webserver = require('gulp-webserver');
   open = require('open'),
-  less = require('gulp-less');;
+  less = require('gulp-less'),
+  babel = require('gulp-babel');
 
 var sources = require('./config.json').sources;
 
@@ -72,7 +73,7 @@ gulp.task('js:vendor', function () {
 });
 
 gulp.task('js:dyanote', function () {
-  var js = gulp.src(sources.dyanote);
+  var js = gulp.src(sources.dyanote).pipe(babel());
   var templates = gulp.src(sources.templates).pipe(templateCache({
     module: 'dyanote'
   }));
