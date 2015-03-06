@@ -21,11 +21,12 @@ class LoginController {
       email: '',
       password: '',
       remember: false,
-      isLoggingIn: false
+      isLoggingIn: false,
+      failure: false
     }
   }
 
-  login (loginForm) {
+  login (loginForm, passwordField) {
     var {email, password, remember} = this.form;
 
     this.form.isLoggingIn = true;
@@ -36,8 +37,7 @@ class LoginController {
       this.$location.path('/notes');
     }, () => {
       this.form.isLoggingIn = false;
-      this.form.password.$setValidity('wrongPassword', false);
-      // loginForm.$error.unshift({'wrongPassword': [loginForm] });
+      this.form.failure = true;
     });
   }
 }

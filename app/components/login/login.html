@@ -30,6 +30,6 @@
         <i ng-show="login.form.isLoggingIn" class="fa fa-spinner fa-pulse"></i>
     </button>
     
-    <!-- <span class="label-info">{{ login.form.successMessage }}</span> -->
+    <span ng-show="login.form.failure" class="label-info">Wrong username or password</span>
 </form>
 <a href="/register">Register</a>
