@@ -1,10 +1,19 @@
-'use strict';
 
-angular.module('dyanote')
+class LogoutController {
+  constructor ($log, $location, $timeout, auth, notesGraph) {
+    this.auth = auth;
+    this.notesGraph = notesGraph;
+    this.$log = $log;
+    this.$location = $location;
+    this.$timeout = $timeout;
+  }
 
-.controller('LogoutController', function ($scope, $log, $location, auth, notesGraph) {
-  auth.logout();
-  notesGraph.clear();
-  $log.info('Logout');
-  $location.path('/login');
-});
+  activate () {
+    this.auth.logout();
+    this.notesGraph.clear();
+    this.$log.info('Logout');
+    this.$timeout(() => this.$location.path('/login'), 3000);
+  }
+}
+
+angular.module('dyanote').controller('LogoutController', LogoutController);
