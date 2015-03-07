@@ -1,9 +1,11 @@
 
-// Service keeping track of notes currently open in the UI.
+// Mantains the list of the notes currently opened by the user.
+// Has a focus event.
 class openNotes {
     
   constructor () {
     this._notes = [];
+    this._focusHandlers = [];
   }
 
   // Ordered list which starts from the root/archive note
@@ -34,6 +36,22 @@ class openNotes {
     var pos = this.notes.indexOf(note);
     if (pos != -1)
       this.notes.length = pos;
+  }
+
+  // Focus event: used to move to/highlight a particular note
+
+  focus (note) {
+    this._focusHandlers.forEach(cb => cb(note));
+  }
+
+  addFocusHandler (cb) {
+    this._focusHandlers.push(cb);
+  }
+
+  removeFocusHandler (cb) {
+    var index = this._focusHandlers.indexOf(cb);
+    if (index != -1)
+      this._focusHandlers.splice(index, 1);
   }
 }
 
