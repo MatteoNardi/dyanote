@@ -1,39 +1,17 @@
-'use strict';
-
 
 // Controller for the notes view.
 // It is responsible for navigation (via breadcrumb or clicked links)
 class NotesController {
-  constructor ($log, $timeout, openNotes, notesGraph, notesManager, auth) {
-    this.$log = $log,
-    this.$timeout = $timeout,
-    this.openNotes = openNotes,
-    this.notesGraph = notesGraph,
-    this.notesManager = notesManager,
-    this.auth = auth
+  constructor ($log, $timeout, openNotes) {
+    this.$log = $log;
+    this.$timeout = $timeout;
+    this.openNotes = openNotes;
   }
 
-  canActivate () {
-    if (this.notesGraph.count()) {
-      this.$log.info('NotesController canActivate: true (notes already loaded)');
-      return true;
-    }
-    if (!auth.isAuthenticated()) {
-      this.$log.warn('NotesController canActivate: false (user not logged in)');
-      return false;
-    }
-    return this.notesManager.loadAll().then(function () {
-      this.$log.info('NotesController canActivate: true (loaded notes)');
-      return true;
-    }, function () {
-      this.$log.warn('NotesController canActivate: false (cant read notes)');
-      return false;
-    });
-  }
 
   activate () {
     this.notes = this.openNotes.notes;
-  }  
+  }
 
   onBreadcrumbItemClicked ($event, note) {
     $event.preventDefault();
@@ -42,13 +20,13 @@ class NotesController {
 
   archive (note) {
     note.archive();
-    var pos = openNotes.notes.indexOf(note);
+    var pos = this.openNotes.notes.indexOf(note);
 
     if (pos > 0) {
-      var previous = openNotes.notes[pos -1];
+      var previous = this.openNotes.notes[pos -1];
       this.openNotes.focus(previous);
       $timeout(function () {
-        openNotes.close(note);
+        this.openNotes.close(note);
       }, 500);
     }
   }

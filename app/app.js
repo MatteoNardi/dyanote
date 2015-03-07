@@ -40,8 +40,6 @@ angular.module('dyanote', [
     { path: '/login', component: 'login'},
     { path: '/register', component: 'register'},
     { path: '/logout', component: 'logout'},
-    { path: '/notes', component: 'notes'},
-    { path: '/archive', component: 'archive'},
-    { path: '/search', component: 'search'},
+    { path: '/notes', component: 'authenticated'}
   ])
 });

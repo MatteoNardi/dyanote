@@ -3,7 +3,7 @@
 angular.module('dyanote')
 
 // SearchCtrl is responsible for searching notes.
-.controller('SearchCtrl', function ($scope, $location, $log, notesGraph, notesManager, $rootScope) {
+.controller('SearchCtrl', function ($scope, $location, $log, notesGraph, $rootScope) {
   $scope.input = {
     searchTerms: ''
   };

@@ -9,9 +9,13 @@ angular.module('dyanote')
   // Notes with unsaved changes.
   var dirtyNotes = {};
 
+  // Todo: set this to false in logout controller
+  this.notesLoaded = false;
+
   // Load all notes
   this.loadAll = function () {
     return noteResource.getAll().then(function (jsons) {
+      this.notesLoaded = true;
       // Add notes.
       for (var i = 0; i < jsons.length; i++) {
         var note = notesFactory.newNote(jsons[i]);
