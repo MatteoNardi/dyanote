@@ -1,6 +1,5 @@
-'use strict';
 
-describe('Service: notifications', function () {
+describe('notifications service', function () {
   beforeEach(module('dyanote'));
 
   var notifications;

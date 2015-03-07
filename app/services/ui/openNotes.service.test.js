@@ -1,5 +1,5 @@
 
-describe('openNotes Service', function () {
+describe('openNotes service', function () {
   beforeEach(module('dyanote'));
 
   var openNotes, A, B, C;

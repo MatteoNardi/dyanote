@@ -1,10 +1,10 @@
-'use strict';
-
-angular.module('dyanote')
 
 // User notification service.
-.service('notifications', function () {
-  var me = this;
+class notifications {
+  
+  constructor () {
+    this._notifications = [];
+  }
 
   // List of notification objects:
   // {
@@ -18,29 +18,34 @@ angular.module('dyanote')
   //     }, ...
   //   ]
   // }
-  this.notifications = [];
+  get notifications () {
+    return this._notifications;
+  }
 
   // Display warning (Eg. implicit notes deletions)
-  this.warn = function (label, actions) {
-    add('warn', label, actions)
+  warn (label, actions) {
+    this._add('warn', label, actions)
   }
 
   // Display safe informations (Eg. explicit notes deletions)
-  this.info = function (label, actions) {
-    add('info', label, actions)
+  info (label, actions) {
+    this._add('info', label, actions)
   }
 
   // Display success (Eg. notes updates from server)
-  this.success = function (label, actions) {
-    add('success', label, actions)
+  success (label, actions) {
+    this._add('success', label, actions)
   }
 
-  function add (type, label, actions) {
-    me.notifications.push({
+  // Private: display generic notification
+  _add (type, label, actions) {
+    this.notifications.push({
       time: Date.now(),
       label: label,
       type: type,
       actions: actions
     });
-  };
-});
+  };  
+}
+
+angular.module('dyanote').service('notifications', notifications);
