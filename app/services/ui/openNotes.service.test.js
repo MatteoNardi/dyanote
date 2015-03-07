@@ -1,6 +1,5 @@
-'use strict';
 
-describe('Service: openNotes', function () {
+describe('openNotes Service', function () {
   beforeEach(module('dyanote'));
 
   var openNotes, A, B, C;
@@ -47,12 +46,12 @@ describe('Service: openNotes', function () {
     expect(openNotes.notes[0]).toBe(A);
   });
 
-  it('should insert notes', function () {
+  it('should allow to insert notes after others', function () {
     openNotes.open(C);
     var D = {
       hasParent: function () { return false; }
     }
-    openNotes.open(D, B);
+    openNotes.openAfter(D, B);
     expect(openNotes.notes.length).toBe(3);
     expect(openNotes.notes[0]).toBe(A);
     expect(openNotes.notes[1]).toBe(B);
