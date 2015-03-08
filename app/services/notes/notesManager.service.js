@@ -14,7 +14,7 @@ angular.module('dyanote')
 
   // Load all notes
   this.loadAll = function () {
-    return noteResource.getAll().then(function (jsons) {
+    return noteResource.getAll().then(jsons => {
       this.notesLoaded = true;
       // Add notes.
       for (var i = 0; i < jsons.length; i++) {
@@ -29,9 +29,7 @@ angular.module('dyanote')
         $log.error('Archive note not found');
 
       openNotes.open(notesGraph.getRoot());
-    }, function (reason) {
-      return $q.reject(reason);
-    });
+    }, reason => $q.reject(reason));
   };
 
   function connectSignals (note) {

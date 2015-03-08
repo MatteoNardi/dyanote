@@ -1,39 +1,47 @@
 'use strict';
 
-angular.module('dyanote')
 
-// SearchCtrl is responsible for searching notes.
-.controller('SearchCtrl', function ($scope, $location, $log, notesGraph, $rootScope) {
-  $scope.input = {
-    searchTerms: ''
-  };
+// SearchController is responsible for searching notes.
+class SearchController {
 
-  $scope.$watch('input.searchTerms', function (newValue, oldValue) {
-    var text = newValue;
-    if (!text) {
-      $scope.isLoading = false;
-      $scope.results = [];
-      return;
-    } 
-    $log.info('Searching for "' + text + '"');
-    var response = notesGraph.search(text);
-    $scope.isLoading = true;
-    $scope.results = response.results;
-    response.promise.then(function () {
-      $scope.isLoading = false;
+  constructor ($rootScope, $location, $log, notesGraph) {
+    this.$rootScope = $rootScope;
+    this.$location = $location;
+    this.$log = $log;
+    this.notesGraph = notesGraph;
+  }
+  
+  activate () {
+    this.input = {
+      searchTerms: ''
+    };
+    this.isLoading = false;
+    this.results = []
+
+    this.$rootScope.$watch(() => this.input.searchTerms, text => {
+      if (!text) {
+        this.isLoading = false;
+        this.results = [];
+        return;
+      } 
+      this.$log.info('Searching for "' + text + '"');
+      var response = this.notesGraph.search(text);
+      this.isLoading = true;
+      console.log(response.results);
+      this.results = response.results;
+      response.promise.then(() => this.isLoading = false);
     });
-  });
+  }
 
-  $scope.open = function (note) {
+  open (note) {
     console.log(note);
     $rootScope.currentNote = note;
-    $location.path('/notes');
+    this.$location.path('/notes/view');
   }
 
-  $scope.cancel = function () {
-    $location.path('/notes');
+  cancel () {
+    this.$location.path('/notes/view');
   }
+}
 
-  $scope.isLoading = false;
-  $scope.results = [];
-});
+angular.module('dyanote').controller('SearchController', SearchController);

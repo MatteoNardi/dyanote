@@ -24,7 +24,7 @@ angular.module('dyanote')
         scope.$apply(function () {
           var note = data.obj;
           openNotes.open(data.note);
-          $location.path('/notes');
+          $location.path('/notes/view');
         });
       };
 

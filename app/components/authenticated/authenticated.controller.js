@@ -12,6 +12,7 @@ class AuthenticatedController {
 
       { path: '/view', component: 'notes'},
       { path: '/archive', component: 'archive'},
+      { path: '/dyagraph', component: 'dyagraph'},
       { path: '/search', component: 'search'}
     ]);
   }
