@@ -15,7 +15,7 @@ class openNotes {
   }
 
   // Replace curretly open notes with the given note and its ancestors.
-  open (note, insertAfter) {
+  open (note) {
     this.notes.length = 0;
     while (note) {
       this.notes.unshift(note);

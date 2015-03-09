@@ -27,7 +27,7 @@ describe('SearchController', function () {
       }
     });
 
-    SearchController.input.searchTerms = 'abracadabra';
+    SearchController.searchTerms = 'abracadabra';
     _.$rootScope.$apply();
     expect(SearchController.isLoading).toBe(true);
     expect(SearchController.results.length).toBe(0);
@@ -52,7 +52,7 @@ describe('SearchController', function () {
     SearchController.results = ['r1', 'r2'];
     SearchController.isLoading = true;
 
-    SearchController.input.searchTerms = '';
+    SearchController.searchTerms = '';
     _.$rootScope.$apply();
 
     expect(SearchController.results.length).toBe(0);

@@ -4,21 +4,20 @@
 // SearchController is responsible for searching notes.
 class SearchController {
 
-  constructor ($rootScope, $location, $log, notesGraph) {
+  constructor ($rootScope, $location, $log, notesGraph, openNotes) {
     this.$rootScope = $rootScope;
     this.$location = $location;
     this.$log = $log;
     this.notesGraph = notesGraph;
+    this.openNotes = openNotes;
   }
   
   activate () {
-    this.input = {
-      searchTerms: ''
-    };
+    this.searchTerms = '';
     this.isLoading = false;
     this.results = []
 
-    this.$rootScope.$watch(() => this.input.searchTerms, text => {
+    this.$rootScope.$watch(() => this.searchTerms, text => {
       if (!text) {
         this.isLoading = false;
         this.results = [];
@@ -35,7 +34,7 @@ class SearchController {
 
   open (note) {
     console.log(note);
-    $rootScope.currentNote = note;
+    this.openNotes.open(note);
     this.$location.path('/notes/view');
   }
 
