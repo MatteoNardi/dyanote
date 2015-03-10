@@ -4,7 +4,7 @@ angular.module('dyanote')
 // which basically is a wrapper around contentEditable.
 // This directive setups Scribe, provides two-way data binding to note's body
 // and adds basic behavior (clicking links and focusing notes)
-.directive('editor', function ($location, $timeout, $window, $log, SERVER_CONFIG) {
+.directive('editor', function ($location, $timeout, $window, $log, openNotes, notesGraph, SERVER_CONFIG) {
   return {
     restrict: 'A',
     link: function postLink(scope, element, attrs) {
@@ -51,23 +51,24 @@ angular.module('dyanote')
           // Use a regex the get the note id, which is the last number in the href.
           var targetNoteId = href.match(/.*\/(\d+)\/$/)[1];
           var callerNoteId = scope.note.id;
+          var targetNote = notesGraph.getById(targetNoteId);
+          var callerNote = notesGraph.getById(callerNoteId);
           console.log('Note ' + callerNoteId + ' opens ' + targetNoteId);
-          scope.notes.open(targetNoteId, callerNoteId);
+          openNotes.openAfter(targetNote, callerNote);
+          openNotes.focus(targetNote);
           scope.$apply();
         }
       });
 
-      // Scroll to note on directive creation...
-      var scrollToNote = function () {
-        jQuery("html,body").animate({scrollTop: element.parent().offset().top - 90}, 400);
-        // Note: this 90px magic number shoud be @navbar-height + @note-margin in style.less 
+      var focusHandler = (note) => {
+        if (note == scope.note) {
+          jQuery("html,body").animate({scrollTop: element.parent().offset().top - 90}, 400);
+          // Note: this 90px magic number shoud be @navbar-height + @note-margin in style.less 
+        }
       };
-      scrollToNote();
-      // ... and when someone asks to.
-      scope.$on('$scrollToNote', function (event, targetNote) {
-        if (targetNote == scope.note)
-          scrollToNote();
-      });
+      openNotes.addFocusHandler(focusHandler);
+      element.on('$destroy', () => { openNotes.removeFocusHandler(focusHandler); });
+      openNotes.focus(scope.note);
     }
   };
 });

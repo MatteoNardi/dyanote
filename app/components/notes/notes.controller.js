@@ -8,7 +8,6 @@ class NotesController {
     this.openNotes = openNotes;
   }
 
-
   activate () {
     this.notes = this.openNotes.notes;
   }
