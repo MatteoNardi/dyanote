@@ -2,33 +2,33 @@
 <div class="toolbar" ng-show="toolbar.show" 
     style="top: {{ toolbar.Y }}px; left: {{ toolbar.X}}px">
     
-    <a shortcut="ctrl+l" ng-click="commands.link()"
+    <button shortcut="ctrl+l" ng-click="commands.link()"
        tooltip-html-unsafe="Create a new note and link to it.<strong>Ctrl+L</strong>"
        tooltip-placement="right" tooltip-popup-delay="500">
         <i class="fa fa-link"></i>
-    </a>
+    </button>
 
-    <a shortcut="ctrl+b" ng-click="commands.strong()"
+    <button shortcut="ctrl+b" ng-click="commands.strong()"
        tooltip-html-unsafe="Make the selected text bold.<strong>Ctrl+B</strong>"
        tooltip-placement="right" tooltip-popup-delay="500">
         <i class="fa fa-bold"></i>
-    </a>
+    </button>
 
-    <a shortcut="ctrl+i" ng-click="commands.em()"
+    <button shortcut="ctrl+i" ng-click="commands.em()"
        tooltip-html-unsafe="Make the selected text italic.<strong>Ctrl+I</strong>"
        tooltip-placement="right" tooltip-popup-delay="500">
         <i class="fa fa-italic"></i>
-    </a>
+    </button>
 
-    <a shortcut="ctrl+t" ng-click="commands.title()"
+    <button shortcut="ctrl+t" ng-click="commands.title()"
        tooltip-html-unsafe="Make the selected text a title.<strong>Ctrl+T</strong>"
        tooltip-placement="right" tooltip-popup-delay="500">
         <i class="fa fa-header"></i>
-    </a>
+    </button>
 
-    <a shortcut="ctrl+e" ng-click="commands.insertUnorderedList()"
+    <button shortcut="ctrl+e" ng-click="commands.insertUnorderedList()"
        tooltip-html-unsafe="Add a bullet list.<strong>Ctrl+E</strong>"
        tooltip-placement="right" tooltip-popup-delay="500">
         <i class="fa fa-list-ul"></i>
-    </a>
+    </button>
 </div>
