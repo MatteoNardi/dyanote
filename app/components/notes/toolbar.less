@@ -4,18 +4,26 @@
 
 .toolbar {
     display: block;
-    position: absolute;
-    left: 640px;
-    top: 30px;
+    position: fixed;
 
-    button {
-        display: block;
-        margin: 10px 0;
-        width: 100px;
+    width: 35px * 6;
+    height: 30px;
 
-        span {
-            margin: 0 5px;
-        }
+    a {
+        display: inline-block;
+        background-color: @dyanote-green;
+        border-radius: 15px;
+        height: 30px;
+        width: 30px;
+        margin: 0 0 0 5px;
+        color: white;
+        text-align: center;
+        font-size: 16px; 
+        line-height: 30px;
+    }
+
+    a:first-child {
+        background-color: @dyanote-blue;
     }
 }
 

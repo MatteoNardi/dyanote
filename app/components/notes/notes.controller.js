@@ -29,11 +29,6 @@ class NotesController {
       }, 500);
     }
   }
-
-  // Show a dialog to move the note to a new parent.
-  showMoveDialog (note) {
-    console.log('show move dialog', note);
-  }
 }
 
 angular.module('dyanote').controller('NotesController', NotesController);
