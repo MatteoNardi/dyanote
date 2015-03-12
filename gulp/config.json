@@ -27,7 +27,7 @@
     ],
     "vendor": [
       "node_modules/jquery/dist/jquery.min.js",
-      "node_modules/angular/angular.js",
+      "node_modules/angular/angular.min.js",
       "node_modules/angular-new-router/dist/router.es5.js",
       "node_modules/angular-local-storage/dist/angular-local-storage.js",
       "node_modules/mousetrap/mousetrap.js",

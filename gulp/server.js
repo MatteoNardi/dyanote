@@ -46,29 +46,29 @@ gulp.task('watch', function () {
 });
 
 gulp.task('index', function () {
-  gulp.src(sources.index)
+  return gulp.src(sources.index)
     .pipe(gulp.dest('dist'));
 });
 
 gulp.task('style', function () {
-  gulp.src('app/main.less')
+  return gulp.src('app/main.less')
     .pipe(concat('style.less'))
     .pipe(less())
     .pipe(gulp.dest('dist/build'));
 });
 
 gulp.task('fonts', function () {
-  gulp.src(sources.fonts)
+  return gulp.src(sources.fonts)
     .pipe(gulp.dest('dist/build/fonts'));
 });
 
 gulp.task('images', function () {
-  gulp.src(sources.images)
+  return gulp.src(sources.images)
     .pipe(gulp.dest('dist/build/images'));
 });
 
 gulp.task('js:vendor', function () {
-  gulp.src(sources.vendor)
+  return gulp.src(sources.vendor)
     .pipe(concat('vendor.js'))
     .pipe(gulp.dest('dist/build'))
 });
@@ -76,7 +76,7 @@ gulp.task('js:vendor', function () {
 gulp.task('js:dyanote', function () {
   var js = gulp.src(sources.dyanote);
   var templates = gulp.src(sources.templates).pipe(templateCache({ module: 'dyanote' }));
-  es.merge(js, templates)
+  return es.merge(js, templates)
     .pipe(sourcemaps.init())
       .pipe(babel())
       .pipe(concat('dyanote.js'))
