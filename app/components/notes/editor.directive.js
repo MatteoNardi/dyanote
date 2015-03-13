@@ -97,14 +97,21 @@ angular.module('dyanote')
         scope.toolbar.X = Math.floor(rect.left + rect.width/2 - toolbarWidth/2);
         scope.toolbar.Y = Math.floor(rect.top - 40);
       }
-      scope.$apply();
-    }
+      scope.$digest();
+    };
+
+    // Add complicated handlers for detecting selection changes
     element.on('keyup', onSelectionChanged);
+    var onMouseUp = function () {
+      document.body.removeEventListener('mouseup', onMouseUp);
+      $timeout(onSelectionChanged, 0);
+    }
+    element.on('blur', () => {
+      document.body.removeEventListener('mouseup', onMouseUp);
+      scope.toolbar.show = false;
+      scope.$digest();
+    });
     element.on('mousedown', () => {
-      function onMouseUp () {
-        document.body.removeEventListener('mouseup', onMouseUp);
-        $timeout(onSelectionChanged, 0);
-      }
       document.body.addEventListener('mouseup', onMouseUp)
     });
   }
@@ -131,6 +138,8 @@ angular.module('dyanote')
       setupAnimatedScrolling(scope, element);
       setupToolbar(scope, element);
       setupCommands(scope, element);
+      // Focus element
+      $timeout(() => element.focus(), 0, false);
     }
   };
 });
