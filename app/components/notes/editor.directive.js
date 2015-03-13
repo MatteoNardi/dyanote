@@ -100,30 +100,22 @@ angular.module('dyanote')
       scope.$digest();
     };
 
-    // Add complicated handlers for detecting selection changes
-    element.on('keyup', onSelectionChanged);
-    var onMouseUp = function () {
-      document.body.removeEventListener('mouseup', onMouseUp);
+    document.addEventListener('selectionchange', () => {
       $timeout(onSelectionChanged, 0);
-    }
-    element.on('blur', () => {
-      document.body.removeEventListener('mouseup', onMouseUp);
-      scope.toolbar.show = false;
-      scope.$digest();
-    });
-    element.on('mousedown', () => {
-      document.body.addEventListener('mouseup', onMouseUp)
-    });
+    })
   }
 
   // Inject in the parent scope the toolbar commands
   function setupCommands (scope, element) {
+    var run = (command) => $timeout(function () {
+      scope.scribe.commands[command].execute()
+    }, 0, false);
     scope.commands = {
-      link: () => scope.scribe.commands['link'].execute(),
-      strong: () => scope.scribe.commands['strong'].execute(),
-      em: () => scope.scribe.commands['em'].execute(),
-      title: () => scope.scribe.commands['title'].execute(),
-      insertUnorderedList: () => scope.scribe.commands['insertUnorderedList'].execute()
+      link: () => run('link'),
+      strong: () => run('strong'),
+      em: () => run('em'),
+      title: () => run('title'),
+      insertUnorderedList: () => run('insertUnorderedList')
     }
   }
 

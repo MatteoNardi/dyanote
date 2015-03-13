@@ -36,7 +36,10 @@ dyanote.scribe.commands.link = function (scribe) {
 
       document.execCommand("createLink", false, note.url);
 
-      $scope.$emit('$openNote', $scope.note.id, note.id);
+      // Open note
+      var openNotes = injector.get('openNotes');
+      openNotes.openAfter(note, $scope.note);
+      $scope.$digest();
     });
   };
 
