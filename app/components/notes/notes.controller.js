@@ -24,9 +24,7 @@ class NotesController {
     if (pos > 0) {
       var previous = this.openNotes.notes[pos -1];
       this.openNotes.focus(previous);
-      $timeout(function () {
-        this.openNotes.close(note);
-      }, 500);
+      this.$timeout(() => this.openNotes.close(note) , 500);
     }
   }
 }
