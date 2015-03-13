@@ -9,11 +9,11 @@
       "app/services/*/*.service.js",
       "app/components/*/*.controller.js",
       "app/components/*/*.directive.js",
-      "**/scribe/*.js",
-      "**/scribe/commands/utils.js",
-      "**/scribe/commands/formatting.js",
-      "**/scribe/commands/link.js",
-      "**/scribe/commands/title.js"
+      "app/scribe/*.js",
+      "app/scribe/commands/utils.js",
+      "app/scribe/commands/formatting.js",
+      "app/scribe/commands/link.js",
+      "app/scribe/commands/title.js"
     ],
     "templates": [
       "app/components/**/*.html"

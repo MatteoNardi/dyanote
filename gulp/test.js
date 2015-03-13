@@ -16,8 +16,10 @@ gulp.task('test', function (done) {
       'node_modules/angular-local-storage/dist/angular-local-storage.js',
       'app/app.js',
       'app/config_local.js',
-      'app/services/**/*.js',
+      'app/services/*/*.js',
       'app/components/*/*.js',
+      'app/scribe/*.js',
+      'app/scribe/*/*.js'
     ],
     preprocessors: {
       "app/**/*.js": ["babel"]
