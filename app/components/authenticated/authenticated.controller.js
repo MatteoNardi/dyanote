@@ -1,9 +1,10 @@
 
 // This controller handles the routing logic of logged in users.
 class AuthenticatedController {
-  constructor ($router, $log, $q, auth, notesManager) {
+  constructor ($router, $log, $q, $location, auth, notesManager) {
     this.$log = $log;
     this.$q = $q;
+    this.$location = $location;
     this.auth = auth;
     this.notesManager = notesManager;
 
@@ -25,6 +26,7 @@ class AuthenticatedController {
     }
     if (!this.auth.isAuthenticated()) {
       this.$log.info('AuthenticatedController canActivate: false (user not logged in)');
+      this.$location.path('/login');
       return false;
     }
     return this.notesManager.loadAll().then(() => {
@@ -32,6 +34,7 @@ class AuthenticatedController {
       return true;
     }, reason => {
       this.$log.warn('AuthenticatedController canActivate: false (cant read notes)');
+      this.$location.path('/login');
       return this.$q.reject(reason);
     });
   }

@@ -62,4 +62,12 @@ describe ('AuthenticatedController', function () {
     var expectedMsg = 'AuthenticatedController canActivate: false (cant read notes)';
     expect(_.$log.warn.logs.shift().shift()).toBe(expectedMsg);
   });
+
+  it('should redirect to /login if user is not logged in', function () {
+    _.$location.path('/notes');
+    expect(_.$location.path()).toBe('/notes');
+    spyOn(_.auth, 'isAuthenticated').and.returnValue(false);
+    component.canActivate();
+    expect(_.$location.path()).toBe('/login');
+  })
 });

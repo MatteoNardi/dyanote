@@ -15,7 +15,9 @@ gulp.task('test', function (done) {
       "node_modules/angular-bootstrap/dist/ui-bootstrap.min.js",
       'node_modules/angular-local-storage/dist/angular-local-storage.js',
       'app/app.js',
-      'app/**/*.js'
+      'app/config_local.js',
+      'app/services/**/*.js',
+      'app/components/*/*.js',
     ],
     preprocessors: {
       "app/**/*.js": ["babel"]
