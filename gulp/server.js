@@ -74,7 +74,7 @@ gulp.task('js:vendor', function () {
 });
 
 gulp.task('js:dyanote', function () {
-  var js = gulp.src(sources.dyanote);
+  var js = gulp.src(sources.dyanote.concat('app/config_local.js'));
   var templates = gulp.src(sources.templates).pipe(templateCache({ module: 'dyanote' }));
   return es.merge(js, templates)
     .pipe(sourcemaps.init())

@@ -60,7 +60,7 @@ gulp.task('publish', ['build:deploy'], function() {
 
 // No sourcemaps
 gulp.task('js:dyanote:deploy', function () {
-  var js = gulp.src(sources.dyanote);
+  var js = gulp.src(sources.dyanote.concat('app/config_production.js'));
   var templates = gulp.src(sources.templates).pipe(templateCache({ module: 'dyanote' }));
   return es.merge(js, templates)
     .pipe(babel())
