@@ -11,7 +11,9 @@ class Minigraph {
     this.element = element;
 
     this.svg = d3.select(element[0]).append('svg');
-    this.svg.append('g');
+    var main = this.svg.append('g').attr('class', 'main')
+    main.append('g').attr('class', 'mainPath');
+    main.append('g').attr('class', 'notes');
 
     // Render on openNotes changes
     scope.$watchCollection(() => this.openNotes.notes, () => this.render());
@@ -32,14 +34,14 @@ class Minigraph {
   renderOpenNotes () {
     var me = this;
 
-    var notes = this.svg.select('g').selectAll('.open')
+    var notes = this.svg.select('.notes').selectAll('.open')
       .data(this.openNotes.notes);
 
     notes.enter().append('circle')
       .attr('class', 'open')
       .attr('r', '4')
-      .attr('cy', (note, i) => me.defaultPos(i).x)
-      .attr('cx', (note, i) => me.defaultPos(i).y)
+      .attr('cx', (note, i) => me.defaultPos(i).x)
+      .attr('cy', (note, i) => me.defaultPos(i).y)
       .attr('fill',  this.defaultFill)
       .on('click', function (note) { me.onNoteClicked(this, note); })
       .append('title');
@@ -53,7 +55,24 @@ class Minigraph {
   }
 
   renderPath () {
+    var me = this;
 
+    // var line = d3.svg.line()
+    //   .x(function(d) { return me.defaultPos(i).x; })
+    //   .y(function(d) { return me.defaultPos(i).y; })
+
+    var path = this.svg.select('.mainPath').selectAll('.path')
+      .data(this.openNotes.notes);
+
+    path.enter().append('line')
+      .attr('class', 'path')
+      .attr('x1', (note, i) => me.defaultPos(i).x)
+      .attr('y1', (note, i) => me.defaultPos(i).y)
+      .attr('x2', (note, i) => me.defaultPos(i-1).x)
+      .attr('y2', (note, i) => me.defaultPos(i-1).y)
+      // .attr('d', line);
+    
+    path.exit().remove();
   }
 
   // Default note fill for open note circles
@@ -95,10 +114,10 @@ class Minigraph {
     // Translate view
     var i = this.openNotes.notes.indexOf(note) -2,
       pos = this.defaultPos(i > 0 ? i : 0);
-    this.svg.select('g')
+    this.svg.select('.main')
       .transition()
         .duration(500)
-        .attr('transform', `translate(${35-pos.y}, ${35-pos.x})`);
+        .attr('transform', `translate(${35-pos.x}, ${35-pos.y})`);
   }
 }
 
