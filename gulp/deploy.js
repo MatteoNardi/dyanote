@@ -23,7 +23,7 @@ gulp.task('build:deploy', ['style', 'fonts', 'images', 'js:vendor', 'js:dyanote:
   var buildFolder = 'dist/build_' + buildNum;
 
   var scout = gulp.src('app/index.html')
-    .pipe(replace(/="build\//g, '="build_' +buildNum+ '/'))
+    .pipe(replace(/="\/build\//g, '="\/build_' +buildNum+ '/'))
     .pipe(gulp.dest('dist'));
   var build = gulp.src('dist/build/**/*'/*, {base:'dist'}*/)
     .pipe(gulp.dest(buildFolder));

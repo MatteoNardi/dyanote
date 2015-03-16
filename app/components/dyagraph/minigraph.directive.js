@@ -4,16 +4,14 @@ class Minigraph {
   constructor (notesGraph, openNotes) {
     this.openNotes = openNotes;
     this.notesGraph = notesGraph;
-    console.log('constructor')
   }
 
   link (scope, element) {
-    console.log('link')
     this.scope = scope;
     this.element = element;
 
     this.svg = d3.select(element[0]).append('svg');
-    this.setupFilters();
+    this.svg.append('g');
 
     // Render on openNotes changes
     scope.$watchCollection(() => this.openNotes.notes, () => this.render());
@@ -26,72 +24,81 @@ class Minigraph {
     });
   }
 
-  setupFilters () {
-    var defs = this.svg.append('defs');
-
-    var filter = defs.append('focusFilter')
-      .attr('id', 'drop-shadow')
-      .attr('height', '130%');
-
-    filter.append('feGaussianBlur')
-      .attr('in', 'SourceAlpha')
-      .attr('stdDeviation', 5)
-      .attr('result', 'blur');
-
-    // filter.append('feOffset')
-    //   .attr('in', 'blur')
-    //   .attr('dx', 5)
-    //   .attr('dy', 5)
-    //   .attr('result', 'offsetBlur');
-
-    var feMerge = filter.append('feMerge');
-    feMerge.append('feMergeNode')
-      .attr('in', 'blur')
-    feMerge.append('feMergeNode')
-      .attr('in', 'SourceGraphic');
+  render () {
+    this.renderOpenNotes();
+    this.renderPath();
   }
 
-  render () {
-    console.info('render');
-    var me = this,
-      width = 300,
-      height = 300,
-      margin = 10;
+  renderOpenNotes () {
+    var me = this;
 
-    var mainCircles = this.svg.selectAll('.open')
+    var notes = this.svg.select('g').selectAll('.open')
       .data(this.openNotes.notes);
 
-    mainCircles.enter().append('circle')
+    notes.enter().append('circle')
       .attr('class', 'open')
       .attr('r', '4')
-      .attr('cy', '30')
+      .attr('cy', (note, i) => me.defaultPos(i).x)
+      .attr('cx', (note, i) => me.defaultPos(i).y)
+      .attr('fill',  this.defaultFill)
       .on('click', function (note) { me.onNoteClicked(this, note); })
       .append('title');
 
-    mainCircles
-      .attr('cx', (note, i) => margin + i * 30 )
+    notes
       .attr('title', (note, i) => note.title )
       .select('title')
         .text((note, i) => note.title);
 
-    mainCircles.exit().remove();
+    notes.exit().remove();
   }
 
+  renderPath () {
+
+  }
+
+  // Default note fill for open note circles
+  defaultFill (note, i) {
+    if (i == 0)
+      return '#002f2f'; // Dyanote green
+    else
+      return '#82b8b3';
+  }
+
+  // Default open note circles position
+  defaultPos (i) {
+    return {
+      x: i * 45 + (i%2 ? -5 : +5),
+      y: i * 45 + (i%2 ? +5 : -5)
+    }
+  }
+
+  // Open note circles click handler
   onNoteClicked (el, note) {
     this.openNotes.focus(note);
     this.scope.$digest();
   }
 
+  // openNotes focus event handler
   onNoteFocused (note) {
-    console.log('onNoteFocused', note);
+    // Highlight element
     this.svg.selectAll('.open')
+      .attr('fill', this.defaultFill)
       .filter(data => data === note)
       .transition()
         .duration(200)
-        .attr('r', '5')
+        .attr('r', '3')
+        .attr('fill', '#07a3d4') // Dyanote blue
       .transition()
         .duration(200)
-        .attr('r', '4')
+        .attr('r', '4');
+
+    // Translate view
+    var i = this.openNotes.notes.indexOf(note) -2,
+      pos = this.defaultPos(i > 0 ? i : 0);
+    this.svg.select('g')
+      .transition()
+        .duration(500)
+        .attr('transform', `translate(${35-pos.y}, ${35-pos.x})`);
   }
 }
 
