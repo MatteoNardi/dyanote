@@ -26,7 +26,7 @@
     "del": "~1.1.0",
     "open": "0.0.5",
     "event-stream": "~3.1.7",
-    "babel": "~4.6.6",
+    "babel": "~4.7.13",
     "karma": "~0.12.28",
     "karma-jasmine": "~0.3.2",
     "karma-phantomjs-launcher": "~0.1.4",
