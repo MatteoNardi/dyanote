@@ -100,4 +100,19 @@ describe('Service: notesFactory', function () {
     expect(rootNote.children.length).toBe(0);
     expect(archiveNote.children).toContain(note2);
   });
+
+  it('should update children on note creation', function () {
+    expect(rootNote.children).not.toContain(note3);
+    var note3 = notesFactory.newNote({
+      url: 'pages/3/',
+      id: 3,
+      parent: rootJson.url,
+      created: '2013-12-27T17:41:10.871Z',
+      flags: [],
+      title: 'Note 2',
+      body: 'This is note N.2',
+      author: ''
+    });
+    expect(rootNote.children).toContain(note3);
+  })
 });

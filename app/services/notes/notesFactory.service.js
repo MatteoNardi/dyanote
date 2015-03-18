@@ -1,11 +1,10 @@
-'use strict';
 
 angular.module('dyanote')
 
 // notesFactory is responsible for converting notes from
-// their json representation to the more powerfull Note objects.
+// their json representation to the more powerful Note objects.
 // In this service we define the Note class, used all over Dyante.
-.service('notesFactory', function ($log, $timeout, notesGraph) {
+.service('notesFactory', function ($log, notesGraph) {
 
   // Return a new Note object created from the json of our REST service.
   this.newNote = function (json) {
@@ -36,6 +35,9 @@ angular.module('dyanote')
       this._tempId = tempId;
       this._tempUrl = 'https://dyanote.com/templink/' + tempId + '/';
     }
+
+    // Reset children for node parent
+    try { delete this.parent._private.children } catch(e) {}
 
     this.changedSignal = new Signal();
     this.titleChangedSignal = new Signal();
