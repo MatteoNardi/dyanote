@@ -21,7 +21,7 @@ class Minigraph {
     // Animate note focusing
     var focusHandler = this.onNoteFocused.bind(this);
     this.openNotes.addFocusHandler(focusHandler);
-    element.on('$destroy', function () {
+    element.on('$destroy', () => {
       this.openNotes.removeFocusHandler(focusHandler);
     });
   }
