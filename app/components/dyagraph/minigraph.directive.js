@@ -66,7 +66,6 @@ class Minigraph {
     var me = this;
     selection
       .attr('class', 'open')
-      .attr('fill',  this.defaultFill)
       .transition()
         .attr('cx', (note, i) => me.defaultPos(i).x)
         .attr('cy', (note, i) => me.defaultPos(i).y);
@@ -79,10 +78,9 @@ class Minigraph {
       var parent = this.openNotes.notes.indexOf(note.parent);
       if (parent == -1) throw new Error (`Note ${note.title} has no parent open`);
       var { x, y } = me.defaultPos(parent);
-      var radius = 25,
-        pseudoRandomNumer = (note.id % 10)/10,
+      var radius = 20 + 5 * (note.id % 13)/13,
         baseAngle = note.id % 2 ? Math.PI/4 : Math.PI*5/4,
-        angle = baseAngle + (pseudoRandomNumer - .5) * Math.PI/3;
+        angle = baseAngle + ((note.id % 12)/12 - .5) * Math.PI*2/3;
       return {
         x: x + radius * Math.cos(angle),
         y: y - radius * Math.sin(angle)
@@ -117,14 +115,6 @@ class Minigraph {
     paths.exit().remove();
   }
 
-  // Default note fill for open note circles
-  defaultFill (note, i) {
-    if (i == 0)
-      return '#002f2f'; // Dyanote green
-    else
-      return '#82b8b3';
-  }
-
   // Default open note circles position
   defaultPos (i) {
     return {
@@ -146,8 +136,9 @@ class Minigraph {
   onNoteFocused (note) {
     // Highlight element
     this.svg.selectAll('.open')
-      .attr('fill', this.defaultFill)
+      .attr('class', 'open')
       .filter(data => data === note)
+        .attr('class', 'open focused')
       // .transition()
       //   .duration(200)
       //   .attr('r', '3')

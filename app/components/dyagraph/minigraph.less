@@ -14,10 +14,19 @@
         width: 100%;
         height: 100%;
 
+        .open:first-child {
+            fill: @dyanote-green;
+        }
+
         .open {
             stroke-width: 1.3px;
             stroke: black;
             cursor: pointer;
+            fill: #82b8b3;
+        }
+
+        .open.focused {
+            fill: @dyanote-blue;
         }
 
         .child {
