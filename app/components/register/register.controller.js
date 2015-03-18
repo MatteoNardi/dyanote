@@ -1,52 +1,64 @@
-'use strict';
-
-angular.module('dyanote')
 
 // The controller for registering new users.
-.controller('RegisterController', function ($scope, $log, auth) {
-
-  var form = {
-    email: '',
-    password: '',
-    passwordCheck: '',
-
-    emailErrorMessage: '',
-    passwordErrorMessage: '',
-    passwordCheckErrorMessage: '',
-
-    successMessage: '',
-    errorMessage: '',
-
-    isRegistering: false
+class RegisterController {
+  constructor ($log, $location, notifications, auth) {
+    this.auth = auth;
+    this.$log = $log;
+    this.notifications = notifications;
+    this.$location = $location;
   }
-  $scope.form = form;
 
-  $scope.register = function () {
-    if (form.email == '')
-      form.emailErrorMessage = "Email address is required";
-    else if (! /\S+@\S+\.\S+/.test(form.email))
-      form.emailErrorMessage = "This is not a valid mail address";
-    else if (form.password.length < 4)
-      form.passwordErrorMessage = "Password is too short";
-    else if (form.password != form.passwordCheck)
-      form.passwordCheckErrorMessage = 'Passwords are different';
-    else {
-      form.emailErrorMessage = '';
-      form.emailCheckErrorMessage = '';
-      form.isRegistering = true;
+  canActivate () {
+    if (this.auth.isAuthenticated() || this.auth.loadFromSettings()) {
+      this.$log.info('RegisterController canActivate: false (User is already logged in)');
+      this.$location.path('/notes');
+      return false;
+    }
+    this.$log.info('RegisterController canActivate: true');
+    return true;
+  }
 
-      auth.register(form.email, form.password).success(function() {
-        form.isRegistering = false;
-        form.successMessage = 'You received an activation mail.';
-      }).error(function (data, code) {
-        form.isRegistering = false;
-        if (code == 409 /*CONFLICT*/) {
-          form.emailErrorMessage = 'This mail address is already in use';
-        } else {
-          $log.error('Sending mail failed');
-          form.errorMessage = 'Registration failed.';
-        }
-      });
+  activate () {
+    this.form = {
+      email: '',
+      password: '',
+      passwordCheck: '',
+
+      isRegistering: false,
+      alreadyInUse: false,
+      mismatch: false,
+      failure: false
     }
   }
-});
+
+  register (registerForm, passwordField) {
+    var {email, password, passwordCheck} = this.form;
+
+    if (password != passwordCheck) {
+      this.form.mismatch = true;
+      return;
+    }
+
+    this.form.isRegistering = true;
+    this.form.alreadyInUse = false;
+    this.form.mismatch = false;
+    this.form.failure = false;
+
+    this.auth.register(email, password).then(() => {
+      this.$log.info("Registration successful");
+      this.$location.path('/login');
+      this.notifications.success('Registration successful: check your email');
+      this.form.isRegistering = false;
+    }, (response) => {
+      this.form.isRegistering = false;
+      if (response.status == 409 /*CONFLICT*/)
+        this.form.alreadyInUse = true;
+      else {
+        this.$log.error('Sending mail failed');
+        this.form.failure = true;
+      }
+    });
+  }
+}
+
+angular.module('dyanote').controller('RegisterController', RegisterController);
