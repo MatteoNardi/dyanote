@@ -5,6 +5,7 @@ class openNotes {
     
   constructor () {
     this._notes = [];
+    this._set = new Set();
     this._focusHandlers = [];
   }
 
@@ -14,11 +15,17 @@ class openNotes {
     return this._notes;
   }
 
+  isOpen (note) {
+    return this._set.has(note);
+  }
+
   // Replace curretly open notes with the given note and its ancestors.
   open (note) {
     this.notes.length = 0;
+    this._set.clear();
     while (note) {
       this.notes.unshift(note);
+      this._set.add(note);
       note = note.hasParent() && note.parent; 
     }
   }
@@ -27,6 +34,9 @@ class openNotes {
   // with the given note.
   openAfter (note, insertAfter) {
     var insertPos = this.notes.indexOf(insertAfter);
+    for (var i = insertPos + 1; i < this.notes.length; i++)
+      this._set.delete(this.notes[i]);
+    this._set.add(note);
     this.notes.length = insertPos + 1;
     this.notes.push(note);
   }

@@ -26,102 +26,170 @@ class Minigraph {
     });
   }
 
+  // Render functions
+
   render () {
+    this.visibleNotes = this.getVisibleNotes();
+
     this.renderNotes();
     this.renderPath();
   }
 
   renderNotes() {
-    var me = this, 
-      open = this.openNotes.notes,
-      children = open.map((n) => n.children),
-      all = children.reduce((output, current) => {
-        return (output || []).concat(...current);
-      }, [open[0]]);
+    var selection = this.svg.select('.notes')
+      .selectAll('circle')
+        .data(this.visibleNotes);
 
-    // Join data
-    var openSet = new Set(open);
-    var selection = this.svg.select('.notes').selectAll('circle').data(all);
+    this.enterNotes(selection);
+    this.updateNotes(selection);
+    this.updateOpenNotes(selection);
+    this.updateChildNotes(selection);    
+    this.exitNotes(selection);
+  }
 
-    // Enter
+  enterNotes (selection) {
+    var me = this;
     selection.enter().append('circle')
       .attr('r', '4')
       .on('click', function (note) { me.onNoteClicked(this, note); })
-      .append('title');
+      .append('title');    
+  }
 
-    // Update
+  updateNotes (selection) {
     selection
       .attr('title', (note, i) => note.title)
       .select('title')
-        .text((note, i) => note.title);
-    this.updateOpenNotes(selection.filter(note => openSet.has(note)));
-    this.updateChildNotes(selection.filter(note => !openSet.has(note)));    
-
-    // Exit
-    selection.exit().remove();
+        .text((note, i) => note.title);    
   }
 
-  // Update notes in selection to match "Open" style
   updateOpenNotes (selection) {
-    var me = this;
     selection
-      .attr('class', 'open')
-      .transition()
-        .attr('cx', (note, i) => me.defaultPos(i).x)
-        .attr('cy', (note, i) => me.defaultPos(i).y);
+      .filter(note => this.openNotes.isOpen(note))
+        .attr('class', 'open')
+        .transition()
+          .attr('cx', (note, i) => Minigraph.getPosOfOpenNote(i).x)
+          .attr('cy', (note, i) => Minigraph.getPosOfOpenNote(i).y);
   }
 
-  // Update notes in selection to match "Child" style
   updateChildNotes (selection) {
     var me = this;
-    var getPos = (note) => {
-      var parent = this.openNotes.notes.indexOf(note.parent);
-      if (parent == -1) throw new Error (`Note ${note.title} has no parent open`);
-      var { x, y } = me.defaultPos(parent);
-      var radius = 20 + 5 * (note.id % 13)/13,
-        baseAngle = note.id % 2 ? Math.PI/4 : Math.PI*5/4,
-        angle = baseAngle + ((note.id % 12)/12 - .5) * Math.PI*2/3;
-      return {
-        x: x + radius * Math.cos(angle),
-        y: y - radius * Math.sin(angle)
-      }
-    };
-
     selection
-      .attr('class', 'child')
+      .filter(note => !this.openNotes.isOpen(note))
+        .attr('class', 'child')
+        .transition()
+          .each(function (note, i) {
+            var parentIndex = me.openNotes.notes.indexOf(note.parent),
+              pos = Minigraph.getPosOfChildNote(note, parentIndex);
+            d3.select(this).attr({
+              'cx': pos.x,
+              'cy': pos.y
+            });
+          })
+  }
+
+  exitNotes (selection) {
+    selection.exit()
       .transition()
-        .attr('cx', note => getPos(note).x)
-        .attr('cy', note => getPos(note).y);
+        .remove();
   }
 
   renderPath () {
-    var me = this;
+    var selection = this.svg.select('.mainPath')
+      .selectAll('.path')
+        .data(this.visibleNotes.slice(1));
 
-    var paths = this.svg.select('.mainPath').selectAll('.path')
-      .data(this.openNotes.notes);
-
-    paths.enter().append('path')
-      .attr('class', 'path')
-      .attr('d', (note, i) => {
-        if (i == 0) return;
-        var source = me.defaultPos(i-1),
-          dest = me.defaultPos(i);
-        return `M${source.x},${source.y} ` +        // Move to source
-               `C${source.x+25},${source.y+25} ` +  // First control point 
-                 `${dest.x-25},${dest.y-25} ` +     // Second control point
-                 `${dest.x},${dest.y}`;             // Destination
-      });
-    
-    paths.exit().remove();
+    this.enterPaths(selection);
+    this.updatePaths(selection);
+    this.updateToOpenPaths(selection);
+    this.updateToChildPaths(selection);
+    this.updateEndingPaths(selection);
+    this.exitPaths(selection);
   }
 
-  // Default open note circles position
-  defaultPos (i) {
+  enterPaths (selection) {
+    selection.enter().append('path');
+  }
+
+  updatePaths (selection) {}
+
+  updateToOpenPaths (selection) {
+    selection
+      // We don't count the root, so the current open note is the (i+1)-th
+      .filter((note, i) => (this.openNotes.isOpen(note)))
+        .each(function (note,i) { console.info(i, note.title)})
+        .attr('class', 'path toOpen')
+        .attr('d', (note, i) => {
+          var source = Minigraph.getPosOfOpenNote(i),
+            dest = Minigraph.getPosOfOpenNote(i+1);
+          return `M${source.x},${source.y} ` +        // Move to source
+                 `C${source.x+25},${source.y+25} ` +  // First control point 
+                   `${dest.x-25},${dest.y-25} ` +     // Second control point
+                   `${dest.x},${dest.y}`;             // Destination
+        });
+  }
+
+  updateToChildPaths (selection) {
+    selection
+      // We don't count the root, so the current open note is the (i+1)-th
+      .filter((note, i) => (!this.openNotes.isOpen(note)))
+        .attr('class', 'path toChild')
+        .attr('d', (note, i) => {
+          var parentIndex = this.openNotes.notes.indexOf(note.parent),
+            source = Minigraph.getPosOfOpenNote(parentIndex),
+            dest = Minigraph.getPosOfChildNote(note, parentIndex);
+          return `M${source.x},${source.y} ` +        // Move to source
+                 `C${source.x+25},${source.y+25} ` +  // First control point 
+                   `${dest.x-25},${dest.y-25} ` +     // Second control point
+                   `${dest.x},${dest.y}`;             // Destination
+
+        });
+  } 
+
+  updateEndingPaths (selection) {
+
+  } 
+
+  exitPaths (selection) {
+    selection.exit()
+      .transition()
+        .remove();
+  }
+
+  //
+  // Utility methods
+  //
+
+  // Get all notes visible on the minigraph (open notes and their children)
+  getVisibleNotes () {
+    var children = this.openNotes.notes.map((n) => n.children);
+    return children.reduce((output, current) => {
+      return (output || []).concat(...current);
+    }, [this.openNotes.notes[0]]);
+  }
+
+  // Get position of the n-th open note 
+  static getPosOfOpenNote (n) {
     return {
-      x: i * 45 + (i%2 ? -12 : +12),
-      y: i * 45 + (i%2 ? +12 : -12)
+      x: n * 45 + (n%2 ? -12 : +12),
+      y: n * 45 + (n%2 ? +12 : -12)
     }
   }
+
+  // Get position of note, child of the n-th open note 
+  static getPosOfChildNote (note, n) {
+    var { x, y } = Minigraph.getPosOfOpenNote(n);
+    var radius = 20 + 5 * (note.id % 13)/13,
+      baseAngle = note.id % 2 ? Math.PI/4 : Math.PI*5/4,
+      angle = baseAngle + ((note.id % 12)/12 - .5) * Math.PI*2/3;
+    return {
+      x: x + radius * Math.cos(angle),
+      y: y - radius * Math.sin(angle)
+    }
+  }
+
+  //
+  // Event Handlers
+  //
 
   // Open note circles click handler
   onNoteClicked (el, note) {
@@ -139,17 +207,17 @@ class Minigraph {
       .attr('class', 'open')
       .filter(data => data === note)
         .attr('class', 'open focused')
-      // .transition()
-      //   .duration(200)
-      //   .attr('r', '3')
-      //   .attr('fill', '#07a3d4') // Dyanote blue
-      // .transition()
-      //   .duration(200)
-      //   .attr('r', '4');
 
     // Translate view
-    var i = this.openNotes.notes.indexOf(note) -1,
-      pos = this.defaultPos(i > 0 ? i : 0);
+    // The topLeftNote-th note will be put in the top left corner
+    var topLeftNote = 0,
+      index = this.openNotes.notes.indexOf(note);
+    if (index > 0)
+      topLeftNote = index -1;
+    if (this.openNotes.notes.length-1 == index && topLeftNote > 0)
+      topLeftNote--;
+    var pos = Minigraph.getPosOfOpenNote(topLeftNote);
+    console.warn(topLeftNote, index, this.openNotes.notes.length);
     this.svg.select('.main')
       .transition()
         .duration(500)

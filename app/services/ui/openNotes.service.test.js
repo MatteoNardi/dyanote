@@ -80,4 +80,23 @@ describe('openNotes service', function () {
     expect(cb1).toBe(B);
     expect(cb2).toBe(undefined);
   });
+
+  it('should have an isOpen method', function () {
+    openNotes.open(B);
+    expect(openNotes.isOpen(A)).toBe(true);
+    expect(openNotes.isOpen(B)).toBe(true);
+    expect(openNotes.isOpen(C)).toBe(false);
+  });
+
+  it('should update isOpen even after openNoteAfter', function () {
+    openNotes.open(C);
+    var D = {
+      hasParent: function () { return false; }
+    }
+    openNotes.openAfter(D, A);
+    expect(openNotes.isOpen(A)).toBe(true);
+    expect(openNotes.isOpen(B)).toBe(false);
+    expect(openNotes.isOpen(C)).toBe(false);
+    expect(openNotes.isOpen(D)).toBe(true);
+  })
 });
