@@ -12,7 +12,7 @@ class Minigraph {
 
     this.svg = d3.select(element[0]).append('svg');
     var main = this.svg.append('g').attr('class', 'main')
-    main.append('g').attr('class', 'mainPath');
+    main.append('path').attr('class', 'mainPath');
     main.append('g').attr('class', 'notes');
 
     // Render on openNotes changes
@@ -67,6 +67,7 @@ class Minigraph {
       .filter(note => this.openNotes.isOpen(note))
         .attr('class', 'open')
         .transition()
+          // .duration(500)
           .attr('cx', (note, i) => Minigraph.getPosOfOpenNote(i).x)
           .attr('cy', (note, i) => Minigraph.getPosOfOpenNote(i).y);
   }
@@ -77,14 +78,9 @@ class Minigraph {
       .filter(note => !this.openNotes.isOpen(note))
         .attr('class', 'child')
         .transition()
-          .each(function (note, i) {
-            var parentIndex = me.openNotes.notes.indexOf(note.parent),
-              pos = Minigraph.getPosOfChildNote(note, parentIndex);
-            d3.select(this).attr({
-              'cx': pos.x,
-              'cy': pos.y
-            });
-          })
+          // .duration(500)
+          .attr('cx', (note, i) => Minigraph.getPosOfChildNote(note, me.openNotes.notes.indexOf(note.parent)).x)
+          .attr('cy', (note, i) => Minigraph.getPosOfChildNote(note, me.openNotes.notes.indexOf(note.parent)).y)
   }
 
   exitNotes (selection) {
@@ -94,65 +90,29 @@ class Minigraph {
   }
 
   renderPath () {
-    var selection = this.svg.select('.mainPath')
-      .selectAll('.path')
-        .data(this.visibleNotes.slice(1));
+    var path = this.svg.select('.mainPath');
+    
+    var start = Minigraph.getPosOfOpenNote(0);
+    var data = `M${start.x},${start.y} `;
+    var len = Math.max(this.openNotes.notes.length, 20);
+    var pos = start;
+    for (var i = 1; i < len; i++) {
+      if (i < this.openNotes.notes.length) {
+        pos = Minigraph.getPosOfOpenNote(i);
+        if (i != this.openNotes.notes.length-1)
+          data += `S${pos.x-20},${pos.y-20} `;
+        else
+          data += `S${pos.x},${pos.y} `;
+        data +=  `${pos.x},${pos.y}`;
+      } else {
+        data += `S${pos.x},${pos.y} ${pos.x},${pos.y}`;
+      }
+    }
 
-    this.enterPaths(selection);
-    this.updatePaths(selection);
-    this.updateToOpenPaths(selection);
-    this.updateToChildPaths(selection);
-    this.updateEndingPaths(selection);
-    this.exitPaths(selection);
-  }
-
-  enterPaths (selection) {
-    selection.enter().append('path');
-  }
-
-  updatePaths (selection) {}
-
-  updateToOpenPaths (selection) {
-    selection
-      // We don't count the root, so the current open note is the (i+1)-th
-      .filter((note, i) => (this.openNotes.isOpen(note)))
-        .each(function (note,i) { console.info(i, note.title)})
-        .attr('class', 'path toOpen')
-        .attr('d', (note, i) => {
-          var source = Minigraph.getPosOfOpenNote(i),
-            dest = Minigraph.getPosOfOpenNote(i+1);
-          return `M${source.x},${source.y} ` +        // Move to source
-                 `C${source.x+25},${source.y+25} ` +  // First control point 
-                   `${dest.x-25},${dest.y-25} ` +     // Second control point
-                   `${dest.x},${dest.y}`;             // Destination
-        });
-  }
-
-  updateToChildPaths (selection) {
-    selection
-      // We don't count the root, so the current open note is the (i+1)-th
-      .filter((note, i) => (!this.openNotes.isOpen(note)))
-        .attr('class', 'path toChild')
-        .attr('d', (note, i) => {
-          var parentIndex = this.openNotes.notes.indexOf(note.parent),
-            source = Minigraph.getPosOfOpenNote(parentIndex),
-            dest = Minigraph.getPosOfChildNote(note, parentIndex);
-          return `M${source.x},${source.y} ` +        // Move to source
-                 `C${source.x+25},${source.y+25} ` +  // First control point 
-                   `${dest.x-25},${dest.y-25} ` +     // Second control point
-                   `${dest.x},${dest.y}`;             // Destination
-
-        });
-  } 
-
-  updateEndingPaths (selection) {
-
-  } 
-
-  exitPaths (selection) {
-    selection.exit()
+    path
       .transition()
-        .remove();
+        .duration(500)
+        .attr('d', data)
   }
 
   //
@@ -170,8 +130,8 @@ class Minigraph {
   // Get position of the n-th open note 
   static getPosOfOpenNote (n) {
     return {
-      x: n * 45 + (n%2 ? -12 : +12),
-      y: n * 45 + (n%2 ? +12 : -12)
+      x: n * 45 + (n%2 ? +9 : -9),
+      y: n * 45 + (n%2 ? -9 : +9)
     }
   }
 
