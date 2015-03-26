@@ -1,5 +1,6 @@
 
 angular.module('dyanote', [
+  'ngAnimate',          // Animations module
   'ngNewRouter',        // Angular 2 Router
   'LocalStorageModule', // Browser local storage access
   'ui.bootstrap'        // Widgets
