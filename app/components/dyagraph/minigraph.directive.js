@@ -92,20 +92,21 @@ class Minigraph {
   renderPath () {
     var path = this.svg.select('.mainPath');
     
-    var start = Minigraph.getPosOfOpenNote(0);
-    var data = `M${start.x},${start.y} `;
-    var len = Math.max(this.openNotes.notes.length, 20);
-    var pos = start;
+    var data = '',
+      len = Math.max(this.openNotes.notes.length, 20),
+      start = Minigraph.getPosOfOpenNote(0),
+      pos = start,
+      prev;
+    data += `M${start.x},${start.y} `;
     for (var i = 1; i < len; i++) {
       if (i < this.openNotes.notes.length) {
+        prev = pos;
         pos = Minigraph.getPosOfOpenNote(i);
-        if (i != this.openNotes.notes.length-1)
-          data += `S${pos.x-20},${pos.y-20} `;
-        else
-          data += `S${pos.x},${pos.y} `;
-        data +=  `${pos.x},${pos.y}`;
+        data += `C${prev.x+25},${prev.y+25} `;
+        data += `${pos.x-25},${pos.y-25} `;
+        data += `${pos.x},${pos.y} `;
       } else {
-        data += `S${pos.x},${pos.y} ${pos.x},${pos.y}`;
+        data += `C${pos.x},${pos.y} ${pos.x},${pos.y} ${pos.x},${pos.y} `;
       }
     }
 
@@ -177,7 +178,6 @@ class Minigraph {
     if (this.openNotes.notes.length-1 == index && topLeftNote > 0)
       topLeftNote--;
     var pos = Minigraph.getPosOfOpenNote(topLeftNote);
-    console.warn(topLeftNote, index, this.openNotes.notes.length);
     this.svg.select('.main')
       .transition()
         .duration(500)
