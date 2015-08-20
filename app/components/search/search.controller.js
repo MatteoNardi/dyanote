@@ -11,7 +11,7 @@ class SearchController {
     this.notesGraph = notesGraph;
     this.openNotes = openNotes;
   }
-  
+
   activate () {
     this.searchTerms = '';
     this.isLoading = false;
@@ -22,7 +22,7 @@ class SearchController {
         this.isLoading = false;
         this.results = [];
         return;
-      } 
+      }
       this.$log.info('Searching for "' + text + '"');
       var response = this.notesGraph.search(text);
       this.isLoading = true;

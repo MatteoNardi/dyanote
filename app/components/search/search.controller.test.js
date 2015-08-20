@@ -1,5 +1,5 @@
 
-describe('SearchController', function () {
+xdescribe('SearchController', function () {
 
   // load the controller's module
   beforeEach(module('dyanote'));

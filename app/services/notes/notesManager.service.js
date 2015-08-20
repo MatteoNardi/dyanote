@@ -1,94 +1,42 @@
-'use strict';
 
-angular.module('dyanote')
+class notesManager {
+  constructor (notesGraph, backend, notifications) {
+    this.notesGraph = notesGraph;
 
-// notesManager is responsible for loading notes on startup,
-// creating and saving notes.  
-.service('notesManager', function ($log, $timeout, $q, auth, notifications, openNotes, noteResource, notesFactory, notesGraph, notesCoherenceTools) {
-
-  // Notes with unsaved changes.
-  var dirtyNotes = {};
-
-  // Todo: set this to false in logout controller
-  this.notesLoaded = false;
-
-  // Load all notes
-  this.loadAll = function () {
-    return noteResource.getAll().then(jsons => {
-      this.notesLoaded = true;
-      // Add notes.
-      for (var i = 0; i < jsons.length; i++) {
-        var note = notesFactory.newNote(jsons[i]);
-        connectSignals(note);
-      }
-
-      // Make sure we have a Root and an Archive
-      if (!notesGraph.getRoot())
-        $log.error('Root note not found');
-      if (!notesGraph.getArchive())
-        $log.error('Archive note not found');
-
-      openNotes.open(notesGraph.getRoot());
-    }, reason => $q.reject(reason));
-  };
-
-  function connectSignals (note) {
-    note.changedSignal.addHandler(onNoteChanged);
-    note.parentChangedSignal.addHandler(onNoteParentChanged);
-    note.titleChangedSignal.addHandler(onNoteTitleChanged);
-  }
-
-  // Handler for noteChanged signal.
-  // We save dirty notes to server every 4 seconds.
-  function onNoteChanged (note) {
-    var id = note.id;
-    if (id in dirtyNotes)
-      return;
-    dirtyNotes[id] = note;
-    $timeout(function () {
-      delete dirtyNotes[id];
-      noteResource.put(note._json);
-    }, 4000);
-  }
-
-  // When the parent of a note changes, we remove the dead links.
-  function onNoteParentChanged (note, oldParent) {
-    notifications.warn('"' + note.title + '" was moved to "' + note.parent.title + '"');
-    notesCoherenceTools.removeLink(oldParent, note.url);
-  }
-
-  // When the title of a note changes, we rename the links to it.
-  function onNoteTitleChanged (note, oldTitle) {
-    // Note might have no parent
-    try {
-      notesCoherenceTools.renameLink(note.parent, note, oldTitle);
-    } catch (e) {
-      $log.warn('Note has no parent: cant rename link');
-    }
-  }
-
-  // Create a new note with the given parent, title and body.
-  // Returns a Note with a temporary id (which will get updated
-  // once the server responds).
-  this.newNote = function (parent, title, body) {
-    if (!title || title == '')
-      throw 'Title is required';
-
-    var json = {
-      title: title,
-      body: body,
-      parent: parent.url
-    };
-    // Create new fake Note
-    var note = notesFactory.newTempNote(json);
-    connectSignals(note);
-    noteResource.post(json).then(function (json) {
-      // Update note to use real server data.
-      var realUrl = json.url;
-      var fakeUrl = note.url;
-      note.finalize(json.id, realUrl)
-      notesCoherenceTools.convertLink(note.parent, fakeUrl, realUrl);
+    // Keep the graph of notes updated
+    backend.onGraphUpdate(graph => {
+      for (let note in graph)
+        notesGraph.setParent(note, graph[note]);
     });
-    return note;
-  };
-})
+
+    backend.onTitleUpdate(notesGraph.setTitle);
+    backend.onBodyUpdate(notesGraph.setBody);
+  }
+
+  newNote (parent, title) {
+    title = title || "New note";
+    id = backend.newNote(parent, id);
+
+    this.notesGraph.setTitle(id, title);
+    this.notesGraph.setParent(id, parent);
+    this.notesGraph.setBody(id, "");
+  }
+
+  setTitle (id, title) {
+    // notesCoherenceTools.renameLink(note.parent, note, oldTitle);
+    this.notesGraph.setTitle(id, title);
+  }
+
+  setBody (id, body) {
+    // TODO: check if all children are still present and move to
+    // lost&found the ones which are not.
+    this.notesGraph.setBody(id, body);
+  }
+
+  archiveNote (id) {
+    // notifications.warn('"' + note.title + '" was moved to "' + note.parent.title + '"');
+    // notesCoherenceTools.removeLink(oldParent, note.url);
+  }
+}
+
+angular.module('dyanote').service('notesManager', notesManager);

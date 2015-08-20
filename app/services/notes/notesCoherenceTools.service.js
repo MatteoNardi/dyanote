@@ -2,21 +2,10 @@
 
 angular.module('dyanote')
 
-// notesCoherenceTools is a stateless service which contains 
+// notesCoherenceTools is a stateless service which contains
 // utility functions to enforce coherence in the notes set.
 .service('notesCoherenceTools', function ($log) {
   // Todo: remove notsGraph dependency
-
-  // convertLink converts a temporary links in a note
-  // to its definitive version. (Dyanote uses fake ids and fake links
-  // when a new note is created and when the server acknowledges its
-  // creation we need to update them.)
-  this.convertLink = function (note, fakeUrl, realUrl) {
-    while (note.body.indexOf(fakeUrl) != -1) {
-      note.body = note.body.replace(fakeUrl, realUrl);
-      $log.info("removeFakeLinks: replaced " + fakeUrl + " with " + realUrl);
-    }
-  };
 
   // removeLink removes a link from a note
   this.removeLink = function (note, link) {

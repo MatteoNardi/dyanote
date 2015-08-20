@@ -1,131 +1,49 @@
-'use strict';
 
-angular.module('dyanote')
+// The store of notes.
+// We try to follow the Flux pattern, this is the store of data and only
+// the notesManager service should apply modifications.
+class notesGraph {
 
-// notesGraph is the container of all the notes.
-// It allows to get special notes (Root and Archive),
-// and search notes by Id or text.
-.service('notesGraph', function ($q, $timeout) {
-
-  // All our notes
-  var notes = {};
-  // Root  and Archive notes.
-  var rootNote, archiveNote;
-  // Number of notes.
-  var notesCounter = 0;
-
-  // Add a new note to the graph.
-  this.add  = function (note) {
-    if (note.id in notes)
-      throw 'A note with the given Id already exists';
-    notes[note.id] = note;
-    notesCounter++;
-
-    if (note.isRoot()) {
-      if (rootNote != undefined)
-        throw 'Root note already exists';
-      rootNote = note;
-    }
-    
-    if (note.isArchive()) {
-      if (archiveNote != undefined)
-        throw 'Root note already exists';
-      archiveNote = note;
-    }
-
-    if (note.hasTemporaryId()) {
-      note.gotFinalIdSignal.addHandler(function () {
-        notes[note.id] = note;
-      });
-    }
+  constructor () {
+    this.parents = new Map(); // Map <Id, Id>
+    this.titles = new Map(); // Map <Id, String>
+    this.children = new Map(); // Map <Id, Set<Id>>
+    this.bodies = new Map(); // Map <Id, String>
   }
 
-  // Clear everything (For example after logout)
-  this.clear = function () {
-    notes = {};
-    rootNote = undefined;
-    archiveNote = undefined;
-    notesCounter = 0;
-  };
-
-  // Get list of all notes
-  this.getNotes = function () {
-    var list = [];
-    for (var i in notes)
-      list.push(notes[i]);
-    return list;
+  setParent (id, parent) {
+    this.unlink(id, this.parent(id));
+    this.link(id, parent);
   }
 
-  // Get the one to rule them all.
-  this.getRoot = function () {
-    return rootNote;
-  };
+  setTitle (id, title) {
+    this.titles.set(id, title);
+  }
 
-  // Get the archive note (The trash).
-  this.getArchive = function () {
-    return archiveNote;
-  };
+  setBody (id, body) {
+    this.bodies.set(id, body);
+  }
 
-  // Returns the note with the given id or throws an exception.
-  this.getById = function (id) {
-    if (id in notes)
-      return notes[id];
-    else
-      throw "Note " + id + " not found.";
-  };
+  delete (id) {
+    // TODO
+  }
 
-  // Get number of notes.
-  this.count = function () {
-    return notesCounter;
-  };
+  // Getters
+  parent (id) { return this.parents.get(id); }
+  title (id) { return this.titles.get(id); }
+  body (id) { return this.bodies.get(id); }
+  children (id) { return this.children.get(id); }
 
-  // Search for notes.
-  // Since we don't want to freeze UI, this runs "asynchronously".
-  // Returns {}
-  // {
-  //    results: [list of notes]
-  //    promise: $q promise resolved when search is finished
-  // }
-  // A new search cancels every other running search. 
-  var searchDeferred;
-  this.search = function (text) {
-    // If a search is running, cancel it.
-    if (searchDeferred)
-      searchDeferred.reject('New search requested');
+  // Private
+  link (parent, child) {
+    this.parents.set(parent, child);
+    this.children.get(parent).add(child);
+  }
 
-    var notesGraph = this;
-    var regex = new RegExp(text, 'i');
-    var deferred = searchDeferred = $q.defer();
-    var results = [];
-    var keys = Object.keys(notes);
-    var running = true;
-    deferred.promise.catch(function () {
-      running = false;
-    });
+  unlink (parent, child) {
+    this.parents.set(parent, null);
+    this.children.get(parent).delete(child);
+  }
+}
 
-    var search_next = function () {
-      if (!running) return;
-      if (keys.length == 0) return deferred.resolve();
-
-      var key = keys.pop();
-      var note = notesGraph.getById(key);
-      // Search for text in note.
-      if (!(note in results)) {
-        // Notes matching in title have precedence.
-        if (regex.test(note.title))
-          results.unshift(note);
-        else if (regex.test(note.body))
-          results.push(note);
-      }
-
-      $timeout(search_next, 0);
-    }
-
-    $timeout(search_next, 0);
-
-    return {
-      promise: searchDeferred.promise,
-      results: results
-    }
-  };
-});
+angular.module('dyanote').service('notesGraph', notesGraph);

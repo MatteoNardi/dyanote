@@ -1,11 +1,19 @@
 
 class HeaderController {
-  constructor (auth) {
-    this.auth = auth;
+  constructor (backend, $location) {
+    this.backend = backend;
+    this.$location = $location;
   }
 
   get username () {
-    return this.auth.getEmail();
+    return this.backend.getUserVisibleName();
+  }
+
+  logout () {
+    this.backend.logout();
+    this.notesGraph.clear();
+    this.$log.info('Logout');
+    this.$location.path('/login');
   }
 }
 

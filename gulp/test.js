@@ -10,9 +10,10 @@ gulp.task('test', function (done) {
     frameworks: ['jasmine', 'source-map-support'],
     files: [
       'node_modules/angular/angular.js',
-      "node_modules/angular-new-router/dist/router.es5.js",
+      'node_modules/angular-new-router/dist/router.es5.js',
       'node_modules/angular-mocks/angular-mocks.js',
-      "node_modules/angular-bootstrap/dist/ui-bootstrap.min.js",
+      'node_modules/angular-animate/angular-animate.js',
+      'node_modules/angular-bootstrap/dist/ui-bootstrap.min.js',
       'node_modules/angular-local-storage/dist/angular-local-storage.js',
       'app/app.js',
       'app/config_local.js',
@@ -22,14 +23,14 @@ gulp.task('test', function (done) {
       'app/scribe/*/*.js'
     ],
     preprocessors: {
-      "app/**/*.js": ["babel"]
+      'app/**/*.js': ['babel']
     },
-    "babelPreprocessor": {
+    'babelPreprocessor': {
       options: {
-        sourceMap: "inline"
+        sourceMap: 'inline'
       },
       filename: function(file) {
-        return file.originalPath.replace(/\.js$/, ".es5.js");
+        return file.originalPath.replace(/\.js$/, '.es5.js');
       },
       sourceFileName: function(file) {
         return file.originalPath;

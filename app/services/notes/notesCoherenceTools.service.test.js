@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Service: notesCoherenceTools', function () {
+xdescribe('Service: notesCoherenceTools', function () {
 
   // load the service's module
   beforeEach(module('dyanote'));
@@ -42,4 +42,3 @@ describe('Service: notesCoherenceTools', function () {
     expect(note.body).toEqual('<a href="http://api.dyanote.com/42">New title</a>')
   });
 });
-

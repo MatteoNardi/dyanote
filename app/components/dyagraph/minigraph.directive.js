@@ -11,7 +11,7 @@ class Minigraph {
     this.element = element;
 
     this.svg = d3.select(element[0]).append('svg');
-    var main = this.svg.append('g').attr('class', 'main')
+    var main = this.svg.append('g').attr('class', 'main');
     main.append('path').attr('class', 'mainPath');
     main.append('g').attr('class', 'notes');
 
@@ -43,7 +43,7 @@ class Minigraph {
     this.enterNotes(selection);
     this.updateNotes(selection);
     this.updateOpenNotes(selection);
-    this.updateChildNotes(selection);    
+    this.updateChildNotes(selection);
     this.exitNotes(selection);
   }
 
@@ -52,14 +52,14 @@ class Minigraph {
     selection.enter().append('circle')
       .attr('r', '4')
       .on('click', function (note) { me.onNoteClicked(this, note); })
-      .append('title');    
+      .append('title');
   }
 
   updateNotes (selection) {
     selection
-      .attr('title', (note, i) => note.title)
+      .attr('title', (note, i) => this.notesGraph.title(note))
       .select('title')
-        .text((note, i) => note.title);    
+        .text((note, i) => this.notesGraph.title(note));
   }
 
   updateOpenNotes (selection) {
@@ -79,8 +79,8 @@ class Minigraph {
         .attr('class', 'child')
         .transition()
           // .duration(500)
-          .attr('cx', (note, i) => Minigraph.getPosOfChildNote(note, me.openNotes.notes.indexOf(note.parent)).x)
-          .attr('cy', (note, i) => Minigraph.getPosOfChildNote(note, me.openNotes.notes.indexOf(note.parent)).y)
+          .attr('cx', (note, i) => Minigraph.getPosOfChildNote(note, me.openNotes.notes.indexOf(this.notesGraph.parent(note))).x)
+          .attr('cy', (note, i) => Minigraph.getPosOfChildNote(note, me.openNotes.notes.indexOf(this.notesGraph.parent(note))).y);
   }
 
   exitNotes (selection) {
@@ -91,7 +91,7 @@ class Minigraph {
 
   renderPath () {
     var path = this.svg.select('.mainPath');
-    
+
     var data = '',
       len = Math.max(this.openNotes.notes.length, 20),
       start = Minigraph.getPosOfOpenNote(0),
@@ -113,7 +113,7 @@ class Minigraph {
     path
       .transition()
         .duration(500)
-        .attr('d', data)
+        .attr('d', data);
   }
 
   //
@@ -122,30 +122,43 @@ class Minigraph {
 
   // Get all notes visible on the minigraph (open notes and their children)
   getVisibleNotes () {
+    if (this.openNotes.notes.length === 0) return [];
     var children = this.openNotes.notes.map((n) => n.children);
     return children.reduce((output, current) => {
       return (output || []).concat(...current);
     }, [this.openNotes.notes[0]]);
   }
 
-  // Get position of the n-th open note 
+  // Get position of the n-th open note
   static getPosOfOpenNote (n) {
     return {
       x: n * 45 + (n%2 ? +9 : -9),
       y: n * 45 + (n%2 ? -9 : +9)
-    }
+    };
   }
 
-  // Get position of note, child of the n-th open note 
+  // Get the pseudo-random position of note, child of the n-th open note
   static getPosOfChildNote (note, n) {
+    console.info(note, n);
+    function hashCode (str) {
+      var hash = 0, i, chr, len;
+      if (str.length === 0) return hash;
+      for (i = 0, len = str.length; i < len; i++) {
+        chr   = str.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+      }
+      return hash;
+    }
     var { x, y } = Minigraph.getPosOfOpenNote(n);
-    var radius = 20 + 5 * (note.id % 13)/13,
-      baseAngle = note.id % 2 ? Math.PI/4 : Math.PI*5/4,
-      angle = baseAngle + ((note.id % 12)/12 - .5) * Math.PI*2/3;
+    var rand = hashCode(note),
+      radius = 20 + 5 * (rand % 13)/13,
+      baseAngle = rand % 2 ? Math.PI/4 : Math.PI*5/4,
+      angle = baseAngle + ((rand % 12)/12 - 0.5) * Math.PI*2/3;
     return {
       x: x + radius * Math.cos(angle),
       y: y - radius * Math.sin(angle)
-    }
+    };
   }
 
   //
