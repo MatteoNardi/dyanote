@@ -5,23 +5,31 @@
 class notesGraph {
 
   constructor () {
-    this.parents = new Map(); // Map <Id, Id>
-    this.titles = new Map(); // Map <Id, String>
-    this.children = new Map(); // Map <Id, Set<Id>>
-    this.bodies = new Map(); // Map <Id, String>
+    this._parents = new Map(); // Map <Id, Id>
+    this._titles = new Map(); // Map <Id, String>
+    this._children = new Map(); // Map <Id, Set<Id>>
+    this._bodies = new Map(); // Map <Id, String>
   }
 
   setParent (id, parent) {
-    this.unlink(id, this.parent(id));
+    this.init(id);
+    this.init(this.parent(id));
+    this.init(parent);
+    this.unlink(this.parent(id), id);
     this.link(id, parent);
   }
 
+  init (id) {
+    if (this._children.get(id) === undefined)
+      this._children.set(id, new Set());
+  }
+
   setTitle (id, title) {
-    this.titles.set(id, title);
+    this._titles.set(id, title);
   }
 
   setBody (id, body) {
-    this.bodies.set(id, body);
+    this._bodies.set(id, body);
   }
 
   delete (id) {
@@ -29,20 +37,20 @@ class notesGraph {
   }
 
   // Getters
-  parent (id) { return this.parents.get(id); }
-  title (id) { return this.titles.get(id); }
-  body (id) { return this.bodies.get(id); }
-  children (id) { return this.children.get(id); }
+  parent (id) { return this._parents.get(id); }
+  title (id) { return this._titles.get(id); }
+  body (id) { return this._bodies.get(id); }
+  children (id) { return this._children.get(id); }
 
   // Private
   link (parent, child) {
-    this.parents.set(parent, child);
-    this.children.get(parent).add(child);
+    this._parents.set(parent, child);
+    this._children.get(parent).add(child);
   }
 
   unlink (parent, child) {
-    this.parents.set(parent, null);
-    this.children.get(parent).delete(child);
+    this._parents.set(parent, null);
+    this._children.get(parent).delete(child);
   }
 }
 

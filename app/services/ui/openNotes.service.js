@@ -2,11 +2,13 @@
 // Mantains the list of the notes currently opened by the user.
 // Has a focus event.
 class openNotes {
-    
-  constructor () {
+
+  constructor (notesGraph) {
+    this.notesGraph = notesGraph;
     this._notes = [];
     this._set = new Set();
     this._focusHandlers = [];
+    this._openHandlers = [];
   }
 
   // Ordered list which starts from the root/archive note
@@ -24,9 +26,10 @@ class openNotes {
     this.notes.length = 0;
     this._set.clear();
     while (note) {
+      this._openHandlers.forEach(cb => cb(note));
       this.notes.unshift(note);
       this._set.add(note);
-      note = note.hasParent() && note.parent; 
+      note = this.notesGraph.parent(note);
     }
   }
 
@@ -40,7 +43,7 @@ class openNotes {
     this.notes.length = insertPos + 1;
     this.notes.push(note);
   }
-  
+
   // Close a note and the following ones.
   close (note) {
     var pos = this.notes.indexOf(note);
@@ -62,6 +65,10 @@ class openNotes {
     var index = this._focusHandlers.indexOf(cb);
     if (index != -1)
       this._focusHandlers.splice(index, 1);
+  }
+
+  addOpenHandler (cb) {
+    this._openHandlers.push(cb);
   }
 }
 

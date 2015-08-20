@@ -1,4 +1,3 @@
-'use strict';
 
 class Minigraph {
   constructor (notesGraph, openNotes) {
@@ -123,7 +122,7 @@ class Minigraph {
   // Get all notes visible on the minigraph (open notes and their children)
   getVisibleNotes () {
     if (this.openNotes.notes.length === 0) return [];
-    var children = this.openNotes.notes.map((n) => n.children);
+    var children = this.openNotes.notes.map(n => this.notesGraph.children(n));
     return children.reduce((output, current) => {
       return (output || []).concat(...current);
     }, [this.openNotes.notes[0]]);
@@ -139,7 +138,6 @@ class Minigraph {
 
   // Get the pseudo-random position of note, child of the n-th open note
   static getPosOfChildNote (note, n) {
-    console.info(note, n);
     function hashCode (str) {
       var hash = 0, i, chr, len;
       if (str.length === 0) return hash;
@@ -180,7 +178,7 @@ class Minigraph {
     this.svg.selectAll('.open')
       .attr('class', 'open')
       .filter(data => data === note)
-        .attr('class', 'open focused')
+        .attr('class', 'open focused');
 
     // Translate view
     // The topLeftNote-th note will be put in the top left corner

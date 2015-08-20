@@ -1,6 +1,6 @@
 // This controller allows only logged in  logged in users.
 class AuthenticatedController {
-  constructor ($router, backend) {
+  constructor ($router, backend, notesManager) {
     this.backend = backend;
 
     $router.config([

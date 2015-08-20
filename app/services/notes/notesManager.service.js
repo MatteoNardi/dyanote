@@ -1,16 +1,29 @@
 
 class notesManager {
-  constructor (notesGraph, backend, notifications) {
+  constructor (notesGraph, backend, notifications, openNotes) {
     this.notesGraph = notesGraph;
+    this.backend = backend;
 
     // Keep the graph of notes updated
     backend.onGraphUpdate(graph => {
-      for (let note in graph)
+      var rootNote;
+      for (let note in graph) {
+        if (!graph[note] && !rootNote)
+          rootNote = note;
         notesGraph.setParent(note, graph[note]);
+      }
+
+      if (openNotes.notes.length === 0)
+        openNotes.open(rootNote);
     });
 
-    backend.onTitleUpdate(notesGraph.setTitle);
-    backend.onBodyUpdate(notesGraph.setBody);
+    openNotes.addOpenHandler(note => this.load(note));
+
+  }
+
+  load (note) {
+    this.backend.onTitleUpdate(note, title => this.notesGraph.setTitle(note, title));
+    this.backend.onBodyUpdate(note, body => this.notesGraph.setBody(note, body));
   }
 
   newNote (parent, title) {

@@ -9,6 +9,10 @@ class HeaderController {
     return this.backend.getUserVisibleName();
   }
 
+  get avatar () {
+    return this.backend.getUserAvatar();
+  }
+
   logout () {
     this.backend.logout();
     this.notesGraph.clear();

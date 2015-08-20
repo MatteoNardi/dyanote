@@ -1,5 +1,5 @@
 <div class='container-fluid'>
-    
+
     <!-- Brand  -->
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#togglable-navbar">
@@ -40,11 +40,14 @@
         <!-- User dropdown on the right -->
         <ul class="nav navbar-nav navbar-right">
             <li dropdown class="dropdown">
-                <a href="#" class="dropdown-toggle" dropdown-toggle role="button"> {{ header.username }} <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle userButton" dropdown-toggle role="button">
+                  <img src="{{ header.avatar }}" alt="User picture" />
+                  {{ header.username }} <b class="caret"></b>
+                </a>
                 <ul class="dropdown-menu" rol="menu">
                     <!-- Logout button -->
                     <li><a target="_blank" href="https://github.com/MatteoNardi/dyanote-client/issues/new">Report a problem</a></li>
-                    <li><a href="/logout">Logout</a></li>
+                    <li><a ng-click="header.logout()">Logout</a></li>
                 </ul>
             </li>
         </ul>

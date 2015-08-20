@@ -29,7 +29,6 @@ angular.module('dyanote', [
     { path: '/', redirectTo: '/login'},
 
     { path: '/login', component: 'login'},
-    { path: '/logout', component: 'logout'},
     { path: '/notes', component: 'authenticated'}
   ]);
 });

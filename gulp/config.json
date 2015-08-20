@@ -26,6 +26,7 @@
       "resources/images/*"
     ],
     "vendor": [
+      "node_modules/babel/browser-polyfill.js",
       "node_modules/jquery/dist/jquery.min.js",
       "node_modules/angular/angular.js",
       "node_modules/angular-animate/angular-animate.min.js",
