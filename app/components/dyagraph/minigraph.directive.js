@@ -121,11 +121,12 @@ class Minigraph {
 
   // Get all notes visible on the minigraph (open notes and their children)
   getVisibleNotes () {
-    if (this.openNotes.notes.length === 0) return [];
-    var children = this.openNotes.notes.map(n => this.notesGraph.children(n));
-    return children.reduce((output, current) => {
-      return (output || []).concat(...current);
-    }, [this.openNotes.notes[0]]);
+    var visibleNotes = [];
+    if (this.openNotes.notes[0])
+      visibleNotes.push(this.openNotes.notes[0]);
+    for (let note of this.openNotes.notes)
+      this.notesGraph.children(note).forEach(child => visibleNotes.push(child));
+    return visibleNotes;
   }
 
   // Get position of the n-th open note

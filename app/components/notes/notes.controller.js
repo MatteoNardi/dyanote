@@ -30,9 +30,12 @@ class NotesController {
   }
 
   title (note) {
-    return title => {
-      if (title) this.notesManager.setTitle(note, title);
-      else return this.notesGraph.title(note);
+    var me = this;
+    return function () {
+      if (arguments.length === 0)
+        return me.notesGraph.title(note);
+      else
+        me.notesManager.setTitle(note, arguments[0]);
     };
   }
 }

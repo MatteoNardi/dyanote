@@ -35,7 +35,6 @@ class backend {
     });
   }
 
-
   logout () {
     this.firebase.unauth();
   }
@@ -67,6 +66,10 @@ class backend {
     this.userRef.child('titles').child(id).set(title);
   }
 
+  updateBody (id, body) {
+    this.userRef.child('bodies').child(id).set(body);
+  }
+
   onTitleUpdate (id, cb) {
     this.userRef.child('titles').child(id).on('value', title => {
       cb(title.val());
@@ -86,7 +89,6 @@ class backend {
     this.newNote(null, 'Welcome to Dyanote');
     // TODO: Add a set of default notes which make sense.
   }
-
 
   // Utility: display error on console
   errorCallback (msg) {

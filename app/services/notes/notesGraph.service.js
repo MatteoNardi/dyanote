@@ -16,7 +16,7 @@ class notesGraph {
     this.init(this.parent(id));
     this.init(parent);
     this.unlink(this.parent(id), id);
-    this.link(id, parent);
+    this.link(parent, id);
   }
 
   init (id) {
@@ -44,12 +44,12 @@ class notesGraph {
 
   // Private
   link (parent, child) {
-    this._parents.set(parent, child);
+    this._parents.set(child, parent);
     this._children.get(parent).add(child);
   }
 
   unlink (parent, child) {
-    this._parents.set(parent, null);
+    this._parents.set(child, null);
     this._children.get(parent).delete(child);
   }
 }

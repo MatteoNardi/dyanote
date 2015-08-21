@@ -7,7 +7,7 @@ angular.module('dyanote')
 // which basically is a wrapper around contentEditable.
 // This directive setups Scribe, provides two-way data binding to note's body
 // and adds basic behavior (clicking links and focusing notes)
-.directive('editor', function ($location, $timeout, $window, $log, openNotes, notesGraph, SERVER_CONFIG) {
+.directive('editor', function ($location, $timeout, $window, $log, openNotes, notesGraph, notesManager, SERVER_CONFIG) {
 
   // Setup Scribe editor
   function setupScribe (scope, element) {
@@ -24,8 +24,8 @@ angular.module('dyanote')
   // Sync view -> model
   function setupViewModelSync (scope, element) {
     element.on('input', function () {
-      if (scope.note.body != element.html()) {
-        scope.note.body = element.html();
+      if (notesGraph.body(scope.note) != element.html()) {
+        notesManager.setBody(scope.note, element.html());
         scope.$apply();
       }
     });
@@ -33,10 +33,10 @@ angular.module('dyanote')
 
   // Model -> View
   function setupModelViewSync (scope, element) {
-    scope.$watch('note.body', function (newValue, oldValue) {
-      if (element.html() != newValue) {
-        console.log('Sync model -> view (' + scope.note.id + ')');
-        element.html(newValue)
+    scope.$watch(_ => notesGraph.body(scope.note), html => {
+      if (element.html() != html) {
+        console.log('Sync model -> view (' + scope.note + ')');
+        element.html(html);
       }
     });
   }
@@ -45,18 +45,15 @@ angular.module('dyanote')
     // Intercept clicks on note links
     element.on('click', 'a', function(event) {
       var href = event.target.getAttribute('href');
-      if (href.indexOf(SERVER_CONFIG.apiUrl) == -1)
+      if (href[0] !== '#')
         $window.open(href);
       else {
         event.preventDefault();
         // Use a regex the get the note id, which is the last number in the href.
-        var targetNoteId = href.match(/.*\/(\d+)\/$/)[1];
-        var callerNoteId = scope.note.id;
-        var targetNote = notesGraph.getById(targetNoteId);
-        var callerNote = notesGraph.getById(callerNoteId);
-        console.log('Note ' + callerNoteId + ' opens ' + targetNoteId);
-        openNotes.openAfter(targetNote, callerNote);
-        openNotes.focus(targetNote);
+        var target = href.substring(1);
+        console.log('Note ' + scope.note + ' opens ' + target);
+        openNotes.openAfter(target, scope.note);
+        openNotes.focus(target);
         scope.$apply();
       }
     });
@@ -66,7 +63,7 @@ angular.module('dyanote')
     var focusHandler = (note) => {
       if (note == scope.note) {
         jQuery("html,body").animate({scrollTop: element.parent().offset().top - 90}, 400);
-        // Note: this 90px magic number shoud be @navbar-height + @note-margin in style.less 
+        // Note: this 90px magic number shoud be @navbar-height + @note-margin in style.less
       }
     };
     openNotes.addFocusHandler(focusHandler);
@@ -76,7 +73,7 @@ angular.module('dyanote')
 
   // Show overlay toolbar on selection change.
   function setupToolbar (scope, element) {
-    var ownRange = document.createRange()
+    var ownRange = document.createRange();
     ownRange.setStartBefore(element[0]);
     ownRange.setEndAfter(element[0]);
 
@@ -102,13 +99,13 @@ angular.module('dyanote')
 
     document.addEventListener('selectionchange', () => {
       $timeout(onSelectionChanged, 0);
-    })
+    });
   }
 
   // Inject in the parent scope the toolbar commands
   function setupCommands (scope, element) {
     var run = (command) => $timeout(function () {
-      scope.scribe.commands[command].execute()
+      scope.scribe.commands[command].execute();
     }, 0, false);
     scope.commands = {
       link: () => run('link'),
@@ -116,7 +113,7 @@ angular.module('dyanote')
       em: () => run('em'),
       title: () => run('title'),
       insertUnorderedList: () => run('insertUnorderedList')
-    }
+    };
   }
 
   return {

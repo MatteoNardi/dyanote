@@ -1,6 +1,3 @@
-'use strict';
-
-
 
 // Scribe plugin for linking to new notes.
 // Expectations:
@@ -10,7 +7,7 @@ dyanote.scribe.commands.link = function (scribe) {
 
   var utils = dyanote.scribe.utils;
 
-  var command = scribe.commands['link'] = {};
+  var command = scribe.commands.link = {};
 
   // Executes the command.
   command.execute = function () {
@@ -23,18 +20,20 @@ dyanote.scribe.commands.link = function (scribe) {
       return;
 
     scribe.transactionManager.run(function () {
-      var $scope = angular.element(scribe.el).scope()
-      var injector = angular.element(document).injector();
-      var notesManager = injector.get('notesManager');
-      
+      var $scope = angular.element(scribe.el).scope(),
+        injector = angular.element(document).injector(),
+        notesManager = injector.get('notesManager');
+
       var parent = $scope.note;
       // Make the selected text (without formatting) as the title
       var title = data.title;
       var body = '';
 
-      var note = notesManager.newNote(parent, title, body);
+      var note = notesManager.newNote(parent, title, body),
+        link = '#' + note;
+      console.info('note', note);
 
-      document.execCommand("createLink", false, note.url);
+      document.execCommand("createLink", false, link);
 
       // Open note
       var openNotes = injector.get('openNotes');
@@ -46,11 +45,11 @@ dyanote.scribe.commands.link = function (scribe) {
   command.queryState = function () {
     // Clicking link two times won't undo it.
     return false;
-  }
+  };
 
   command.queryEnabled = function () {
     return command.analyze().enabled;
-  }
+  };
 
   // Analyzes the current selection and returns an object like this:
   // {

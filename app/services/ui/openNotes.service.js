@@ -42,6 +42,7 @@ class openNotes {
     this._set.add(note);
     this.notes.length = insertPos + 1;
     this.notes.push(note);
+    this._openHandlers.forEach(cb => cb(note));
   }
 
   // Close a note and the following ones.

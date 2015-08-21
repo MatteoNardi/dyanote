@@ -3,6 +3,7 @@ class notesManager {
   constructor (notesGraph, backend, notifications, openNotes) {
     this.notesGraph = notesGraph;
     this.backend = backend;
+    this.loaded = new Set();
 
     // Keep the graph of notes updated
     backend.onGraphUpdate(graph => {
@@ -21,17 +22,16 @@ class notesManager {
   }
 
   load (note) {
-    this.backend.onTitleUpdate(note, title => this.notesGraph.setTitle(note, title));
-    this.backend.onBodyUpdate(note, body => this.notesGraph.setBody(note, body));
+    if (!this.loaded.has(note)) {
+      this.loaded.add(note);
+      this.backend.onTitleUpdate(note, title => this.notesGraph.setTitle(note, title));
+      this.backend.onBodyUpdate(note, body => this.notesGraph.setBody(note, body));
+    }
   }
 
   newNote (parent, title) {
     title = title || "New note";
-    id = backend.newNote(parent, id);
-
-    this.notesGraph.setTitle(id, title);
-    this.notesGraph.setParent(id, parent);
-    this.notesGraph.setBody(id, "");
+    return this.backend.newNote(parent, title);
   }
 
   setTitle (id, title) {
@@ -42,7 +42,7 @@ class notesManager {
   setBody (id, body) {
     // TODO: check if all children are still present and move to
     // lost&found the ones which are not.
-    this.notesGraph.setBody(id, body);
+    this.backend.updateBody(id, body);
   }
 
   archiveNote (id) {
