@@ -36,7 +36,7 @@ class notesManager {
 
   setTitle (id, title) {
     // notesCoherenceTools.renameLink(note.parent, note, oldTitle);
-    this.notesGraph.setTitle(id, title);
+    this.backend.updateTitle(id, title);
   }
 
   setBody (id, body) {

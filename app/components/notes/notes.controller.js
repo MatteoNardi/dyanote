@@ -6,7 +6,7 @@ class NotesController {
     this.$timeout = $timeout;
     this.openNotes = openNotes;
     this.notesGraph = notesGraph;
-    this.notesManger = notesManger;
+    this.notesManager = notesManager;
   }
 
   activate () {
@@ -30,9 +30,9 @@ class NotesController {
   }
 
   title (note) {
-    return {
-      get: _ => this.notesGraph.title(note),
-      set: t => this.notesManager.setTitle(t)
+    return title => {
+      if (title) this.notesManager.setTitle(note, title);
+      else return this.notesGraph.title(note);
     };
   }
 }

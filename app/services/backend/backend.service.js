@@ -63,6 +63,10 @@ class backend {
     return id;
   }
 
+  updateTitle (id, title) {
+    this.userRef.child('titles').child(id).set(title);
+  }
+
   onTitleUpdate (id, cb) {
     this.userRef.child('titles').child(id).on('value', title => {
       cb(title.val());
