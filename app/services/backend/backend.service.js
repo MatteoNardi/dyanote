@@ -70,6 +70,10 @@ class backend {
     this.userRef.child('bodies').child(id).set(body);
   }
 
+  updateParent (id, parent) {
+    this.userRef.child('graph').child(id).set(parent);
+  }
+
   onTitleUpdate (id, cb) {
     this.userRef.child('titles').child(id).on('value', title => {
       cb(title.val());
@@ -88,6 +92,35 @@ class backend {
   newUserAccount () {
     this.newNote(null, 'Welcome to Dyanote');
     // TODO: Add a set of default notes which make sense.
+  }
+
+  backup (callback) {
+    console.info('backup');
+    this.userRef.once('value', data => {
+      var notes = data.val();
+      console.info(notes);
+      console.info(notes);
+      var serialization = Object.keys(notes.graph).map(key => ({
+        id: key,
+        title: notes.titles[key],
+        body: notes.bodies[key],
+        parent: notes.graph[key]
+      }));
+      callback(JSON.stringify(serialization));
+    });
+  }
+
+  restore (data) {
+    try {
+      console.info(data);
+      JSON.parse(data).forEach(note => {
+        this.updateTitle(note.id, note.title);
+        this.updateBody(note.id, note.body);
+        this.updateParent(note.id, note.parent);
+      });
+    } catch (e) {
+      console.warn(e);
+    }
   }
 
   // Utility: display error on console

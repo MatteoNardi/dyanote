@@ -5,6 +5,7 @@
 class notesGraph {
 
   constructor () {
+    this._notes = new Set();
     this._parents = new Map(); // Map <Id, Id>
     this._titles = new Map(); // Map <Id, String>
     this._children = new Map(); // Map <Id, Set<Id>>
@@ -20,8 +21,14 @@ class notesGraph {
   }
 
   init (id) {
-    if (this._children.get(id) === undefined)
+    if (this._children.get(id) === undefined) {
+      this._notes.add(id);
       this._children.set(id, new Set());
+    }
+  }
+
+  allNotes () {
+    return Array.from(this._notes);
   }
 
   setTitle (id, title) {
