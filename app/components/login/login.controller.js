@@ -9,7 +9,7 @@ class LoginController {
     });
   }
 
-  cxanActivate () {
+  canActivate () {
     // if (this.backend.isAuthenticated()) {
     //   this.$location.path('/notes');
     //   return false;

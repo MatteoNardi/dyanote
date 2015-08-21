@@ -13,7 +13,7 @@ gulp.task('test', function (done) {
       'node_modules/angular-new-router/dist/router.es5.js',
       'node_modules/angular-mocks/angular-mocks.js',
       'node_modules/angular-animate/angular-animate.js',
-      'node_modules/angular-bootstrap/dist/ui-bootstrap.min.js',
+      'node_modules/angular-bootstrap/ui-bootstrap.min.js',
       'node_modules/angular-local-storage/dist/angular-local-storage.js',
       'app/app.js',
       'app/config_local.js',

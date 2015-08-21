@@ -2,7 +2,7 @@
     <div id='breadcrumb'>
         <ol>
             <li ng-repeat="note in notes.notes" ng-click="notes.onBreadcrumbItemClicked($event, note)">
-                <p>{{ note.title }}</p>
+                <p>{{ notes.notesGraph.title(note) }}</p>
             </li>
         </ol>
     </div>
@@ -12,8 +12,10 @@
     <div class="note-container" ng-repeat="note in notes.notes">
         <div class="note">
             <div class="note-header">
-                <input type='text' class='title' ng-model="note.title"/>
-                <span class="glyphicon glyphicon-trash" ng-click="notes.archive(note)" 
+                <input type='text' class='title'
+                    ng-model="notes.notesGraph.title(note)"
+                    ng-model-options="{ getterSetter: true }"/>
+                <span class="glyphicon glyphicon-trash" ng-click="notes.archive(note)"
                     tooltip="Archive note"/>
             </div>
             <div editor class="richTextEditor" contenteditable="true"></div>

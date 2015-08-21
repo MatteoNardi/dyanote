@@ -18,7 +18,6 @@ class notesManager {
     });
 
     openNotes.addOpenHandler(note => this.load(note));
-
   }
 
   load (note) {

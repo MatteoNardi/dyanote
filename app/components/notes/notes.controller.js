@@ -2,10 +2,11 @@
 // Controller for the notes view.
 // It is responsible for navigation (via breadcrumb or clicked links)
 class NotesController {
-  constructor ($log, $timeout, openNotes) {
-    this.$log = $log;
+  constructor ($scope, $timeout, openNotes, notesGraph, notesManager) {
     this.$timeout = $timeout;
     this.openNotes = openNotes;
+    this.notesGraph = notesGraph;
+    this.notesManger = notesManger;
   }
 
   activate () {
@@ -26,6 +27,13 @@ class NotesController {
       this.openNotes.focus(previous);
       this.$timeout(() => this.openNotes.close(note) , 500);
     }
+  }
+
+  title (note) {
+    return {
+      get: _ => this.notesGraph.title(note),
+      set: t => this.notesManager.setTitle(t)
+    };
   }
 }
 
