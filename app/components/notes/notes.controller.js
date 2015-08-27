@@ -19,7 +19,7 @@ class NotesController {
   }
 
   archive (note) {
-    note.archive();
+    this.notesManager.archiveNote(note);
     var pos = this.openNotes.notes.indexOf(note);
 
     if (pos > 0) {

@@ -1,8 +1,10 @@
 
 class notesManager {
-  constructor (notesGraph, backend, notifications, openNotes) {
+  constructor (notesGraph, backend, notifications, openNotes, notesCoherenceTools) {
     this.notesGraph = notesGraph;
+    this.notifications = notifications;
     this.backend = backend;
+    this.notesCoherenceTools = notesCoherenceTools;
     this.loaded = new Set();
 
     // Keep the graph of notes updated
@@ -46,8 +48,37 @@ class notesManager {
   }
 
   archiveNote (id) {
-    // notifications.warn('"' + note.title + '" was moved to "' + note.parent.title + '"');
-    // notesCoherenceTools.removeLink(oldParent, note.url);
+    var parent = this.notesGraph.parent(id);
+
+    // Detect notes to archive.
+    var toArchive = [ { id: id, parent: '' } ];
+    var recAdd = note => {
+      this.notesGraph.children(note).forEach(child => {
+        toArchive.push({
+          id: child,
+          parent: note
+        });
+        recAdd(child);
+      });
+    };
+    recAdd(id);
+
+    // Show notification.
+    var title = this.notesGraph.title(id),
+      children = toArchive.length -1;
+    if (children)
+      this.notifications.warn(`Note “${title}” and its ${children} sub-notes have been  archived`);
+    else
+      this.notifications.warn(`Note “${title}” has been  archived`);
+
+    // Archive notes
+    toArchive.forEach(({ id: id, parent: parent }) => {
+      this.backend.archive(id, parent);
+    });
+
+    // Remove links to archived note
+    var newBody = this.notesCoherenceTools.removeLink(parent, `#${id}`);
+    this.backend.updateBody(parent, newBody);
   }
 }
 

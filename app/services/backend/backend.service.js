@@ -8,7 +8,7 @@ class backend {
 
     this.firebase.onAuth(authData => {
       this.authData = authData;
-      this.userRef = this.firebase.child(authData.uid);
+      this.userRef = authData ? this.firebase.child(authData.uid) : undefined;
       this.digest();
     });
   }
@@ -72,6 +72,12 @@ class backend {
 
   updateParent (id, parent) {
     this.userRef.child('graph').child(id).set(parent);
+  }
+
+  archive (id, parentId) {
+    console.info('archive', id, parentId);
+    this.userRef.child('graph').child(id).remove();
+    this.userRef.child('archive').child(id).set(parentId);
   }
 
   onTitleUpdate (id, cb) {
