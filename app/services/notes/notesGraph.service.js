@@ -2,63 +2,59 @@
 // The store of notes.
 // We try to follow the Flux pattern, this is the store of data and only
 // the notesManager service should apply modifications.
-class notesGraph {
+function notesGraph () {
+  let _notes = new Set(),  // Set <Id>
+    _parents = new Map(),  // Map <Id, Id>
+    _titles = new Map(),   // Map <Id, String>
+    _children = new Map(), // Map <Id, Set<Id>>
+    _bodies = new Map();   // Map <Id, String>
 
-  constructor () {
-    this._notes = new Set();
-    this._parents = new Map(); // Map <Id, Id>
-    this._titles = new Map(); // Map <Id, String>
-    this._children = new Map(); // Map <Id, Set<Id>>
-    this._bodies = new Map(); // Map <Id, String>
-  }
+  let
+    init = id => {
+      if (id !== undefined && _children.get(id) === undefined) {
+        _notes.add(id);
+        _children.set(id, new Set());
+      }
+    },
+    link = (source, dest) => {
+      _parents.set(dest, source);
+      if (source !== undefined)
+        _children.get(source).add(dest);
+    },
+    unlink = (source, dest) => {
+      _parents.set(dest, null);
+      if (source !== undefined)
+        _children.get(source).delete(dest);
+    },
+    setParent = (id, newParent) => {
+      init(id);
+      init(newParent);
+      unlink(parent(id), id);
+      link(newParent, id);
+    },
+    allNotes = _ => Array.from(_notes),
+    callMethod = R.converge(R.bind, R.prop, R.nthArg(1)),
+    setter = callMethod('set'),
+    getter = callMethod('get'),
+    setTitle = setter(_titles),
+    setBody = setter(_bodies),
+    parent = getter(_parents),
+    title = getter(_titles),
+    body = getter(_bodies),
+    children = R.compose(Array.from, getter(_children));
 
-  setParent (id, parent) {
-    this.init(id);
-    this.init(this.parent(id));
-    this.init(parent);
-    this.unlink(this.parent(id), id);
-    this.link(parent, id);
-  }
+  return {
+    setParent: setParent, // id -> string -> null
+    setTitle: setTitle,   // id -> string -> null
+    setBody: setBody,     // id -> string -> null
 
-  init (id) {
-    if (this._children.get(id) === undefined) {
-      this._notes.add(id);
-      this._children.set(id, new Set());
-    }
-  }
-
-  allNotes () {
-    return Array.from(this._notes);
-  }
-
-  setTitle (id, title) {
-    this._titles.set(id, title);
-  }
-
-  setBody (id, body) {
-    this._bodies.set(id, body);
-  }
-
-  delete (id) {
-    // TODO
-  }
-
-  // Getters
-  parent (id) { return this._parents.get(id); }
-  title (id) { return this._titles.get(id); }
-  body (id) { return this._bodies.get(id); }
-  children (id) { return this._children.get(id); }
-
-  // Private
-  link (parent, child) {
-    this._parents.set(child, parent);
-    this._children.get(parent).add(child);
-  }
-
-  unlink (parent, child) {
-    this._parents.set(child, null);
-    this._children.get(parent).delete(child);
-  }
+    // Getters
+    parent: parent,     // id -> id
+    title: title,       // id -> string
+    body: body,         // id -> string
+    children: children, // id -> [id]
+    allNotes: allNotes // [id]
+  };
 }
 
 angular.module('dyanote').service('notesGraph', notesGraph);

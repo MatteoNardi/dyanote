@@ -34,6 +34,7 @@
       "node_modules/angular-local-storage/dist/angular-local-storage.js",
       "node_modules/mousetrap/mousetrap.js",
       "node_modules/d3/d3.min.js",
+      "node_modules/ramda/dist/ramda.js",
       "node_modules/angular-bootstrap/ui-bootstrap.min.js",
       "node_modules/angular-bootstrap/ui-bootstrap-tpls.min.js",
       "resources/js/*.js"

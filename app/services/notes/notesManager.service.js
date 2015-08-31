@@ -77,7 +77,7 @@ class notesManager {
     });
 
     // Remove links to archived note
-    var newBody = this.notesCoherenceTools.removeLink(parent, `#${id}`);
+    var newBody = this.notesCoherenceTools.removeLink(this.notesGraph.body(parent), id);
     this.backend.updateBody(parent, newBody);
   }
 }
