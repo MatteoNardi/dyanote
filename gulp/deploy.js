@@ -1,6 +1,6 @@
 var gulp = require('gulp'),
   awspublish = require('gulp-awspublish'),
-  uglify = require('gulp-uglify');
+  uglify = require('gulp-uglify'),
   concat = require('gulp-concat'),
   templateCache = require('gulp-angular-templatecache'),
   del = require('del'),
@@ -16,7 +16,7 @@ gulp.task('clean', function (cb) {
   ], cb);
 });
 
-gulp.task('build:deploy', ['style', 'fonts', 'images', 'js:vendor', 'js:dyanote:deploy'], 
+gulp.task('build:deploy', ['style', 'fonts', 'images', 'js:vendor', 'js:dyanote:deploy'],
   function () {
 
   var buildNum = new Date().valueOf();
@@ -32,8 +32,10 @@ gulp.task('build:deploy', ['style', 'fonts', 'images', 'js:vendor', 'js:dyanote:
 
 gulp.task('publish', ['build:deploy'], function() {
   var publisher = awspublish.create({
-    bucket: 'dyanote.com',
-    region: 'eu-west-1'
+    region: 'eu-west-1',
+    params: {
+      Bucket: 'dyanote.com'
+    }
   });
 
   var build = gulp.src(['dist/**', '!dist/build/**', '!dist/index.html'])
