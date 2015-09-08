@@ -5,6 +5,7 @@
     ],
     "dyanote": [
       "app/app.js",
+      "app/utilities/*.js",
       "app/services/*.service.js",
       "app/services/*/*.service.js",
       "app/components/*/*.controller.js",

@@ -28,4 +28,19 @@ describe('Service: notesGraph', function () {
     expect(notesGraph.allNotes()).toContain(1);
     expect(notesGraph.allNotes()).toContain(2);
   });
+
+  it('should allow to get all descendants', function () {
+    notesGraph.setParent(2, 0);
+    notesGraph.setParent(1, 2);
+    notesGraph.setParent(3, 1);
+    notesGraph.setParent(4, 0);
+    notesGraph.setParent(5, 3);
+    notesGraph.setParent(6, 5);
+    expect(notesGraph.descendants(6)).toEqual([]);
+    expect(notesGraph.descendants(5)).toEqual([6]);
+    expect(notesGraph.descendants(2)).toContain(1);
+    expect(notesGraph.descendants(2)).toContain(3);
+    expect(notesGraph.descendants(2)).toContain(5);
+    expect(notesGraph.descendants(2)).toContain(6);
+  });
 });

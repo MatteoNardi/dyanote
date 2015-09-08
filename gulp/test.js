@@ -20,6 +20,7 @@ gulp.task('test', function (done) {
       'app/app.js',
       'app/config_local.js',
       'app/services/*/*.js',
+      'app/utilities/*.js',
       'app/components/*/*.js',
       'app/scribe/*.js',
       'app/scribe/*/*.js'

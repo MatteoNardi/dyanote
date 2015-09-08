@@ -9,7 +9,6 @@ class notesCoherenceTools {
 
   // removeLink removes a link from a note
   removeLink (body, id) {
-    console.info('body', body, body.replace(this.linkRegex(id), '$1'));
     return body.replace(this.linkRegex(id), '$1');
   }
 

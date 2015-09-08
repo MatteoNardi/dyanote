@@ -47,38 +47,24 @@ class notesManager {
     this.backend.updateBody(id, body);
   }
 
-  archiveNote (id) {
-    var parent = this.notesGraph.parent(id);
+  trashNote (id) {
+    var graph = this.notesGraph,
+      backend = this.backend,
+      parent = graph.parent(id),
+      removeLink = this.notesCoherenceTools.removeLink;
 
-    // Detect notes to archive.
-    var toArchive = [ { id: id, parent: '' } ];
-    var recAdd = note => {
-      this.notesGraph.children(note).forEach(child => {
-        toArchive.push({
-          id: child,
-          parent: note
-        });
-        recAdd(child);
-      });
-    };
-    recAdd(id);
+    var toArchive = R.append(id, notesGraph.descendants(id));
+    backend.updateBody(parent, removeLink(graph.body(parent), id));
+    toArchive.forEach(backend.trash);
 
     // Show notification.
-    var title = this.notesGraph.title(id),
+    var title = graph.title(id),
       children = toArchive.length -1;
     if (children)
       this.notifications.warn(`Note “${title}” and its ${children} sub-notes have been  archived`);
     else
       this.notifications.warn(`Note “${title}” has been  archived`);
 
-    // Archive notes
-    toArchive.forEach(({ id: id, parent: parent }) => {
-      this.backend.archive(id, parent);
-    });
-
-    // Remove links to archived note
-    var newBody = this.notesCoherenceTools.removeLink(this.notesGraph.body(parent), id);
-    this.backend.updateBody(parent, newBody);
   }
 }
 

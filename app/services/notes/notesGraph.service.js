@@ -32,16 +32,14 @@ function notesGraph () {
       unlink(parent(id), id);
       link(newParent, id);
     },
-    allNotes = _ => Array.from(_notes),
-    callMethod = R.converge(R.bind, R.prop, R.nthArg(1)),
-    setter = callMethod('set'),
-    getter = callMethod('get'),
-    setTitle = setter(_titles),
-    setBody = setter(_bodies),
-    parent = getter(_parents),
-    title = getter(_titles),
-    body = getter(_bodies),
-    children = R.compose(Array.from, getter(_children));
+    setTitle = D.setter(_titles),
+    setBody = D.setter(_bodies),
+    parent = D.getter(_parents),
+    title = D.getter(_titles),
+    body = D.getter(_bodies),
+    children = R.compose(Array.from, D.getter(_children)),
+    descendants = R.compose(R.flatten, D.dfs(children, children)),
+    allNotes = _ => Array.from(_notes);
 
   return {
     setParent: setParent, // id -> string -> null
@@ -53,7 +51,8 @@ function notesGraph () {
     title: title,       // id -> string
     body: body,         // id -> string
     children: children, // id -> [id]
-    allNotes: allNotes // [id]
+    descendants: descendants, // [id]
+    allNotes: allNotes  // [id]
   };
 }
 
