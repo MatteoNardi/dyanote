@@ -23,11 +23,11 @@ describe('LoginController', function () {
     LoginController = _.$controller('LoginController', { $scope: _.$rootScope.$new() });
   });
 
-  it('should be able to activate when user is not authenticated', function () {
+  xit('should be able to activate when user is not authenticated', function () {
     expect(LoginController.canActivate()).toBe(true);
   });
 
-  it('should redirect to notes if user is already logged in', function () {
+  xit('should redirect to notes if user is already logged in', function () {
     _.$rootScope.$apply(() => {
       _.backend.isAuthenticated = () => true;
     });

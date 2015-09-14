@@ -1,21 +1,21 @@
 // This controller allows only logged in  logged in users.
-class AuthenticatedController {
-  constructor ($router, backend, notesManager) {
-    this.backend = backend;
+function AuthenticatedController ($router, $location, $timeout, backend, notesManager) {
+  $router.config([
+    { path: '/', redirectTo: '/view'},
 
-    $router.config([
-      { path: '/', redirectTo: '/view'},
+    { path: '/view', component: 'notes'},
+    { path: '/archive', component: 'archive'},
+    { path: '/dyagraph', component: 'dyagraph'},
+    { path: '/search', component: 'search'}
+  ]);
 
-      { path: '/view', component: 'notes'},
-      { path: '/archive', component: 'archive'},
-      { path: '/dyagraph', component: 'dyagraph'},
-      { path: '/search', component: 'search'}
-    ]);
-  }
-
-  canActivate () {
-    return this.backend.isAuthenticated();
-  }
+  this.activate = _ => {
+    if (!backend.isAuthenticated()) {
+      $timeout(function () {
+        $location.path('/login');
+      });
+    }
+  };
 }
 
 angular.module('dyanote').controller('AuthenticatedController', AuthenticatedController);

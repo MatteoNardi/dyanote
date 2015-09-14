@@ -16,8 +16,31 @@
     return results;
   });
 
-  D.callMethod = R.converge(R.bind, R.prop, R.nthArg(1));
-  D.setter = D.callMethod('set');
-  D.getter = D.callMethod('get');
-  D.log = x => { console.log(x); return x; };
+  // Getter and setters for ES6 maps and sets.
+  D.setter = R.curry((object, key, value) => object.set(key, value));
+  D.getter = R.curry((object, key) => object.get(key));
+
+  // Log a value and return it
+  D.log = x => {
+    console.warn('Log', x);
+    return x;
+  };
+
+  // Make a function print its arguments before executing.
+  D.debug = fn => {
+    function newFn () {
+      console.warn('Debug', arguments);
+      fn.apply(this, arguments);
+    }
+    if (fn.length)
+      return R.curryN(fn.length, newFn);
+    else return newFn;
+  };
+
+  D.exists = x => !!x;
+  D.ifExists = R.ifElse(D.exists);
+  D.executeAll = R.curryN(2, (callbacks, x) => callbacks.forEach(cb => cb(x)));
+
+  // Convert n arguments to a list of arguments
+  D.list = n => R.curryN(n, function () { return Array.prototype.slice.call(arguments); });
 } ());

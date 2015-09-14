@@ -26,8 +26,8 @@ class notesManager {
   load (note) {
     if (!this.loaded.has(note)) {
       this.loaded.add(note);
-      this.backend.onTitleUpdate(note, title => this.notesGraph.setTitle(note, title));
-      this.backend.onBodyUpdate(note, body => this.notesGraph.setBody(note, body));
+      this.backend.onTitleUpdate(note, this.notesGraph.setTitle(note));
+      this.backend.onBodyUpdate(note, this.notesGraph.setBody(note));
     }
   }
 

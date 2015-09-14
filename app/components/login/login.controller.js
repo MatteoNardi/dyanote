@@ -1,26 +1,15 @@
 
-class LoginController {
-  constructor (backend, $scope, $location) {
-    this.backend = backend;
+function LoginController (backend, $scope, $location, $timeout) {
 
-    $scope.$watch(() => backend.isAuthenticated(), (a, isAuthenticated) => {
-      if (isAuthenticated)
+  $scope.$watch(() => backend.isAuthenticated(), (a, isAuthenticated) => {
+    if (isAuthenticated) {
+      $timeout(function () {
         $location.path('/notes');
-    });
-  }
+      });
+    }
+  });
 
-  canActivate () {
-    // if (this.backend.isAuthenticated()) {
-    //   this.$location.path('/notes');
-    //   return false;
-    // }
-    return !this.backend.isAuthenticated();
-  }
-
-  login (loginForm, passwordField) {
-    console.info('login()');
-    this.backend.login();
-  }
+  this.login = _ => backend.login();
 }
 
 angular.module('dyanote').controller('LoginController', LoginController);

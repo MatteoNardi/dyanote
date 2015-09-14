@@ -1,147 +1,139 @@
 
-class backend {
-  constructor (SERVER_CONFIG, notifications, $rootScope) {
-    this.notifications = notifications;
-    this.$rootScope = $rootScope;
+function backend (SERVER_CONFIG, notifications, $rootScope) {
 
-    this.firebase = new Firebase(SERVER_CONFIG.apiUrl);
+  let
+    firebase = new Firebase(SERVER_CONFIG.apiUrl),
+    authData = null,
+    userRef = null,
 
-    this.firebase.onAuth(authData => {
-      this.authData = authData;
-      this.userRef = authData ? this.firebase.child(authData.uid) : undefined;
-      this.digest();
-    });
-  }
+    isAuthenticated = _ =>
+      !!authData,
 
-  isAuthenticated () {
-    return !!this.authData;
-  }
+    getUserVisibleName = _ =>
+      R.path(['google', 'displayName'], authData),
 
-  getUserVisibleName () {
-    return this.authData.google.displayName;
-  }
+    getUserAvatar = _ =>
+      R.path(['google', 'profileImageURL'], authData),
 
-  getUserAvatar () {
-    return this.authData.google.profileImageURL;
-  }
+    login = _ =>
+      firebase.authWithOAuthPopup('google', R.ifElse(
+        err => {
+          notifications.warn('Login failure');
+          console.warn(err);
+        },
+        _ => {
+          notifications.success('Logged in');
+        }
+      )),
 
-  login () {
-    this.firebase.authWithOAuthPopup('google', err => {
-      if (err) {
-        this.notifications.warn('Login failure');
-        console.warn(err);
-      }
-      else this.notifications.success('Logged in');
-    });
-  }
+    logout = _ => firebase.unauth(),
 
-  logout () {
-    this.firebase.unauth();
-  }
+    // Eg. getUserObject('titles/42') -> Firebase ref
+    getUserObject = c => userRef.child(c),
+    // Eg. below('titles', 42) -> 'titles/42'
+    below = R.compose(R.join('/'), D.log, D.list(2)),
+    addWatch = R.curry((path, cb) => userRef.child(path).on('value', d => {
+      cb(d.val());
+      digest();
+    })),
+    // Eg. setNoteProperty('titles', 42, 'New title...')
+    // setNoteProperty = R.compose(R.flip(R.invoker(1, 'set')), getUserObject, below),
+    setNoteProperty = R.curry((prop, note, value) => {
+      getUserObject(below(prop, note)).set(value);
+    }),
+    // setNoteProperty = setRef
 
-  onGraphUpdate (cb) {
-    this.userRef.child('graph').on('value', graph => {
-      // console.info('graph', graph)
-      if (graph.exists())
-        cb(graph.val());
-      else
-        this.newUserAccount();
-      this.digest();
-    });
-  }
+    // Eg. updateTitle('42', 'New title...')
+    updateTitle = setNoteProperty('titles'),
+    updateBody = setNoteProperty('bodies'),
+    updateParent = setNoteProperty('graph'),
 
-  newNote (parent, title) {
-    console.info('new note');
-    var ref = this.userRef.child('graph').push(parent || "",
-      this.errorCallback('Error creating new note'));
-    var id = ref.key();
-    this.userRef.child('titles').child(id).set(title,
-      this.errorCallback('Error creating setting the new note title'));
-    this.userRef.child('bodies').child(id).set('',
-      this.errorCallback('Error creating setting the new note body'));
-    return id;
-  }
+    // Eg. onTitleUpdate('42', newTitle => { ... })
+    onTitleUpdate = R.useWith(addWatch, below('titles')),
+    onBodyUpdate = R.useWith(addWatch, below('bodies')),
 
-  updateTitle (id, title) {
-    this.userRef.child('titles').child(id).set(title);
-  }
+    archive = id => setNoteProperty('trash', id, true),
 
-  updateBody (id, body) {
-    this.userRef.child('bodies').child(id).set(body);
-  }
+    graphListeners = [],
+    onGraphUpdate = cb => graphListeners.push(cb),
+    watchGraph = _ => addWatch('graph',
+      D.ifExists(
+        D.executeAll(graphListeners),
+        newUserAccount
+      )
+    ),
 
-  updateParent (id, parent) {
-    this.userRef.child('graph').child(id).set(parent);
-  }
+    newNote = (parent, title) => {
+      var ref = userRef.child('graph').push(parent || "", errorCallback('Error creating new note'));
+      var id = ref.key();
+      userRef.child('titles').child(id).set(title, errorCallback('Error creating setting the new note title'));
+      userRef.child('bodies').child(id).set('', errorCallback('Error creating setting the new note body'));
+      return id;
+    },
 
-  archive (id, parentId) {
-    console.info('archive', id, parentId);
-    this.userRef.child('graph').child(id).remove();
-    this.userRef.child('archive').child(id).set(parentId);
-  }
+    newUserAccount = _ => newNote(null, 'Welcome to Dyanote'),
 
-  onTitleUpdate (id, cb) {
-    this.userRef.child('titles').child(id).on('value', title => {
-      cb(title.val());
-      this.digest();
-    });
-  }
-
-  onBodyUpdate (id, cb) {
-    this.userRef.child('bodies').child(id).on('value', body => {
-      cb(body.val());
-      this.digest();
-    });
-  }
-
-  // Notes created on first login.
-  newUserAccount () {
-    this.newNote(null, 'Welcome to Dyanote');
-    // TODO: Add a set of default notes which make sense.
-  }
-
-  backup (callback) {
-    console.info('backup');
-    this.userRef.once('value', data => {
-      var notes = data.val();
-      console.info(notes);
-      console.info(notes);
-      var serialization = Object.keys(notes.graph).map(key => ({
-        id: key,
-        title: notes.titles[key],
-        body: notes.bodies[key],
-        parent: notes.graph[key]
-      }));
-      callback(JSON.stringify(serialization));
-    });
-  }
-
-  restore (data) {
-    try {
-      console.info(data);
-      JSON.parse(data).forEach(note => {
-        this.updateTitle(note.id, note.title);
-        this.updateBody(note.id, note.body);
-        this.updateParent(note.id, note.parent);
+    backup = callback => {
+      console.info('backup');
+      userRef.once('value', data => {
+        var notes = data.val();
+        console.info(notes);
+        console.info(notes);
+        var serialization = Object.keys(notes.graph).map(key => ({
+          id: key,
+          title: notes.titles[key],
+          body: notes.bodies[key],
+          parent: notes.graph[key]
+        }));
+        callback(JSON.stringify(serialization));
       });
-    } catch (e) {
-      console.warn(e);
-    }
-  }
+    },
 
-  // Utility: display error on console
-  errorCallback (msg) {
-    return (err) => {
-      if (err)
-        console.warn(msg, err);
-    };
-  }
+    restore = data => {
+      try {
+        console.info(data);
+        JSON.parse(data).forEach(note => {
+          updateTitle(note.id, note.title);
+          updateBody(note.id, note.body);
+          updateParent(note.id, note.parent);
+        });
+      } catch (e) {
+        console.warn(e);
+      }
+    },
 
-  // Utility: Make sure we run a digest cycle
-  digest () {
-    if (!this.$rootScope.$$phase)
-      this.$rootScope.$apply();
-  }
+    // Utility: display error on console
+    errorCallback = msg => (err => err && console.warn(msg, err)),
+
+    // Utility: Make sure we run a digest cycle
+    digest = _ => $rootScope.$$phase || $rootScope.$apply();
+
+  firebase.onAuth(newAuth => {
+    authData = newAuth;
+    if (userRef) userRef.off();
+    userRef = authData ? firebase.child(authData.uid) : null;
+    if (userRef)
+      watchGraph();
+    digest();
+  });
+  console.info('setNoteProperty.length', setNoteProperty.length)
+  return {
+    isAuthenticated: isAuthenticated,
+    getUserVisibleName: getUserVisibleName,
+    getUserAvatar: getUserAvatar,
+    login: login,
+    logout: logout,
+    onGraphUpdate: onGraphUpdate,
+    newNote: newNote,
+    updateTitle: updateTitle,
+    updateBody: updateBody,
+    updateParent: updateParent,
+    onTitleUpdate: onTitleUpdate,
+    onBodyUpdate: onBodyUpdate,
+    archive: archive,
+    backup: backup,
+    restore: restore
+  };
 }
 
 angular.module('dyanote').service('backend', backend);
