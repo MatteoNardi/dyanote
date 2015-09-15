@@ -1,7 +1,7 @@
 
-<div class="toolbar" ng-show="toolbar.show" 
+<div class="toolbar" ng-show="toolbar.show"
     style="top: {{ toolbar.Y }}px; left: {{ toolbar.X}}px">
-    
+
     <button shortcut="ctrl+l" ng-click="commands.link()"
        tooltip-html-unsafe="Create a new note and link to it.<strong>Ctrl+L</strong>"
        tooltip-placement="right" tooltip-popup-delay="500">
@@ -20,8 +20,8 @@
         <i class="fa fa-italic"></i>
     </button>
 
-    <button shortcut="ctrl+t" ng-click="commands.title()"
-       tooltip-html-unsafe="Make the selected text a title.<strong>Ctrl+T</strong>"
+    <button shortcut="ctrl+k" ng-click="commands.title()"
+       tooltip-html-unsafe="Make the selected text a title.<strong>Ctrl+K</strong>"
        tooltip-placement="right" tooltip-popup-delay="500">
         <i class="fa fa-header"></i>
     </button>
