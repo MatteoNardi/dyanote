@@ -7,13 +7,15 @@ function notesGraph () {
     _parents = new Map(),  // Map <Id, Id>
     _titles = new Map(),   // Map <Id, String>
     _children = new Map(), // Map <Id, Set<Id>>
-    _bodies = new Map();   // Map <Id, String>
+    _bodies = new Map(),   // Map <Id, String>
+    _trashed = new Map();  // Map <Id, Boolean>
 
   let
     init = id => {
       if (id !== undefined && _children.get(id) === undefined) {
         _notes.add(id);
         _children.set(id, new Set());
+        _trashed.set(id, false);
       }
     },
     link = (source, dest) => {
@@ -34,17 +36,24 @@ function notesGraph () {
     },
     setTitle = D.setter(_titles),
     setBody = D.setter(_bodies),
+    setTrashed = D.setter(_trashed),
     parent = D.getter(_parents),
     title = D.getter(_titles),
     body = D.getter(_bodies),
-    children = R.compose(Array.from, D.getter(_children)),
+    notTrashed = R.compose(R.not, D.getter(_trashed)),
+    allChildren = R.compose(Array.from, D.getter(_children)),
+    children = R.compose(R.filter(notTrashed), allChildren),
     descendants = R.compose(R.flatten, D.dfs(children, children)),
-    allNotes = _ => Array.from(_notes);
+    allNotes = _ => Array.from(_notes),
+    hasNoParent = R.compose(R.not, D.exists, parent),
+    isRoot = R.both(hasNoParent, notTrashed),
+    roots = _ => R.filter(isRoot, allNotes());
 
   return {
-    setParent: setParent, // id -> string -> null
+    setParent: setParent, // id -> id -> null
     setTitle: setTitle,   // id -> string -> null
     setBody: setBody,     // id -> string -> null
+    setTrashed: setTrashed, // id -> string -> null
 
     // Getters
     parent: parent,     // id -> id
@@ -52,7 +61,8 @@ function notesGraph () {
     body: body,         // id -> string
     children: children, // id -> [id]
     descendants: descendants, // [id]
-    allNotes: allNotes  // [id]
+    allNotes: allNotes, // [id]
+    roots: roots        // [id]
   };
 }
 

@@ -18,8 +18,8 @@ class NotesController {
     this.openNotes.focus(note);
   }
 
-  archive (note) {
-    this.notesManager.archiveNote(note);
+  trash (note) {
+    this.notesManager.trashNote(note);
     var pos = this.openNotes.notes.indexOf(note);
 
     if (pos > 0) {

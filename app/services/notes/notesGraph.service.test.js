@@ -43,4 +43,14 @@ describe('Service: notesGraph', function () {
     expect(notesGraph.descendants(2)).toContain(5);
     expect(notesGraph.descendants(2)).toContain(6);
   });
+
+  it('should allow to get roots', function () {
+    notesGraph.setParent(2, 1);
+    notesGraph.setParent(5, 3);
+    notesGraph.setParent(6, 5);
+    notesGraph.setParent(10, 15);
+    notesGraph.setParent(10, 17);
+    notesGraph.setTrashed(17, true);
+    expect(notesGraph.roots()).toEqual([1, 3, 15]);
+  });
 });

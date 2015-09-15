@@ -8,16 +8,14 @@ class notesManager {
     this.loaded = new Set();
 
     // Keep the graph of notes updated
-    backend.onGraphUpdate(graph => {
-      var rootNote;
-      for (let note in graph) {
-        if (!graph[note] && !rootNote)
-          rootNote = note;
-        notesGraph.setParent(note, graph[note]);
-      }
+    backend.onGraphUpdate(notes => {
+      notes.forEach(note => {
+        notesGraph.setParent(note.id, note.parent);
+        notesGraph.setTrashed(note.id, note.trashed);
+      });
 
       if (openNotes.notes.length === 0)
-        openNotes.open(rootNote);
+        openNotes.open(R.head(notesGraph.roots()));
     });
 
     openNotes.addOpenHandler(note => this.load(note));
@@ -33,7 +31,9 @@ class notesManager {
 
   newNote (parent, title) {
     title = title || "New note";
-    return this.backend.newNote(parent, title);
+    var id = this.backend.newNote(parent, title);
+    this.load(id);
+    return id;
   }
 
   setTitle (id, title) {
@@ -50,21 +50,20 @@ class notesManager {
   trashNote (id) {
     var graph = this.notesGraph,
       backend = this.backend,
-      parent = graph.parent(id),
-      removeLink = this.notesCoherenceTools.removeLink;
+      parent = graph.parent(id);
 
-    var toArchive = R.append(id, notesGraph.descendants(id));
-    backend.updateBody(parent, removeLink(graph.body(parent), id));
-    toArchive.forEach(backend.trash);
+    var toTrash = R.append(id, graph.descendants(id));
+    if (parent)
+      backend.updateBody(parent, this.notesCoherenceTools.removeLink(graph.body(parent), id));
+    R.forEach(backend.trash, toTrash);
 
     // Show notification.
     var title = graph.title(id),
-      children = toArchive.length -1;
+      children = toTrash.length -1;
     if (children)
-      this.notifications.warn(`Note “${title}” and its ${children} sub-notes have been  archived`);
+      this.notifications.warn(`Note “${title}” and its ${children} sub-notes were moved to the trash`);
     else
-      this.notifications.warn(`Note “${title}” has been  archived`);
-
+      this.notifications.warn(`Note “${title}” was moved to the trash`);
   }
 }
 

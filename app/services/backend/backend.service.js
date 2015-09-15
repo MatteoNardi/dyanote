@@ -1,7 +1,17 @@
 
 function backend (SERVER_CONFIG, notifications, $rootScope) {
+  function init () {
+    firebase.onAuth(newAuth => {
+      authData = newAuth;
+      if (userRef) userRef.off();
+      userRef = authData ? firebase.child(authData.uid) : null;
+      if (userRef)
+        watchGraph();
+      digest();
+    });
+  }
 
-  let
+  var
     firebase = new Firebase(SERVER_CONFIG.apiUrl),
     authData = null,
     userRef = null,
@@ -31,7 +41,7 @@ function backend (SERVER_CONFIG, notifications, $rootScope) {
     // Eg. getUserObject('titles/42') -> Firebase ref
     getUserObject = c => userRef.child(c),
     // Eg. below('titles', 42) -> 'titles/42'
-    below = R.compose(R.join('/'), D.log, D.list(2)),
+    below = R.compose(R.join('/'), D.list(2)),
     addWatch = R.curry((path, cb) => userRef.child(path).on('value', d => {
       cb(d.val());
       digest();
@@ -48,20 +58,32 @@ function backend (SERVER_CONFIG, notifications, $rootScope) {
     updateBody = setNoteProperty('bodies'),
     updateParent = setNoteProperty('graph'),
 
+    trash = setNoteProperty('trash', R.__, true),
+
     // Eg. onTitleUpdate('42', newTitle => { ... })
     onTitleUpdate = R.useWith(addWatch, below('titles')),
     onBodyUpdate = R.useWith(addWatch, below('bodies')),
 
-    archive = id => setNoteProperty('trash', id, true),
-
     graphListeners = [],
     onGraphUpdate = cb => graphListeners.push(cb),
-    watchGraph = _ => addWatch('graph',
-      D.ifExists(
-        D.executeAll(graphListeners),
-        newUserAccount
-      )
-    ),
+    watchGraph = _ => {
+      var graph = {}, trash = {};
+      let update = R.pipe(
+        R.keys,
+        R.map(k => ({ id: k, parent: graph[k], trashed: trash[k] })),
+        D.executeAll(graphListeners)
+      );
+      addWatch('graph', g => {
+        graph = g;
+        if (!graph) newUserAccount();
+        update(graph);
+      });
+      addWatch('trash', t => {
+        if (!t) return;
+        trash = t;
+        update(graph);
+      });
+    },
 
     newNote = (parent, title) => {
       var ref = userRef.child('graph').push(parent || "", errorCallback('Error creating new note'));
@@ -108,15 +130,8 @@ function backend (SERVER_CONFIG, notifications, $rootScope) {
     // Utility: Make sure we run a digest cycle
     digest = _ => $rootScope.$$phase || $rootScope.$apply();
 
-  firebase.onAuth(newAuth => {
-    authData = newAuth;
-    if (userRef) userRef.off();
-    userRef = authData ? firebase.child(authData.uid) : null;
-    if (userRef)
-      watchGraph();
-    digest();
-  });
-  console.info('setNoteProperty.length', setNoteProperty.length)
+  init();
+
   return {
     isAuthenticated: isAuthenticated,
     getUserVisibleName: getUserVisibleName,
@@ -130,7 +145,7 @@ function backend (SERVER_CONFIG, notifications, $rootScope) {
     updateParent: updateParent,
     onTitleUpdate: onTitleUpdate,
     onBodyUpdate: onBodyUpdate,
-    archive: archive,
+    trash: trash,
     backup: backup,
     restore: restore
   };

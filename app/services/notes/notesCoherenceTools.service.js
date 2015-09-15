@@ -4,7 +4,7 @@
 class notesCoherenceTools {
 
   constructor () {
-    this.linkRegex = id => new RegExp(`<a href="#${id}">([^<]*)<\/a>`, 'g');
+    this.linkRegex = id => (new RegExp(`<a href="#${id}">([^<]*)<\/a>`, 'g'));
   }
 
   // removeLink removes a link from a note
