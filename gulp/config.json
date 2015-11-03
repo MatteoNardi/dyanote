@@ -24,7 +24,7 @@
       "node_modules/bootstrap/fonts/*"
     ],
     "images": [
-      "resources/images/*"
+      "resources/images/**"
     ],
     "vendor": [
       "node_modules/babel/node_modules/babel-core/browser-polyfill.js",

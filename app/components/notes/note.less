@@ -20,22 +20,20 @@
     box-shadow: 0 0 20px @dyanote-yellow-dark;
     margin: @note-margin 0 @note-margin 0;
 
-    .note-header {
+    h2 {
         position: relative;
 
-        .title {
-            text-align: center;
-            font: 1.7em @font-family-serif;
-            color: @dyanote-green;
-            display: inline-block;
-            width: 30 * @gu;
-            height: 3 * @gu;
-            margin: 0 0 0 (3 * @gu);
-            border: none;
-            outline: none;
-        }
+        text-align: center;
+        font: 1.7em @font-dyanote-serif;
+        color: @dyanote-green;
+        display: inline-block;
+        width: 30 * @gu;
+        height: 3 * @gu;
+        margin: 0 0 0 (3 * @gu);
+        border: none;
+        outline: none;
 
-        .title:focus {
+        input {
             border: none;
             outline: none;
         }
@@ -62,4 +60,3 @@
 }
 /* Force wysihtml5 to expand its frame. */
 .richTextEditor .wysihtml5-sandbox { width: 100%; height: 100%; }
-

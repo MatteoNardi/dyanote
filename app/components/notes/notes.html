@@ -11,13 +11,13 @@
 
     <div class="note-container" ng-repeat="note in notes.notes">
         <div class="note">
-            <div class="note-header">
+            <h2 class="note-header">
                 <input type='text' class='title'
                     ng-model="notes.title(note)"
                     ng-model-options="{ getterSetter: true }"/>
                 <span class="glyphicon glyphicon-trash" ng-click="notes.trash(note)"
                     tooltip="Archive note"/>
-            </div>
+            </h2>
             <div editor class="richTextEditor" contenteditable="true"></div>
             <div ng-include="'notes/toolbar.html'" class="toolbar"></div>
         </div>

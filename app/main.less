@@ -10,14 +10,21 @@
 
 // Dyanote fonts
 @font-dyanote-serif:  'Gilda Display', serif;
+@font-dyanote-sans:  'Ubuntu', sans-serif;
 
 // Grid unit used to space and align things.
 @gu: 15px;
 
-html, body { height: 100%; }
-#main {	height: 100%; }
-@import "../resources/style/custom-bootstrap.less";
+// @import "../resources/style/custom-bootstrap.less";
 @import "../resources/style/custom-font-awesome.less";
+
+.shadow() {
+    box-shadow: 0 0 16px fade(black, 50%);
+}
+.column() {
+    display: flex;
+    flex-direction: column;
+}
 
 // Main styling
 @import "components/dyagraph/dyagraph.less";
@@ -32,3 +39,21 @@ html, body { height: 100%; }
 @import "components/notifications/notifications.less";
 @import "components/search/search.less";
 @import "components/tooltips/tooltips.less";
+
+// Grid system
+@column: 50px;
+@gutter: 15px;
+@block: @column + @gutter * 2;
+
+body {
+    font: 14px/20px @font-dyanote-sans;
+    background-color: #f8f8f6;
+    margin: 0;
+    #main {
+        .shadow();
+        .column();
+        width: @block * 12;
+        margin: auto;
+        background-color: @dyanote-yellow-light;
+    }
+}

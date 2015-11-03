@@ -10,7 +10,6 @@
 
     position: fixed;
     left: @gu;
-    top: @navbar-height;
     height: 100%;
     background-image:
         linear-gradient(0deg,
@@ -46,6 +45,13 @@
         position: relative;
         left: -(2 * @gu);
         cursor: pointer;
+
+        color: @dyanote-green;
+
+        a {
+            color: inherit;
+            text-decoration: inherit;
+        }
     }
 
     p {
@@ -69,7 +75,7 @@
 
 /* Show only on large displays */
 @media all and (max-width: 1020px) {
-    #breadcrumb {    
+    #breadcrumb {
         display: none;
     }
 }

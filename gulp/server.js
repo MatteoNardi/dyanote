@@ -42,6 +42,7 @@ gulp.task('watch', function () {
   gulp.watch(sources.vendor, ['js:vendor']);
   gulp.watch(sources.dyanote.concat(sources.templates), ['js:dyanote']);
   gulp.watch(sources.index, ['index']);
+  gulp.watch(sources.images, ['images']);
   gulp.watch(['app/**/*.less'], ['style']);
 });
 
@@ -70,7 +71,7 @@ gulp.task('images', function () {
 gulp.task('js:vendor', function () {
   return gulp.src(sources.vendor)
     .pipe(concat('vendor.js'))
-    .pipe(gulp.dest('dist/build'))
+    .pipe(gulp.dest('dist/build'));
 });
 
 gulp.task('js:dyanote', function () {

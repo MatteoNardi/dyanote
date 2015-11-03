@@ -1,20 +1,100 @@
-/*
- * Style for the login and register box.
- */
 
-#login-box, #register-box {
-    .container;
-    margin-top: @navbar-height + 30px;
-    max-width: 500px;
+// Style for the main page
+#login {
+    position: relative;
+    overflow: hidden;
+    .column;
 
-    button {
-        img {
-            height: 20px;
-            margin-left: 5px;
+    .overlay {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 324px;
+        height: 266px;
+        background-color: transparent;
+        background-repeat: no-repeat;
+        pointer-events: none;
+    }
+
+    header {
+        h1 {
+            display: none;
+        }
+
+        position: relative;
+        .overlay {
+            background-image: url('images/homepage/banner.png');
+            background-position: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        margin-top: @gutter * 3;
+        height: @block * 6;
+        background: white;
+        .shadow();
+    }
+
+    #breadcrumb {
+        position: absolute;
+        left: @gutter;
+        a {
+            // color: @dyanote-green;
         }
     }
 
-    .label-info {
-        display: block;
+    .note {
+        .richTextEditor {
+            height: inherit;
+            padding-bottom: 30px;
+        }
+        align-self: flex-end;
+        margin-right: @gutter * 2;
+
+        &#awikiofyourlife .overlay {
+            background-image: url('images/homepage/awikiofyourlife.png');
+        }
+    }
+
+    #googleSignIn {
+        position: absolute;
+        bottom: @gutter;
+        right: @gutter * 2;
+
+        .button {
+            display: inline-block;
+            background: #4285f4;
+            color: white;
+            width: 190px;
+            border-radius: 5px;
+            white-space: nowrap;
+
+            &:hover {
+              cursor: pointer;
+            }
+        }
+        span.label {
+            font-size: 13px;
+            margin-right: @gutter;
+        //   font-weight: bold;
+        }
+        span.icon {
+          background: url('images/homepage/g-normal.png') transparent 5px 50% no-repeat;
+          display: inline-block;
+          vertical-align: middle;
+          width: 42px;
+          height: 42px;
+          border-right: #2265d4 1px solid;
+        }
+        span.buttonText {
+          display: inline-block;
+          vertical-align: middle;
+          padding-left: 42px;
+          padding-right: 42px;
+          font-size: 14px;
+          font-weight: bold;
+          /* Use the Roboto font that is loaded in the <head> */
+          font-family: 'Roboto', sans-serif;
+        }
     }
 }
