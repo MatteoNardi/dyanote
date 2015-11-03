@@ -27,6 +27,7 @@ function backend (SERVER_CONFIG, notifications, $rootScope) {
 
     login = _ =>
       firebase.authWithOAuthPopup('google', R.ifElse(
+        D.exists,
         err => {
           notifications.warn('Login failure');
           console.warn(err);

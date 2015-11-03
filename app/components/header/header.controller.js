@@ -1,8 +1,9 @@
 
 class HeaderController {
-  constructor (backend, $location) {
+  constructor (backend, $location, $log) {
     this.backend = backend;
     this.$location = $location;
+    this.$log = $log;
   }
 
   get username () {
@@ -15,7 +16,7 @@ class HeaderController {
 
   logout () {
     this.backend.logout();
-    this.notesGraph.clear();
+    // this.notesGraph.clear();
     this.$log.info('Logout');
     this.$location.path('/login');
   }
