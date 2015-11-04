@@ -2,15 +2,13 @@
 // Style for the main page
 #login {
     position: relative;
-    overflow: hidden;
+    padding-bottom: @block * 2;
     .column;
 
     .overlay {
         position: absolute;
         bottom: 0;
         right: 0;
-        width: 324px;
-        height: 266px;
         background-color: transparent;
         background-repeat: no-repeat;
         pointer-events: none;
@@ -28,6 +26,9 @@
             width: 100%;
             height: 100%;
         }
+        .googleSignIn {
+            bottom: @gutter;
+        }
 
         margin-top: @gutter * 3;
         height: @block * 6;
@@ -37,6 +38,7 @@
 
     #breadcrumb {
         position: absolute;
+        height: 70%;
         left: @gutter;
         a {
             // color: @dyanote-green;
@@ -53,12 +55,47 @@
 
         &#awikiofyourlife .overlay {
             background-image: url('images/homepage/awikiofyourlife.png');
+            width: 324px;
+            height: 266px;
+        }
+
+        &#organizewithlinks .overlay {
+            background-image: url('images/homepage/organizewithlinks.png');
+            width: 201px;
+            height: 242px;
         }
     }
 
-    #googleSignIn {
+    #followus .social {
+        height: 70px;
+        position: relative;
+        margin-bottom: @gutter * 3;
+        a {
+            width: 30%;
+            height: 100%;
+            display: block;
+            position: absolute;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        a.twitter {
+            left: 10%;
+            background-image: url('images/homepage/twitter.png');
+        }
+        a.tumblr {
+            left: 30%;
+            background-image: url('images/homepage/tumblr.png');
+        }
+        a.github {
+            left: 52%;
+            background-image: url('images/homepage/github.png');
+        }
+    }
+
+    .googleSignIn {
         position: absolute;
-        bottom: @gutter;
+        bottom: @gutter * 3;
         right: @gutter * 2;
 
         .button {

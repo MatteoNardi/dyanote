@@ -1,10 +1,9 @@
-
 <div id="login">
     <header>
         <div class="overlay"></div>
         <h1>Dyanote, your personal Hypertext</h1>
 
-        <div id="googleSignIn">
+        <div class="googleSignIn">
             <span class="label">Sign in with:</span>
             <div class="button" ng-click="login.login()">
                 <span class="icon"></span>
@@ -12,12 +11,11 @@
             </div>
         </div>
     </header>
-
     <div id='breadcrumb'>
         <ol>
-            <li><p><a href="">A wiki of your life</a></p></li>
-            <li><p><a href="">Organize your notes with links</a></p></li>
-            <li><p><a href="">Follow us</a></p></li>
+            <a ng-click="scrollTo('awikiofyourlife')"><li><p>A wiki of your life</p></li></a>
+            <a ng-click="scrollTo('organizewithlinks')"><li><p>Organize your notes with links</p></li></a>
+            <a ng-click="scrollTo('followus')"><li><p>Follow us</p></li></a>
         </ol>
     </div>
 
@@ -47,5 +45,46 @@
             <br/>
         </div>
         <div class="overlay"></div>
+    </div>
+
+    <div class="note" id="organizewithlinks">
+        <h2>Organize your notes with links</h2>
+        <div class="richTextEditor">
+            Traditional note taking applications allow you to
+            <br/>search notes and organize them with tags and
+            <br/>buckets. Dyanote solves this problem on a different
+            <br/>level: instead of a bunch of messy notes you’ll have
+            <br/>an organic document reflecting the connections
+            <br/>your mind created.
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+        </div>
+        <div class="overlay"></div>
+    </div>
+
+    <div class="note" id="followus">
+        <h2>Follow us</h2>
+        <div class="richTextEditor">
+            Dyanote is Free Software and  has been created by <a href="http://matteonardi.org">Matteo Nardi</a>
+            <br/>It is inspired by <a href="https://en.wikipedia.org/wiki/Tomboy_(software)">Tomboy</a>
+            <br/>
+            <br/>Follow us on social networks:
+        </div>
+        <div class="social">
+            <a href="https://twitter.com/nardimatteo" class="twitter"></a>
+            <a href="http://news.dyanote.com/" class="tumblr"></a>
+            <a href="https://github.com/MatteoNardi/dyanote-client" class="github"></a>
+        </div>
+    </div>
+
+    <div class="googleSignIn">
+        <span class="label">Sign in with:</span>
+        <div class="button" ng-click="login.login()">
+            <span class="icon"></span>
+            <span class="buttonText">Google</span>
+        </div>
     </div>
 </div>
