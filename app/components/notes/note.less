@@ -27,9 +27,8 @@
         font: 1.7em @font-dyanote-serif;
         color: @dyanote-green;
         display: inline-block;
-        width: 30 * @gu;
+        width: 100%;
         height: 3 * @gu;
-        margin: 0 0 0 (3 * @gu);
         border: none;
         outline: none;
 
@@ -41,19 +40,21 @@
             outline: none;
         }
 
-        .glyphicon-trash {
+        .fa-trash-o {
+            color: #333;
             position: absolute;
-            top: auto;
             right: @gu;
-            bottom: @gu;
+            font-size: 16px;
+            bottom: 20px;
             opacity: .5;
             transition: opacity .5s;
+
+            &:hover {
+                opacity: 1;
+                cursor: pointer;
+            }
         }
 
-        .glyphicon-trash:hover {
-            opacity: 1;
-            cursor: pointer;
-        }
     }
 }
 
