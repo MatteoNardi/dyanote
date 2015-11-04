@@ -1,39 +1,71 @@
-/*
- * Style for the Navigation Bar.
- */
-
-#main {
-    .navbar-brand {
+#header {
+    background-color: @dyanote-green;
+    // .shadow();
+    box-shadow: 0 3px 12px -1px fade(black, 80%);
+    .row();
+    border-bottom: 1px solid black;
+    color: @dyanote-yellow-light;
+    height: @gutter * 3;
+    position: relative;
+    a {
+        color: inherit;
+        text-decoration: inherit;
+        cursor: pointer;
+    }
+    .home {
         font: 19px @font-dyanote-serif;
-        height: 0;
-        padding-left: 0;
         margin-left: 10px;
     }
 
-    .navbar-nav.navbar-right:last-child {
-        margin: 0;
-    }
-
-    .navbar-default {
-        box-shadow: 0 0 20px black;
-    }
-
-    .navbar-button .glyphicon {
-        line-height: 20px;
-    }
-
-    .navbar-nav > li > a {
-        padding-bottom: 1px;
+    nav {
+        flex: 1 1;
     }
 
     .userButton {
-      vertical-align: bottom;
-      img {
         position: relative;
-        bottom: 2px;
-        right: 2px;
-        max-height: 20px;
-        border-radius: 4px;
-      }
+        // height: 100%;
+        padding-right: @gutter;
+        overflow: visible;
+        align-self: flex-end;
+        padding-bottom: 2px;
+        img {
+            height: 20px;
+            width: auto;
+            border-radius: 3px;
+            vertical-align: text-bottom;
+            margin-right: 3px;
+        }
+
+        .fa-caret-down {
+            margin-left: 3px;
+        }
+
+        .dropdown {
+            width: 100%;
+            z-index: 1000;
+            margin-top: 2px;
+            // width: 200px;
+            color: #333;
+            background-color: white;
+            border: 1px solid @dyanote-yellow-dark;
+            border-top: none;
+            display: none;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            box-shadow: 0 3px 16px fade(black, 50%);
+            overflow: hidden;
+            a {
+                padding: @gutter/2;
+                display: block;
+                &:hover {
+                    color: black;
+                    background-color: @dyanote-yellow-light;
+                }
+            }
+        }
+        &:hover .dropdown {
+            display: block;
+            position: absolute;
+        }
     }
 }

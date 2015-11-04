@@ -1,57 +1,27 @@
-<div class='container-fluid'>
+<div id='header'>
+    <a class="home" href="/">Dyanote</a>
 
-    <!-- Brand  -->
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#togglable-navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="/">Dyanote</a>
-    </div>
+    <nav>
+        <a href="/notes/view" tooltip-html-unsafe="Home" tooltip-placement="bottom">
+            <i class="fa fa-home"></i>
+        </a>
+        <a href="/notes/search" shortcut="ctrl+f" tooltip-html-unsafe="Search<strong>Ctrl+F</strong>" tooltip-placement="bottom">
+            <i class="fa fa-search"></i>
+        </a>
+        <a href="/notes/dyagraph" tooltip-html-unsafe="Dyagraph" tooltip-placement="bottom">
+            <i class="fa fa-share-alt"></i>
+        </a>
+    </nav>
 
-    <!-- Navbar -->
-    <div class="collapse navbar-collapse" id="togglable-navbar">
 
-        <!-- Buttons on the left -->
-        <ul class="nav navbar-nav navbar-left">
-
-            <!-- Home button -->
-            <li class='navbar-button'>
-                <a href="/notes/view" tooltip-html-unsafe="Home" tooltip-placement="bottom">
-                    <i class="fa fa-home"></i>
-                </a>
-            </li>
-            <!-- Search button -->
-            <li class='navbar-button'>
-                <a href="/notes/search" shortcut="ctrl+f" tooltip-html-unsafe="Search<strong>Ctrl+F</strong>" tooltip-placement="bottom">
-                    <i class="fa fa-search"></i>
-                </a>
-            </li>
-            <!-- Dyagraph button -->
-            <li class='navbar-button'>
-                <a href="/notes/dyagraph" tooltip-html-unsafe="Dyagraph" tooltip-placement="bottom">
-                    <i class="fa fa-share-alt"></i>
-                </a>
-            </li>
-        </ul>
-
-        <!-- User dropdown on the right -->
-        <ul class="nav navbar-nav navbar-right">
-            <li dropdown class="dropdown">
-                <a href="#" class="dropdown-toggle userButton" dropdown-toggle role="button">
-                  <img src="{{ header.avatar }}" alt="User picture" />
-                  {{ header.username }} <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu" rol="menu">
-                    <!-- Logout button -->
-                    <li><a target="_blank" href="https://github.com/MatteoNardi/dyanote-client/issues/new">Report a problem</a></li>
-                    <li><a ng-click="header.createBackup()">Backup notes</a></li>
-                    <li><a ng-click="header.restoreBackup()">Restore backup</a></li>
-                    <li><a ng-click="header.logout()">Logout</a></li>
-                </ul>
-            </li>
-        </ul>
+    <div class="userButton">
+        <img src="{{ header.avatar }}" alt="User picture" />
+        {{ header.username }} <i class="fa fa-caret-down"></i>
+        <div class="dropdown">
+            <a target="_blank" href="https://github.com/MatteoNardi/dyanote-client/issues/new">Report a problem</a>
+            <a ng-click="header.createBackup()">Backup notes</a>
+            <a ng-click="header.restoreBackup()">Restore backup</a>
+            <a ng-click="header.logout()">Logout</a>
+        </div>
     </div>
 </div>
