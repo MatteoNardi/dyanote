@@ -9,7 +9,8 @@
     @space-length: 4px;
 
     position: fixed;
-    left: @gu;
+    margin-left: @gu;
+    margin-top: -@block + @gutter * 2;
     height: 100%;
     background-image:
         linear-gradient(0deg,
@@ -33,7 +34,7 @@
     li {
         height: 3 * @gu;
         padding: 1px (2 * @gu);
-        width: @block * 5 - 2 * @gutter;
+        width: @block * 3 - 3 * @gutter;
         background-image:
             linear-gradient(90deg,
                             transparent,
