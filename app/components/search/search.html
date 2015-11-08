@@ -12,7 +12,7 @@
 <i class="fa fa-search"></i>
 
 <div class="results">
-    <!-- <a ng-click="search.open(note)" class="result" ng-repeat="note in search.results">
-        <p>{{ note.title }}</p>
-    </a> -->
+    <a ng-click="search.open(note)" class="result" ng-repeat="note in search.results">
+        <p>{{ search.notesGraph.title(note) }}</p>
+    </a>
 </div>

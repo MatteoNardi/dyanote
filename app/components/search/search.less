@@ -24,4 +24,22 @@
         color: @dyanote-green;
         pointer-events: none;
     }
+
+    .results {
+        background-color: @dyanote-yellow-dark;
+        position: fixed;
+        top: 45px;
+        padding-top: 6px;
+        width: @block * 4;
+        max-height: @block * 4;
+        margin-left: @gutter;
+        overflow-y: auto;
+        overflow-x: hidden;
+        p {
+            background-color: @dyanote-yellow-light;
+            margin: 1px;
+            color: @dyanote-green;
+        }
+        border-radius: 5px;
+    }
 }
