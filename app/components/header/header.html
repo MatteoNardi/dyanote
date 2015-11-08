@@ -20,14 +20,13 @@
             tooltip-side="bottom">
             <i class="fa fa-book"></i>
         </a>
-        <a href="/notes/search" shortcut="ctrl+f"
-            tooltips
-            tooltip-html="Search<strong>Ctrl+F</strong>"
-            tooltip-side="bottom">
-            <i class="fa fa-search"></i>
-        </a>
     </nav>
 
+    <div id="search"
+        ng-include="'search/search.html'"
+        ng-controller="SearchController as search"/>
+
+    <div class="filler"></div>
 
     <div class="userButton">
         <img src="{{ header.avatar }}" alt="User picture" />

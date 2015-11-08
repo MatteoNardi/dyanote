@@ -1,5 +1,3 @@
-'use strict';
-
 
 // SearchController is responsible for searching notes.
 class SearchController {

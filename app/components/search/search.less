@@ -1,34 +1,27 @@
-/*
- * Style for the Search view.
- */
 
 
-#searchView {
-    width: 100%;
-    background-color: @dyanote-yellow-light;
-    padding: 70px 40px;
+#search {
+    position: relative;
 
-    label {
-        display: block;
-        text-align: center;
-        font-family: @font-dyanote-serif;
-    }
     input {
-        background: transparent;
-        box-shadow: none;
+        display: block;
+        width: @block * 4;
+        margin-left: @gutter;
+        margin-bottom: 3px;
+        background-color: @dyanote-yellow-light;
+        border-radius: 5px;
         border: none;
-        font-size: 3em;
-        height: 100px;
-        text-align: center;
+        padding: 3px 15px 3px 5px;
+        height: 22px;
+        font-size: 1.1em;
     }
-    .close-button {
-        color: @dyanote-green;
+
+    >i {
         position: absolute;
-        top: 70px;
-        right: 40px;
-        font-size: 2em;
-    }
-    .close-button:hover {
-        font-size: 2.2em;
+        font-size: 18px;
+        right: 8px;
+        top: 2px;
+        color: @dyanote-green;
+        pointer-events: none;
     }
 }

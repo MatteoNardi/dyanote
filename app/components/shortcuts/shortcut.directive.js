@@ -3,8 +3,6 @@ angular.module('dyanote')
 // Simulate a click on the node when a shortcut is pressed.
 // Example:
 // <button shortcut="ctrl+b">
-// Example usage of shortcut-disabled:
-// <button shortcut="ctrl+b" shortcut-disabled>
 .directive('shortcut', function () {
   // Make sure we don't stop working when inside a text field.
   Mousetrap.prototype.stopCallback = function () {
@@ -15,10 +13,10 @@ angular.module('dyanote')
     restrict: 'A',
     link: function (scope, element, attrs) {
       // Bind shortcut to click event.
+      var event = attrs.shortcutEvent || 'click';
       Mousetrap.bind(attrs.shortcut, function (e) {
-        if (attrs['shortcut-disabled']) return;
         e.preventDefault();
-        element.trigger('click');
+        element.trigger(event);
       });
 
       // Avoid memory leaks.
