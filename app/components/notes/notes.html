@@ -15,8 +15,10 @@
                 <input type='text' class='title'
                     ng-model="notes.title(note)"
                     ng-model-options="{ getterSetter: true }"/>
-                <i class="fa fa-trash-o" ng-click="notes.trash(note)"
-                    tooltip="Archive note"/>
+                <i class="fa fa-trash-o"
+                    ng-click="notes.trash(note)"
+                    tooltips
+                    tooltip-title="Trash note"/>
             </h2>
             <div editor class="richTextEditor" contenteditable="true"></div>
             <div ng-include="'notes/toolbar.html'" class="toolbar"></div>
