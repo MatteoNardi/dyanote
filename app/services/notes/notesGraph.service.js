@@ -45,6 +45,7 @@ function notesGraph () {
     children = R.compose(R.filter(notTrashed), allChildren),
     descendants = R.compose(R.flatten, D.dfs(children, children)),
     allNotes = _ => Array.from(_notes),
+    allTrashed = _ => R.filter(D.getter(_trashed))(allNotes()),
     hasNoParent = R.compose(R.not, D.exists, parent),
     isRoot = R.both(hasNoParent, notTrashed),
     roots = _ => R.filter(isRoot, allNotes());
@@ -61,8 +62,9 @@ function notesGraph () {
     body: body,         // id -> string
     children: children, // id -> [id]
     descendants: descendants, // [id]
-    allNotes: allNotes, // [id]
-    roots: roots        // [id]
+    allNotes: allNotes,       // [id]
+    allTrashed: allTrashed,   // [id]
+    roots: roots              // [id]
   };
 }
 

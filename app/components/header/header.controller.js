@@ -36,7 +36,6 @@ class HeaderController {
   }
 
   isActive (path) {
-    console.log('path');
     if (this.$location.path().substr(0, path.length) === path) {
       return 'active';
     } else {

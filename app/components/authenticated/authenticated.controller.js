@@ -4,7 +4,7 @@ function AuthenticatedController ($router, $location, $timeout, backend, notesMa
     { path: '/', redirectTo: '/view'},
 
     { path: '/view', component: 'notes'},
-    { path: '/archive', component: 'archive'},
+    { path: '/trash', component: 'trash'},
     { path: '/dyagraph', component: 'dyagraph'},
     { path: '/search', component: 'search'}
   ]);

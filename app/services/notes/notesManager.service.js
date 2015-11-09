@@ -21,6 +21,7 @@ class notesManager {
   }
 
   load (note) {
+    console.warn(`load ${note}`)
     this.loadTitle(note);
     this.loadBody(note);
   }

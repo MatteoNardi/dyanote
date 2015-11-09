@@ -1,0 +1,8 @@
+<div id="trash">
+  <div ng-repeat="note in trash.notes()">
+      <span>“{{ trash.notesGraph.title(note) }}”</span>
+      <span class="oldParent">
+        Was contained in “{{ trash.notesGraph.title(trash.notesGraph.parent(note)) }}”
+      </span>
+  </div>
+</div>
