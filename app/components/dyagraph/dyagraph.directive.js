@@ -1,9 +1,7 @@
-'use strict';
-
 angular.module('dyanote')
 
 // The interactive graph displaying all notes.
-.directive('dyagraph', function ($window, $timeout, $location, notesGraph, openNotes) {
+.directive('dyagraph', function ($window, $timeout, $location, notesGraph, notesManager, openNotes) {
   return {
     restrict: 'EA',
     link: function (scope, element, attrs) {
@@ -16,9 +14,10 @@ angular.module('dyanote')
           $timeout(function () {
             scope.render();
             scope.dirty = false;
-          }, 500, false)
+          }, 500, false);
         }
       });
+
 
       var clickhandler = function (data) {
         scope.$apply(function () {
@@ -28,26 +27,28 @@ angular.module('dyanote')
         });
       };
 
-      scope.render = function () {
+      scope.render = () => {
         var getHierarchy = function (note) {
           var obj = {
-            name: note.title,
+            name: notesGraph.title(note),
             note: note,
             children: []
           };
-          note.children.forEach(function (child) {
+          notesGraph.children(note).forEach(function (child) {
             obj.children.push(getHierarchy(child));
           });
           return obj;
-        }
-        var rootNote = getHierarchy(notesGraph.getRoot());
+        };
+
+        if (notesGraph.roots().length === 0) return;
+        var rootNote = getHierarchy(notesGraph.roots()[0]);
 
         var width = element[0].parentNode.offsetWidth,
             height = element[0].parentNode.offsetHeight,
             marginX = width * 0.1,
             marginY = height * 0.1;
 
-        svg.attr('transform', 'translate('+ marginX +','+ marginY +')')
+        svg.attr('transform', 'translate('+ marginX +','+ marginY +')');
 
         var cluster = d3.layout.cluster()
             .size([height - 2*marginY, width - 2*marginX]);
@@ -60,7 +61,7 @@ angular.module('dyanote')
 
         // DATA JOIN
         var link = svg.selectAll('.link').data(links);
-        var node = svg.selectAll('.node').data(nodes)
+        var node = svg.selectAll('.node').data(nodes);
         // ENTER
         link.enter().append('path').attr('class', 'link');
         var newnode = node.enter().append('g').attr('class', 'node');
@@ -78,7 +79,11 @@ angular.module('dyanote')
         node.exit().remove();
       };
 
-      scope.render();
+      notesManager.loadAllTitles();
+      // Todo: think a proper solution for waiting for graph and titles.
+      $timeout(scope.render, 500, false);
+      $timeout(scope.render, 1500, false);
+      $timeout(scope.render, 4500, false);
     }
   };
 });

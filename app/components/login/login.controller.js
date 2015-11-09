@@ -13,7 +13,7 @@ function LoginController (backend, $scope, $location, $timeout, $anchorScroll) {
   $scope.scrollTo = function(id) {
     $location.hash(id);
     $anchorScroll();
-};
+  };
 
   this.login = _ => backend.login();
 }

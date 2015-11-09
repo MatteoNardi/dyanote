@@ -5,10 +5,10 @@ class notesManager {
     this.notifications = notifications;
     this.backend = backend;
     this.notesCoherenceTools = notesCoherenceTools;
-    this.loaded = new Set();
 
     // Keep the graph of notes updated
     backend.onGraphUpdate(notes => {
+      console.info('loaadded')
       notes.forEach(note => {
         notesGraph.setParent(note.id, note.parent);
         notesGraph.setTrashed(note.id, note.trashed);
@@ -22,11 +22,22 @@ class notesManager {
   }
 
   load (note) {
-    if (!this.loaded.has(note)) {
-      this.loaded.add(note);
-      this.backend.onTitleUpdate(note, this.notesGraph.setTitle(note));
+    this.loadTitle(note);
+    this.loadBody(note);
+  }
+
+  loadBody (note) {
+    if (this.notesGraph.body(note) === undefined)
       this.backend.onBodyUpdate(note, this.notesGraph.setBody(note));
-    }
+  }
+
+  loadTitle (note) {
+    if (this.notesGraph.title(note) === undefined)
+      this.backend.onTitleUpdate(note, this.notesGraph.setTitle(note));
+  }
+
+  loadAllTitles (cb) {
+    this.notesGraph.allNotes().forEach(note => this.loadTitle(note));
   }
 
   newNote (parent, title) {

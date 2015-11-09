@@ -62,8 +62,10 @@ angular.module('dyanote')
   function setupAnimatedScrolling (scope, element) {
     var focusHandler = (note) => {
       if (note == scope.note) {
-        jQuery("html,body").animate({scrollTop: element.parent().offset().top - 90}, 400);
-        // Note: this 90px magic number shoud be @navbar-height + @note-margin in style.less
+        setTimeout(_ =>
+          jQuery("html,body").animate({scrollTop: element.parent().offset().top - 95}, 400),
+          0);
+        // Note: this 90px magic number shoud be @navbar-height + @note-margin
       }
     };
     openNotes.addFocusHandler(focusHandler);
