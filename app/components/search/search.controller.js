@@ -25,8 +25,9 @@ class SearchController {
       this.$log.info('Searching for "' + text + '"');
       this.isLoading = true;
       // Todo: case insensitive
-      var contains = x => x && x.indexOf(text) != -1;
-      var response = this._search(note =>
+      var regex = new RegExp(text, 'gi');
+      var contains = x => x && x.match(regex);
+      this._search(note =>
         contains(this.notesGraph.body(note)) ||
         contains(this.notesGraph.title(note))
       );
