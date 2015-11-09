@@ -29,6 +29,8 @@ function notesGraph () {
         _children.get(source).delete(dest);
     },
     setParent = (id, newParent) => {
+      if (newParent === '')
+        newParent = undefined;
       init(id);
       init(newParent);
       unlink(parent(id), id);

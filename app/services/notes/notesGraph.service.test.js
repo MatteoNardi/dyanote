@@ -53,4 +53,18 @@ describe('Service: notesGraph', function () {
     notesGraph.setTrashed(17, true);
     expect(notesGraph.roots()).toEqual([1, 3, 15]);
   });
+
+  it('should not consider an empty id as a parent', function () {
+    notesGraph.setParent('2', '');
+    expect(notesGraph.roots()).toEqual(['2']);
+  });
+
+  it('should allow to get all trashed notes', function () {
+    notesGraph.setParent(2, 1);
+    notesGraph.setParent(3, 1);
+    notesGraph.setParent(4, 2);
+    notesGraph.setTrashed(2, true);
+    notesGraph.setTrashed(4, true);
+    expect(notesGraph.allTrashed()).toEqual([2, 4]);
+  });
 });
