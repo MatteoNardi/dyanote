@@ -84,6 +84,7 @@ angular.module('dyanote')
       $timeout(scope.render, 500, false);
       $timeout(scope.render, 1500, false);
       $timeout(scope.render, 4500, false);
+      jQuery("html,body").animate({scrollTop: 0}, 400);
     }
   };
 });

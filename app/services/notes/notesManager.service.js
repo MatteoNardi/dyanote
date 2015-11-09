@@ -8,7 +8,6 @@ class notesManager {
 
     // Keep the graph of notes updated
     backend.onGraphUpdate(notes => {
-      console.info('loaadded')
       notes.forEach(note => {
         notesGraph.setParent(note.id, note.parent);
         notesGraph.setTrashed(note.id, note.trashed);

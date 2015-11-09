@@ -2,19 +2,22 @@
     <a class="home" href="/">Dyanote</a>
 
     <nav>
-        <a href="/notes/view" class="active"
+        <a href="/notes/view"
+            ng-class="header.isActive('/notes/view')"
             tooltips
             tooltip-html="Home"
             tooltip-side="bottom">
             <i class="fa fa-home"></i>
         </a>
         <a href="/notes/dyagraph"
+            ng-class="header.isActive('/notes/dyagraph')"
             tooltips
             tooltip-html="Dyagraph"
             tooltip-side="bottom">
             <i class="dyagraph">&nbsp;</i>
         </a>
-        <a href="/notes/trash" class=""
+        <a href="/notes/trash"
+            ng-class="header.isActive('/notes/trash')"
             tooltips
             tooltip-html="Archive"
             tooltip-side="bottom">

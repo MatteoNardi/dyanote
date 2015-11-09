@@ -34,6 +34,15 @@ class HeaderController {
     var backup = window.prompt('Paste your json backup here');
     this.backend.restore(backup);
   }
+
+  isActive (path) {
+    console.log('path');
+    if (this.$location.path().substr(0, path.length) === path) {
+      return 'active';
+    } else {
+      return '';
+    }
+  }
 }
 
 angular.module('dyanote').controller('HeaderController', HeaderController);

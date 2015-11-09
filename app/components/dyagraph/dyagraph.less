@@ -1,6 +1,17 @@
 
-.dyagraph {
-    height: 100%;
+#dyagraphwarning {
+    position: absolute;
+    top: @gutter * 7;
+    left: @gutter;
+    color: #222;
+    border: 1px solid #A52121;
+    border-radius: 5px;
+    padding: 10px 15px;
+}
+
+#dyagraph {
+    height: 100vh;
+
     svg {
         width: 100%;
         height: 90%;
@@ -12,10 +23,15 @@
             stroke-dasharray: 15, 2;
         }
 
-        .note {
+        .node {
             cursor: pointer;
             text {
                 text-anchor: middle;
+            }
+            circle {
+                fill: #82b8b3;
+                stroke-width: 1.3px;
+                stroke: black;
             }
         }
     }
