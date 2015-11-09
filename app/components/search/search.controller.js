@@ -26,7 +26,7 @@ class SearchController {
       this.isLoading = true;
       // Todo: case insensitive
       var regex = new RegExp(text, 'gi');
-      var contains = x => x && x.match(regex);
+      var contains = x => !!x && x.match(regex);
       this._search(note =>
         contains(this.notesGraph.body(note)) ||
         contains(this.notesGraph.title(note))

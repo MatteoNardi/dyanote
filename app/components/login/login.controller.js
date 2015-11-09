@@ -5,7 +5,7 @@ function LoginController (backend, $scope, $location, $timeout, $anchorScroll) {
     console.info('backend.isAuthenticated', isAuthenticated, wasAuthenticated);
     if (isAuthenticated) {
       $timeout(function () {
-        $location.path('/notes');
+        $location.path('/notes/view');
       });
     }
   });
