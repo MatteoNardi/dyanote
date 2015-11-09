@@ -15,11 +15,15 @@ class Minigraph {
     main.append('g').attr('class', 'notes');
 
     // Render on openNotes changes
-    scope.$watchCollection(() => this.openNotes.notes, () => this.render());
+    scope.$watchCollection(
+      () => this.getVisibleNotes().concat(this.openNotes.notes),
+      () => this.render()
+    );
 
     // Animate note focusing
     var focusHandler = this.onNoteFocused.bind(this);
     this.openNotes.addFocusHandler(focusHandler);
+    // focusHandler(this.openNotes.focused);
     element.on('$destroy', () => {
       this.openNotes.removeFocusHandler(focusHandler);
     });
@@ -62,13 +66,17 @@ class Minigraph {
   }
 
   updateOpenNotes (selection) {
-    selection
-      .filter(note => this.openNotes.isOpen(note))
-        .attr('class', 'open')
-        .transition()
-          // .duration(500)
-          .attr('cx', (note, i) => Minigraph.getPosOfOpenNote(i).x)
-          .attr('cy', (note, i) => Minigraph.getPosOfOpenNote(i).y);
+    var sel = selection.filter(note => this.openNotes.isOpen(note));
+    sel
+      .attr('class', 'open')
+      .transition()
+        // .duration(500)
+        .attr('cx', (note, i) => Minigraph.getPosOfOpenNote(i).x)
+        .attr('cy', (note, i) => Minigraph.getPosOfOpenNote(i).y);
+
+    // Highlight last focused note
+    sel.filter(note => note === this.openNotes.focused)
+      .attr('class', 'open focused');
   }
 
   updateChildNotes (selection) {
@@ -174,12 +182,6 @@ class Minigraph {
 
   // openNotes focus event handler
   onNoteFocused (note) {
-    // Highlight element
-    this.svg.selectAll('.open')
-      .attr('class', 'open')
-      .filter(data => data === note)
-        .attr('class', 'open focused');
-
     // Translate view
     // The topLeftNote-th note will be put in the top left corner
     var topLeftNote = 0,

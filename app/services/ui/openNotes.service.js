@@ -6,6 +6,7 @@ class openNotes {
   constructor (notesGraph) {
     this.notesGraph = notesGraph;
     this._notes = [];
+    this._focused = undefined;
     this._set = new Set();
     this._focusHandlers = [];
     this._openHandlers = [];
@@ -15,6 +16,10 @@ class openNotes {
   // and ends with the last opened one.
   get notes () {
     return this._notes;
+  }
+
+  get focused () {
+    return this._focused;
   }
 
   isOpen (note) {
@@ -55,6 +60,7 @@ class openNotes {
   // Focus event: used to move to/highlight a particular note
 
   focus (note) {
+    this._focused = note;
     this._focusHandlers.forEach(cb => cb(note));
   }
 
