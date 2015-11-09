@@ -1,11 +1,11 @@
 var gulp = require('gulp');
-var karma = require('karma').server;
+var Server = require('karma').Server;
 
 /**
 * Run test once and exit
 */
 gulp.task('test', function (done) {
-  karma.start({
+  var config = {
     basePath: '',
     frameworks: ['jasmine', 'source-map-support'],
     files: [
@@ -15,6 +15,7 @@ gulp.task('test', function (done) {
       'node_modules/angular-mocks/angular-mocks.js',
       'node_modules/angular-animate/angular-animate.js',
       'node_modules/angular-local-storage/dist/angular-local-storage.js',
+      'node_modules/angular-tooltips/dist/angular-tooltips.min.js',
       'node_modules/ramda/dist/ramda.js',
       'app/app.js',
       'app/config_local.js',
@@ -43,10 +44,10 @@ gulp.task('test', function (done) {
     ],
     port: 8080,
     autoWatch: true,
-    // browsers: ['PhantomJS'],
-    browsers: ['Chrome'],
+    browsers: ['PhantomJS'],
+    // browsers: ['Chrome'],
     singleRun: false
-  }, function () {
-    done ();
-  });
+  };
+  var server = new Server(config, done);
+  server.start();
 });
