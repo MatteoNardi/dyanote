@@ -28,6 +28,7 @@ class openNotes {
 
   // Replace curretly open notes with the given note and its ancestors.
   open (note) {
+    if (this.isOpen(note)) return;
     this.notes.length = 0;
     this._set.clear();
     while (note) {
@@ -41,6 +42,7 @@ class openNotes {
   // Replace the insertAfter note and  the following ones
   // with the given note.
   openAfter (note, insertAfter) {
+    if (this.isOpen(note)) return;
     var insertPos = this.notes.indexOf(insertAfter);
     for (var i = insertPos + 1; i < this.notes.length; i++)
       this._set.delete(this.notes[i]);

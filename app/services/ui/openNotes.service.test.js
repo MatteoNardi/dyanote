@@ -29,6 +29,7 @@ describe('openNotes service', function () {
 
   it('should replace notes', function () {
     openNotes.open('C');
+    openNotes.open('D');
     openNotes.open('B');
     expect(openNotes.notes.length).toBe(2);
     expect(openNotes.notes[0]).toBe('A');
@@ -88,5 +89,17 @@ describe('openNotes service', function () {
     expect(openNotes.isOpen('B')).toBe(false);
     expect(openNotes.isOpen('C')).toBe(false);
     expect(openNotes.isOpen('D')).toBe(true);
-  })
+  });
+
+  it('should not open al already opened note', function () {
+    openNotes.open('A');
+    openNotes.open('B');
+    openNotes.open('C');
+    openNotes.open('A');
+    openNotes.openAfter('B', 'A');
+    expect(openNotes.notes.length).toBe(3);
+    expect(openNotes.notes[0]).toBe('A');
+    expect(openNotes.notes[1]).toBe('B');
+    expect(openNotes.notes[2]).toBe('C');
+  });
 });
