@@ -55,6 +55,7 @@ class notesManager {
   setBody (id, body) {
     // TODO: check if all children are still present and move to
     // lost&found the ones which are not.
+    body = this.notesCoherenceTools.forceLocalLinks(body, this.notesGraph.allNotes());
     this.backend.updateBody(id, body);
   }
 

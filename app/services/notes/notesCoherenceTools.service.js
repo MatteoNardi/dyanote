@@ -17,6 +17,16 @@ class notesCoherenceTools {
     newTitle = newTitle || '...';
     return body.replace(this.linkRegex(id), `<a href="#${id}">${newTitle}</a>`);
   }
+
+  // Sometimes (on copy&paste for example), note links (which use anchors)
+  // become full links. This function detects and fixes this.
+  // ... http://localhost:8000/notes/view#-K6rJ4JnnTpGIV4AncFu ...
+  // ... #-K6rJ4JnnTpGIV4AncFu ...
+  forceLocalLinks (body, notesIds) {
+    return body.replace(/href="[^"]*#([-\w]+)"/g, (match, id) =>
+      notesIds.indexOf(id) === -1 ? match : `href="#${id}"`
+    );
+  }
 }
 
 angular.module('dyanote').service('notesCoherenceTools', notesCoherenceTools);

@@ -10,7 +10,7 @@ These are the allowed tags and their nestings:
     |
     +-> Br:		<br/>
     |
-    +-> Link:   <a href="https://dyanote.herokuapp.com/api/users/test@gmail.com/pages/2192341/">Link</a>
+    +-> Link:   <a href="#-K6rJ4JnnTpGIV4AncFu">Link</a>
     |   |
     |   +-> Text
     |
