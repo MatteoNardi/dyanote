@@ -10,6 +10,7 @@
       "app/services/*/*.service.js",
       "app/components/*/*.controller.js",
       "app/components/*/*.directive.js",
+      "app/components/*/*.component.js",
       "app/scribe/*.js",
       "app/scribe/commands/utils.js",
       "app/scribe/commands/formatting.js",
@@ -36,6 +37,9 @@
       "node_modules/mousetrap/mousetrap.js",
       "node_modules/d3/d3.min.js",
       "node_modules/ramda/dist/ramda.js",
+      "node_modules/react/dist/react.min.js",
+      "node_modules/react-dom/dist/react-dom.min.js",
+      "node_modules/ngreact/ngReact.min.js",
       "resources/js/*.js"
     ]
   }

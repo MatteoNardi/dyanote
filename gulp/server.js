@@ -79,7 +79,7 @@ gulp.task('js:dyanote', function () {
   var templates = gulp.src(sources.templates).pipe(templateCache({ module: 'dyanote' }));
   return es.merge(js, templates)
     .pipe(sourcemaps.init())
-      .pipe(babel())
+      .pipe(babel({ presets: ['react', 'es2015'] }))
       .pipe(concat('dyanote.js'))
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('dist/build'));

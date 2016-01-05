@@ -25,9 +25,9 @@
         </a>
     </nav>
 
-    <div id="search"
-        ng-include="'search/search.html'"
-        ng-controller="SearchController as search"/>
+    <react-component
+      ng-controller="searchFRPController as search"
+      name="Search" props="search.props" watch-depth="reference"/>
 
     <div class="filler"></div>
 
