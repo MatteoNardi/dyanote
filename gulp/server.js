@@ -80,6 +80,10 @@ gulp.task('js:dyanote', function () {
   return es.merge(js, templates)
     .pipe(sourcemaps.init())
       .pipe(babel({ presets: ['react', 'es2015'] }))
+      .on('error', function (e) {
+        console.log(e.codeFrame);
+        this.emit('end');
+      })
       .pipe(concat('dyanote.js'))
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('dist/build'));
