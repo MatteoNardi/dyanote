@@ -12,7 +12,6 @@ var Input = React.createClass({
       this.refs.input.select();
       return false;
     });
-    console.log('this.refs.input', this.refs.input);
     this.mousetrap = Mousetrap(this.refs.input);
     this.mousetrap.bind('up', this.props.onUp);
     this.mousetrap.bind('down', this.props.onDown);
