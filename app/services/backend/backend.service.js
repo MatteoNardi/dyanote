@@ -134,6 +134,7 @@ function backend (SERVER_CONFIG, notifications, $rootScope) {
   init();
 
   return {
+    firebase: firebase,
     isAuthenticated: isAuthenticated,
     getUserVisibleName: getUserVisibleName,
     getUserAvatar: getUserAvatar,

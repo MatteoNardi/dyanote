@@ -9,13 +9,15 @@ gulp.task('test', function (done) {
     basePath: '',
     frameworks: ['jasmine', 'source-map-support'],
     files: [
-      'node_modules/babel/node_modules/babel-core/browser-polyfill.js',
       'node_modules/angular/angular.js',
       'node_modules/angular-new-router/dist/router.es5.js',
       'node_modules/angular-mocks/angular-mocks.js',
       'node_modules/angular-animate/angular-animate.js',
       'node_modules/angular-local-storage/dist/angular-local-storage.js',
       'node_modules/angular-tooltips/dist/angular-tooltips.min.js',
+      "node_modules/react/dist/react.min.js",
+      "node_modules/react-dom/dist/react-dom.min.js",
+      "node_modules/ngreact/ngReact.min.js",
       'node_modules/ramda/dist/ramda.js',
       'app/app.js',
       'app/config_local.js',
@@ -44,8 +46,8 @@ gulp.task('test', function (done) {
     ],
     port: 8080,
     autoWatch: true,
-    browsers: ['PhantomJS'],
-    // browsers: ['Chrome'],
+    // browsers: ['PhantomJS'],
+    browsers: ['Chrome'],
     singleRun: false
   };
   var server = new Server(config, done);
